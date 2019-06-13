@@ -6,7 +6,6 @@ import edu.ncsu.csc.itrust.beans.PatientBean;
 import edu.ncsu.csc.itrust.dao.DAOFactory;
 import edu.ncsu.csc.itrust.dao.mysql.PatientDAO;
 import edu.ncsu.csc.itrust.dao.mysql.TransactionDAO;
-import edu.ncsu.csc.itrust.enums.TransactionType;
 import edu.ncsu.csc.itrust.exception.DBException;
 import edu.ncsu.csc.itrust.Messages;
 
@@ -42,8 +41,6 @@ public class ViewPrescriptionRenewalNeedsAction {
 	public List<PatientBean> getRenewalNeedsPatients() {
 	
 		try {	
-			transDAO.logTransaction(TransactionType.VIEW_RENEWAL_NEEDS_PATIENTS, loggedInMID, 
-					0L, loggedInMID + Messages.getString("ViewPrescriptionRenewalNeedsAction.0")); //$NON-NLS-1$
 			return patientDAO.getRenewalNeedsPatients(loggedInMID);
 		}
 		catch (DBException e) {

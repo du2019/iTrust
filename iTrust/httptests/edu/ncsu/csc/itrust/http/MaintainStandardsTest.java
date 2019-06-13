@@ -3,6 +3,7 @@ package edu.ncsu.csc.itrust.http;
 import com.meterware.httpunit.WebConversation;
 import com.meterware.httpunit.WebForm;
 import com.meterware.httpunit.WebResponse;
+import edu.ncsu.csc.itrust.enums.TransactionType;
 
 public class MaintainStandardsTest extends iTrustHTTPTest {
 	@Override
@@ -24,6 +25,8 @@ public class MaintainStandardsTest extends iTrustHTTPTest {
 		WebConversation wc = login("9000000001", "pw");
 		WebResponse wr = wc.getCurrentPage();
 		assertEquals("iTrust - Admin Home", wr.getTitle());
+		assertLogged(TransactionType.HOME_VIEW, 9000000001L, 0L, "");
+		
 		// click on Edit CPT codes
 		wr = wr.getLinkWith("Edit CPT ProcedureCodes").click();
 		assertTrue(wr.getURL().toString().contains("auth/admin/editCPTProcedureCodes.jsp"));
@@ -34,5 +37,6 @@ public class MaintainStandardsTest extends iTrustHTTPTest {
 		form.getSubmitButtons()[0].click();
 		wr = wc.getCurrentPage();
 		assertTrue(wr.getText().contains("Success: 90736 - Shingles Vaccine"));
+		assertLogged(TransactionType.MEDICAL_PROCEDURE_CODE_ADD, 9000000001L, 0L, "");
 	}
 }

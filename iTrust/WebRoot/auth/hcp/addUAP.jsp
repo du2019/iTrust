@@ -31,9 +31,10 @@ pageTitle = "iTrust - Add UAP";
 			String password;
 			password = p.getPassword();
 			fullname = p.getFullName();
+			loggingAction.logEvent(TransactionType.UAP_CREATE, loggedInMID.longValue(), newMID, "");
 %>
 	<div align=center>
-		<span class="iTrustMessage">New UAP <%=fullname%> succesfully added!</span>
+		<span class="iTrustMessage">New UAP <%= StringEscapeUtils.escapeHtml("" + (fullname)) %> succesfully added!</span>
 		<br />
 		<br />
 		<table class="fTable">
@@ -42,14 +43,14 @@ pageTitle = "iTrust - Add UAP";
 			</tr>
 			<tr>
 				<td class="subHeaderVertical">MID:</td>
-				<td><%=newMID%></td>
+				<td><%= StringEscapeUtils.escapeHtml("" + (newMID)) %></td>
 			</tr>
 			<tr>
 				<td class="subHeaderVertical">Temporary Password:</td>
-				<td><%=password%></td>
+				<td><%= StringEscapeUtils.escapeHtml("" + (password)) %></td>
 			</tr>
 		</table>
-		<br />Please get this information to <b><%=fullname%></b>! 
+		<br />Please get this information to <b><%= StringEscapeUtils.escapeHtml("" + (fullname)) %></b>! 
 		<p>
 			<a href = "/iTrust/auth/staff/editPersonnel.jsp">Continue to personnel information.</a>
 		</p>
@@ -58,7 +59,7 @@ pageTitle = "iTrust - Add UAP";
 		} catch(FormValidationException e){
 %>
 	<div align=center>
-		<span class="iTrustError"><%=e.getMessage() %></span>
+		<span class="iTrustError"><%=StringEscapeUtils.escapeHtml(e.getMessage()) %></span>
 	</div>
 <%
 		}

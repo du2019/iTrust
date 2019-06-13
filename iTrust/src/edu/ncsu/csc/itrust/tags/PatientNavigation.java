@@ -25,7 +25,6 @@ public class PatientNavigation implements Tag {
 	private String thisTitle;
 
 	public PatientNavigation() {
-		super();
 	}
 
 	public int doStartTag() throws JspException {

@@ -17,6 +17,8 @@ pageTitle = "iTrust - Email History";
 
 <div align="center" style="margin: 10px;">
 <%
+	loggingAction.logEvent(TransactionType.EMAIL_HISTORY_VIEW, loggedInMID.longValue(), 0, "");
+	
 	ViewMyRecordsAction action = new ViewMyRecordsAction(prodDAO, loggedInMID.longValue());
 	List<Email> Emails = action.getEmailHistory();
 	%><table class="fTable"><%
@@ -33,10 +35,10 @@ pageTitle = "iTrust - Email History";
 		for (Email email : Emails){
 %>
 		<tr>
-			<td> <%=email.getToListStr()%> </td>
-			<td> <%=email.getSubject()%> </td> 
-			<td> <%=email.getBody()%> </td>
-			<td> <%=email.getTimeAdded() %> </td>
+			<td> <%= StringEscapeUtils.escapeHtml("" + (email.getToListStr())) %> </td>
+			<td> <%= StringEscapeUtils.escapeHtml("" + (email.getSubject())) %> </td> 
+			<td> <%= StringEscapeUtils.escapeHtml("" + (email.getBody())) %> </td>
+			<td> <%= StringEscapeUtils.escapeHtml("" + (email.getTimeAdded() )) %> </td>
 		</tr>
 <%}
 

@@ -21,6 +21,7 @@ pageTitle = "iTrust - View My Messages";
 <div align=center>
 	<h2>My Appointments</h2>
 <%
+	loggingAction.logEvent(TransactionType.APPOINTMENT_ALL_VIEW, loggedInMID.longValue(), 0, "");
 	ViewMyApptsAction action = new ViewMyApptsAction(prodDAO, loggedInMID.longValue());
 	EditApptTypeAction types = new EditApptTypeAction(prodDAO, loggedInMID.longValue());
 	List<ApptBean> appts = action.getMyAppointments();
@@ -32,7 +33,8 @@ pageTitle = "iTrust - View My Messages";
 			<th>Appointment Type</th>
 			<th>Appointment Date/Time</th>
 			<th>Duration</th>
-			<th></th>
+			<th>Comments</th>
+			<th>Change</th>
 		</tr>
 <%		 
 		boolean conflicts[] = new boolean[appts.size()];
@@ -48,35 +50,31 @@ pageTitle = "iTrust - View My Messages";
 				}
 			}
 		}
-%>
-<%		int index = 0;
+		int index = 0;
 		for(ApptBean a : appts) { 
-			String comment = "";
-			if(a.getComment() == null)
-				comment = "No Comment";
-			else
-				comment = "<a href='viewAppt.jsp?apt="+index+"'>Read Comment</a>";
+			String comment = "No Comment";
+			if(a.getComment() != null)
+				comment = "<a href='viewAppt.jsp?apt="+a.getApptID()+"'>Read Comment</a>";
 				
 			Date d = new Date(a.getDate().getTime());
 			DateFormat format = new SimpleDateFormat("MM/dd/yyyy hh:mm a");
 			
-			String row = "";
+			String row = "<tr";
 			if(conflicts[index])
-				row = "<tr style='font-weight: bold;'";
-			else
-				row = "<tr";
+				row += " style='font-weight: bold;'";
 %>
 			<%=row+" "+((index%2 == 1)?"class=\"alt\"":"")+">"%>
-				<td><%= action.getName(a.getPatient()) %></td>
-				<td><%= a.getApptType() %></td>
-				<td><%= format.format(d) %></td>
-				<td><%= types.getDurationByType(a.getApptType())+" minutes" %></td>
-				<td>
-					<%=comment %>
-				</td>
+				<td><%= StringEscapeUtils.escapeHtml("" + ( action.getName(a.getPatient()) )) %></td>
+				<td><%= StringEscapeUtils.escapeHtml("" + ( a.getApptType() )) %></td>
+				<td><%= StringEscapeUtils.escapeHtml("" + ( format.format(d) )) %></td>
+				<td><%= StringEscapeUtils.escapeHtml("" + ( types.getDurationByType(a.getApptType())+" minutes" )) %></td>
+				<td><%= comment %></td>
+				<td><a href="editAppt.jsp?apt=<%=a.getApptID() %>">Edit/Remove</a></td>
 			</tr>
-	<%		index ++; %>
-	<%	} %>
+	<%
+			index ++;
+		}
+	%>
 	</table>
 <%	} else { %>
 	<div>

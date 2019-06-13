@@ -27,6 +27,7 @@ public class iTrustException extends Exception {
 		return message;
 	}
 
+	
 	/**
 	 * For exceptions which show a lot of technical detail, usually delegated to a subclass
 	 * 

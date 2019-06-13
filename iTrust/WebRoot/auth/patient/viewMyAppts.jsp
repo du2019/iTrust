@@ -21,11 +21,14 @@ pageTitle = "iTrust - View My Messages";
 <div align=center>
 	<h2>My Appointments</h2>
 <%
+	loggingAction.logEvent(TransactionType.APPOINTMENT_ALL_VIEW, loggedInMID.longValue(), 0, "");
+	
 	ViewMyApptsAction action = new ViewMyApptsAction(prodDAO, loggedInMID.longValue());
 	EditApptTypeAction types = new EditApptTypeAction(prodDAO, loggedInMID.longValue());
 	List<ApptBean> appts = action.getMyAppointments();
 	session.setAttribute("appts", appts);
-	if (appts.size() > 0) { %>	
+	if (appts.size() > 0) {
+%>	
 	<table class="fancyTable">
 		<tr>
 			<th>Patient</th>
@@ -48,14 +51,14 @@ pageTitle = "iTrust - View My Messages";
 				}
 			}
 		}
-%>
-<%		int index = 0;
+
+		int index = 0;
 		for(ApptBean a : appts) { 
 			String comment = "";
 			if(a.getComment() == null)
 				comment = "No Comment";
 			else
-				comment = "<a href='viewAppt.jsp?apt="+index+"'>Read Comment</a>";
+				comment = "<a href='viewAppt.jsp?apt=" + a.getApptID() + "'>Read Comment</a>";
 				
 			Date d = new Date(a.getDate().getTime());
 			DateFormat format = new SimpleDateFormat("MM/dd/yyyy hh:mm a");
@@ -67,13 +70,11 @@ pageTitle = "iTrust - View My Messages";
 				row = "<tr";
 %>
 			<%=row+" "+((index%2 == 1)?"class=\"alt\"":"")+">"%>
-				<td><%= action.getName(a.getHcp()) %></td>
-				<td><%= a.getApptType() %></td>
-				<td><%= format.format(d) %></td>
-				<td><%= types.getDurationByType(a.getApptType())+" minutes" %></td>
-				<td>
-					<%=comment %>
-				</td>
+				<td><%= StringEscapeUtils.escapeHtml("" + ( action.getName(a.getHcp()) )) %></td>
+				<td><%= StringEscapeUtils.escapeHtml("" + ( a.getApptType() )) %></td>
+				<td><%= StringEscapeUtils.escapeHtml("" + ( format.format(d) )) %></td>
+				<td><%= StringEscapeUtils.escapeHtml("" + ( types.getDurationByType(a.getApptType())+" minutes" )) %></td>
+				<td><%= comment %></td>
 			</tr>
 	<%		index ++; %>
 	<%	} %>

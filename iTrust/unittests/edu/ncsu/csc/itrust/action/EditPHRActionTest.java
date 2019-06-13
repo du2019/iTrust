@@ -1,6 +1,5 @@
 package edu.ncsu.csc.itrust.action;
 
-import static edu.ncsu.csc.itrust.testutils.JUnitiTrustUtils.assertTransactionOnly;
 import java.util.List;
 import junit.framework.TestCase;
 import edu.ncsu.csc.itrust.beans.AllergyBean;
@@ -8,7 +7,6 @@ import edu.ncsu.csc.itrust.beans.FamilyMemberBean;
 import edu.ncsu.csc.itrust.dao.DAOFactory;
 import edu.ncsu.csc.itrust.dao.mysql.FamilyDAO;
 import edu.ncsu.csc.itrust.datagenerators.TestDataGenerator;
-import edu.ncsu.csc.itrust.enums.TransactionType;
 import edu.ncsu.csc.itrust.exception.iTrustException;
 import edu.ncsu.csc.itrust.testutils.TestDAOFactory;
 
@@ -68,7 +66,6 @@ public class EditPHRActionTest extends TestCase {
 		assertTrue(action.getFamilyMemberCOD(fmBean).contains(""));
 		assertEquals(5, new ViewMyRecordsAction(factory, 5L).getFamilyHistory().size());
 		
-		assertTransactionOnly(TransactionType.IDENTIFY_RISK_FACTORS, 9000000000L, 2L, "Check for risk factors");
 	}
 
 	public void testUpdateAllergies() throws Exception {

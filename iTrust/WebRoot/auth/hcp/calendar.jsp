@@ -23,9 +23,11 @@ pageTitle = "iTrust - Appointment Calendar";
 	boolean conflicts[];
 	Hashtable<Integer, ArrayList<ApptBean>> list;
 	Calendar a = Calendar.getInstance();
+	loggingAction.logEvent(TransactionType.CALENDAR_VIEW, loggedInMID, 0, "");
 	
 	//Calendar Stuff
-	String months[] = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
+	String months[] = {"January", "February", "March", "April", "May", "June",
+						"July", "August", "September", "October", "November", "December"};
 	String weekDays[] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
 	Calendar cal = Calendar.getInstance();
 	int origDay = cal.get(Calendar.DAY_OF_MONTH);
@@ -79,21 +81,21 @@ pageTitle = "iTrust - Appointment Calendar";
 <table width="90%">
 	<tr>
 		<td style="text-align: left;">
-			<a href="calendar.jsp?c=<%= month %>&m=-1">Last</a>	
+			<a href="calendar.jsp?c=<%= StringEscapeUtils.escapeHtml("" + ( month )) %>&m=-1">Last</a>	
 		</td>
 		<td style="text-align: center;">
-			<h3><%= "Appointments for "+months[thisMonth]+" "+thisYear %></h3>
+			<h3><%= StringEscapeUtils.escapeHtml("" + ( "Appointments for "+months[thisMonth]+" "+thisYear )) %></h3>
 		</td>
 		<td style="text-align: right;">
-			<a href="calendar.jsp?c=<%= month %>&m=1">Next</a>
+			<a href="calendar.jsp?c=<%= StringEscapeUtils.escapeHtml("" + ( month )) %>&m=1">Next</a>
 		</td>
 	</tr>
 </table>
-<table id="calendarTable" style="clear: both;">
+<table id="calendarTable">
 	<%
 		out.print("<tr>\n");
 		for(String d : weekDays) {
-			out.print("<th>"+d+"</th>");
+			out.print("<th>"+StringEscapeUtils.escapeHtml("" + (d))+"</th>");
 		}
 		out.print("</tr>\n");
 		int calDay = 1 + Calendar.SUNDAY - firstDayOfMonth;
@@ -105,14 +107,23 @@ pageTitle = "iTrust - Appointment Calendar";
 					out.print("<td class=\"today\"><div class=\"cell\">");
 				else
 					out.print("<td><div class=\"cell\">");
-				if(calDay > 0 && calDay <= lastDayOfMonth) out.print("<div style=\"float: right;\">"+calDay+"</div>");
-				else out.print("<div class=\"blankDay\"></div>");
+				if(calDay > 0 && calDay <= lastDayOfMonth)
+					out.print("<div style=\"float: right;\">"+StringEscapeUtils.escapeHtml("" + (calDay))+"</div>");
+				else
+					out.print("<div class=\"blankDay\"></div>");
 				if(list.containsKey(calDay)) {
 					ArrayList<ApptBean> l = list.get(calDay);
 					for(ApptBean b : l) {	
 						a.setTimeInMillis(b.getDate().getTime());
-						//String t = a.get(Calendar.HOUR)+":"+((a.get(Calendar.MINUTE)<10)? "0"+a.get(Calendar.MINUTE): a.get(Calendar.MINUTE))+" "+((a.get(Calendar.AM_PM) == 0) ? "AM" : "PM");
-						out.print("<div class=\"calendarEntry "+(conflicts[p]?"conflict":"")+" \">"+b.getApptType()+"<br /><a name=\""+b.getApptType()+"-"+calDay+"\" style=\"font-size: 12px;\" href=\"viewAppt.jsp?apt="+ p++ +"\" >Read Details</a></div>");
+						out.print("<div class=\"calendarEntry "
+								+StringEscapeUtils.escapeHtml("" + ((conflicts[p]?"conflict":"")))
+								+" \">"+StringEscapeUtils.escapeHtml("" + (b.getApptType()))
+								+"<br /><a name=\""
+								+StringEscapeUtils.escapeHtml("" + (b.getApptType()))
+								+"-"+StringEscapeUtils.escapeHtml("" + (calDay))
+								+"\" style=\"font-size: 12px;\" href=\"viewAppt.jsp?apt="
+								+StringEscapeUtils.escapeHtml("" + b.getApptID())
+								+"\" >Read Details</a></div>");
 					}
 				}
 				calDay++;

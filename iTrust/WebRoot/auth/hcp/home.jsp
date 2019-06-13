@@ -23,7 +23,10 @@ List<ReportRequestBean> reports = reportAction.getAllReportRequestsForRequester(
 LabProcHCPAction lpAction = new LabProcHCPAction(DAOFactory.getProductionInstance(), loggedInMID);
 List<LabProcedureBean> labProcedures = lpAction.getLabProcForNextMonth();
 
+loggingAction.logEvent(TransactionType.HOME_VIEW, loggedInMID.longValue(), 0, "");
+
 %>
+<%@include file="/auth/hcp/notificationArea.jsp" %>
 
 <table cellpadding="1" cellspacing="1">
 	<tr>
@@ -42,11 +45,6 @@ List<LabProcedureBean> labProcedures = lpAction.getLabProcForNextMonth();
 
 	<tr>
 		<td>
-		<h3>Notifications</h3>
-		</td>
-	</tr>
-	<tr>
-		<td>
 		<h4>Comprehensive Report History</h4>
 		</td>
 	</tr>
@@ -58,7 +56,7 @@ List<LabProcedureBean> labProcedures = lpAction.getLabProcForNextMonth();
 	if(reports.size() != 0) {
 		for(ReportRequestBean report : reports) {
 %>
-			<li><%=reportAction.getLongStatus(report.getID())%></li>
+			<li><%= StringEscapeUtils.escapeHtml("" + (reportAction.getLongStatus(report.getID()))) %></li>
 <%
 		} 
 	} else {
@@ -86,7 +84,7 @@ List<LabProcedureBean> labProcedures = lpAction.getLabProcForNextMonth();
 			<%if(labProcedures.size() != 0) {
 				for(LabProcedureBean bean : labProcedures) {
 					PatientBean patient = new PatientDAO(DAOFactory.getProductionInstance()).getPatient(bean.getPid());%>
-			<li>Lab Procedure <%=bean.getLoinc()%> for patient <%=patient.getFullName() %>
+			<li>Lab Procedure <%= StringEscapeUtils.escapeHtml("" + (bean.getLoinc())) %> for patient <%= StringEscapeUtils.escapeHtml("" + (patient.getFullName() )) %>
 			<br />
 			Results: 
 <%
@@ -96,7 +94,7 @@ List<LabProcedureBean> labProcedures = lpAction.getLabProcForNextMonth();
 <%
 					} else {
 %>
-						<%=bean.getResults()%>
+						<%= StringEscapeUtils.escapeHtml("" + (bean.getResults())) %>
 <%
 					}
 				}

@@ -7,7 +7,6 @@ import edu.ncsu.csc.itrust.dao.mysql.AuthDAO;
 import edu.ncsu.csc.itrust.dao.mysql.PersonnelDAO;
 import edu.ncsu.csc.itrust.dao.mysql.TransactionDAO;
 import edu.ncsu.csc.itrust.enums.Role;
-import edu.ncsu.csc.itrust.enums.TransactionType;
 import edu.ncsu.csc.itrust.exception.FormValidationException;
 import edu.ncsu.csc.itrust.exception.iTrustException;
 import edu.ncsu.csc.itrust.validate.PersonnelValidator;
@@ -66,7 +65,6 @@ public class EditPersonnelAction extends PersonnelBaseAction {
 		personnelForm.setMID(pid);
 		validator.validate(personnelForm);
 		personnelDAO.editPersonnel(personnelForm);
-		transDAO.logTransaction(TransactionType.CREATE_DISABLE_PATIENT_HCP, loggedInMID);
 	}
 	
 	public void editMessageFilter(String filter) throws iTrustException, FormValidationException {

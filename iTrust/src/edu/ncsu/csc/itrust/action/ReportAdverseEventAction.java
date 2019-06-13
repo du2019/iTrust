@@ -1,8 +1,4 @@
 package edu.ncsu.csc.itrust.action;
-/**
- * Used for the patient to report adverse events.
- */
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import edu.ncsu.csc.itrust.EmailUtil;
@@ -15,7 +11,6 @@ import edu.ncsu.csc.itrust.dao.mysql.AdverseEventDAO;
 import edu.ncsu.csc.itrust.dao.mysql.PatientDAO;
 import edu.ncsu.csc.itrust.dao.mysql.PersonnelDAO;
 import edu.ncsu.csc.itrust.dao.mysql.TransactionDAO;
-import edu.ncsu.csc.itrust.enums.TransactionType;
 import edu.ncsu.csc.itrust.exception.DBException;
 import edu.ncsu.csc.itrust.exception.iTrustException;
 import edu.ncsu.csc.itrust.validate.AdverseEventValidator;
@@ -100,7 +95,6 @@ public class ReportAdverseEventAction {
 			email.setSubject(String.format("Adverse Event Report(Prescription)"));
 			email.setBody(message);
 			emailer.sendEmail(email);
-			transactionDAO.logTransaction(TransactionType.SEND_MESSAGE, loggedInMID);
 			
 		}
 		return email;
@@ -131,8 +125,6 @@ public class ReportAdverseEventAction {
 				" Drug: " + aeBean.getDrug() + "(" + aeBean.getCode() + ") Description: " + aeBean.getDescription()
 				));
 		emailer.sendEmail(email);
-		
-		transactionDAO.logTransaction(TransactionType.SEND_MESSAGE, loggedInMID);
 		
 		return email;
 	}
@@ -182,10 +174,8 @@ public class ReportAdverseEventAction {
 				+ " (MID " + aeBean.getMID() + ") Has Reported the following adverse event(s)" +
 				" Drug: " + aeBean.getDrug() + "(" + aeBean.getCode() + ") Description: " + aeBean.getDescription()
 				));
-		emailer.sendEmail(email);
+		emailer.sendEmail(email);*/
 		
-		transactionDAO.logTransaction(TransactionType.SEND_MESSAGE, loggedInMID);*/
-		transactionDAO.logTransaction(TransactionType.ADVERSE_EVENT, loggedInMID);
 		return "";
 	}
 }

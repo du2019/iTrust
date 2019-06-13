@@ -43,12 +43,14 @@ pageTitle = "iTrust - Hospital Staffing Assignments";
 	if (action.equals("assgn"))
 	{
 		hosAssignManager.assignHCPToHospital(pid + "", request.getParameter("id"));
-		%><span >HCP has been assigned. <%=request.getParameter("id") %><br /></span><%
+		loggingAction.logEvent(TransactionType.LHCP_ASSIGN_HOSPITAL, loggedInMID.longValue(), pid, "");
+		%><span >HCP has been assigned. <%= StringEscapeUtils.escapeHtml("" + (request.getParameter("id") )) %><br /></span><%
 	}
 	else if (action.equals("unass"))
 	{
 		hosAssignManager.removeHCPAssignmentToHospital(pid + "", request.getParameter("id"));
-		%><span >HCP has been unassigned. <%=request.getParameter("id") %><br /></span><%
+		loggingAction.logEvent(TransactionType.LHCP_REMOVE_HOSPITAL, loggedInMID.longValue(), pid, "");
+		%><span >HCP has been unassigned. <%= StringEscapeUtils.escapeHtml("" + (request.getParameter("id") )) %><br /></span><%
 	}
 	
 	
@@ -77,9 +79,9 @@ pageTitle = "iTrust - Hospital Staffing Assignments";
 			tempName = assigned.getHospitalName();
 			escapedName = URLEncoder.encode(tempName, "UTF-8").replaceAll("\\+", "%20");
 		%><tr>
-			<td><%=tempID %></td>
+			<td><%= StringEscapeUtils.escapeHtml("" + (tempID )) %></td>
 			<td><%=HtmlEncoder.encode(tempName) %></td>
-			<td><a href="hospitalAssignments.jsp?pid=<%=pidString %>&id=<%=tempID %>&action=unass" >Unassign</a></td>
+			<td><a href="hospitalAssignments.jsp?pid=<%= StringEscapeUtils.escapeHtml("" + (pidString )) %>&id=<%= StringEscapeUtils.escapeHtml("" + (tempID )) %>&action=unass" >Unassign</a></td>
 		</tr>
 		<%} %>
 	</table>
@@ -105,9 +107,9 @@ pageTitle = "iTrust - Hospital Staffing Assignments";
 			tempName = assigned.getHospitalName();
 			escapedName = URLEncoder.encode(tempName, "UTF-8").replaceAll("\\+", "%20");
 		%><tr>
-			<td><%=tempID %></td>
+			<td><%= StringEscapeUtils.escapeHtml("" + (tempID )) %></td>
 			<td><%=HtmlEncoder.encode(tempName) %></td>
-			<td><a href="hospitalAssignments.jsp?pid=<%=pidString%>&id=<%=tempID%>&action=assgn">Assign</a></td>
+			<td><a href="hospitalAssignments.jsp?pid=<%= StringEscapeUtils.escapeHtml("" + (pidString)) %>&id=<%= StringEscapeUtils.escapeHtml("" + (tempID)) %>&action=assgn">Assign</a></td>
 		</tr>
 		<%} %>
 	</table>

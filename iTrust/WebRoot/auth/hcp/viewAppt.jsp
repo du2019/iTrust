@@ -3,6 +3,7 @@
 <%@page import="java.util.Date"%>
 <%@page import="java.text.DateFormat"%>
 <%@page import="java.text.SimpleDateFormat"%>
+<%@page import="edu.ncsu.csc.itrust.action.EditApptAction"%>
 <%@page import="edu.ncsu.csc.itrust.action.EditApptTypeAction"%>
 <%@page import="edu.ncsu.csc.itrust.action.ViewMyApptsAction"%>
 <%@page import="edu.ncsu.csc.itrust.beans.ApptBean"%>
@@ -20,9 +21,9 @@ pageTitle = "iTrust - View Message";
 	ViewMyApptsAction action = new ViewMyApptsAction(prodDAO, loggedInMID.longValue());
 	EditApptTypeAction types = new EditApptTypeAction(prodDAO, loggedInMID.longValue());
 	ApptBean original = null;
-
+	
 	if (request.getParameter("apt") != null) {
-		String aptParameter = request.getParameter("apt");
+		/*String aptParameter = request.getParameter("apt");
 		int aptIndex = 0;
 		try {
 			aptIndex = Integer.parseInt(aptParameter);
@@ -40,43 +41,69 @@ pageTitle = "iTrust - View Message";
 			response.sendRedirect("viewMyAppts.jsp");
 		}
 		original = (ApptBean)appts.get(aptIndex);
-	}
-	else {
+		*/
+		
+		EditApptAction editAction = new EditApptAction(prodDAO, loggedInMID.longValue());
+		String aptParameter = request.getParameter("apt");
+		try {
+			int apptID = Integer.parseInt(aptParameter);
+			original = editAction.getAppt(apptID);
+			if (original == null){
+				response.sendRedirect("viewMyAppts.jsp");
+			}
+		} catch (NullPointerException npe) {
+			response.sendRedirect("viewMyAppts.jsp");
+		} catch (NumberFormatException e) {
+			response.sendRedirect("viewMyAppts.jsp");
+		}
+	} else {
 		response.sendRedirect("viewMyAppts.jsp");
 	}
 	
-	Date d = new Date(original.getDate().getTime());
-	DateFormat format = new SimpleDateFormat("MM/dd/yyyy hh:mm a");
-	
+	if (original != null) {
+		if (loggedInMID == original.getHcp()) {
+			Date d = new Date(original.getDate().getTime());
+			DateFormat format = new SimpleDateFormat("MM/dd/yyyy hh:mm a");
+			
+			loggingAction.logEvent(TransactionType.APPOINTMENT_VIEW, loggedInMID, original.getPatient(), "" + original.getApptID());
 %>
-	<div>
-		<table width="100%" style="background-color: #DDDDDD;">
-			<tr>
-				<th>Appointment Info</th>
-			</tr>
-			<tr>
-				<td><b>Patient:</b> <%= action.getName(original.getPatient()) %></td>
-			</tr>
-			<tr>
-				<td><b>Type:</b> <%= original.getApptType() %></td>
-			</tr>
-			<tr>
-				<td><b>Date/Time:</b> <%= format.format(d) %></td>
-			</tr>
-			<tr>
-				<td><b>Duration:</b> <%= types.getDurationByType(original.getApptType())+" minutes" %></td>
-			</tr>
-		</table>
-	</div>
-	
-	<table>
-		<tr>
-			<td colspan="2"><b>Comments:</b></td>
-		</tr>
-		<tr>
-			<td colspan="2"><%= (original.getComment()== null)?"No Comment":original.getComment() %></td>
-		</tr>
-	</table>
-
+			<div>
+				<table width="99%">
+					<tr>
+						<th>Appointment Info</th>
+					</tr>
+					<tr>
+						<td><b>Patient:</b> <%= StringEscapeUtils.escapeHtml("" + ( action.getName(original.getPatient()) )) %></td>
+					</tr>
+					<tr>
+						<td><b>Type:</b> <%= StringEscapeUtils.escapeHtml("" + ( original.getApptType() )) %></td>
+					</tr>
+					<tr>
+						<td><b>Date/Time:</b> <%= StringEscapeUtils.escapeHtml("" + ( format.format(d) )) %></td>
+					</tr>
+					<tr>
+						<td><b>Duration:</b> <%= StringEscapeUtils.escapeHtml("" + ( types.getDurationByType(original.getApptType())+" minutes" )) %></td>
+					</tr>
+				</table>
+			</div>
+			
+			<table>
+				<tr>
+					<td colspan="2"><b>Comments:</b></td>
+				</tr>
+				<tr>
+					<td colspan="2"><%= StringEscapeUtils.escapeHtml("" + ( (original.getComment()== null)?"No Comment":original.getComment() )) %></td>
+				</tr>
+			</table>
+<%
+		} else {
+%>
+		<div align=center>
+			<span class="iTrustError">You are not authorized to view details of this appointment</span>
+		</div>
+<%
+		}
+	}
+%>
 
 <%@include file="/footer.jsp" %>

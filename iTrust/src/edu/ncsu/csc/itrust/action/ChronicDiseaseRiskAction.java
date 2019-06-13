@@ -5,7 +5,6 @@ import edu.ncsu.csc.itrust.action.base.PatientBaseAction;
 import edu.ncsu.csc.itrust.dao.DAOFactory;
 import edu.ncsu.csc.itrust.dao.mysql.AuthDAO;
 import edu.ncsu.csc.itrust.dao.mysql.TransactionDAO;
-import edu.ncsu.csc.itrust.enums.TransactionType;
 import edu.ncsu.csc.itrust.exception.DBException;
 import edu.ncsu.csc.itrust.exception.NoHealthRecordsException;
 import edu.ncsu.csc.itrust.exception.iTrustException;
@@ -80,7 +79,6 @@ public class ChronicDiseaseRiskAction extends PatientBaseAction {
 	 * @author Andy Meneely
 	 */
 	public List<RiskChecker> getDiseasesAtRisk() throws iTrustException, DBException {
-		transDAO.logTransaction(TransactionType.IDENTIFY_RISK_FACTORS, loggedInMID, pid, "");
 		return diseaseMediator.getDiseaseAtRisk();
 	}
 }

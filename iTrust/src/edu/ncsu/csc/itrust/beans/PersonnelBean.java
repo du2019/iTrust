@@ -18,6 +18,7 @@ public class PersonnelBean implements Serializable {
 	private long MID = 0;
 	private long AMID = 0;
 	private Role role;
+	private String roleString;
 	private String firstName = "";
 	private String lastName = "";
 	private String password = "";
@@ -141,12 +142,8 @@ public class PersonnelBean implements Serializable {
 		this.phone3 = phone3;
 	}
 
-	public Role getRole() {
-		return role;
-	}
-
-	public void setRole(Role role) {
-		this.role = role;
+	public String getRoleString() {
+		return roleString;
 	}
 
 	public String getSecurityAnswer() {
@@ -232,6 +229,18 @@ public class PersonnelBean implements Serializable {
 			if (list.get(i).MID == this.MID) return i;
 		}
 		return -1;
+	}
+
+	public void setRoleString(String role) {
+		this.roleString = role;
+	}
+
+	public Role getRole() {
+		return Role.parse(roleString);
+	}
+
+	public void setRole(Role role) {
+		this.role = role;		
 	}
 
 }

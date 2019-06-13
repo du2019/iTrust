@@ -2,6 +2,7 @@
 <%@page errorPage="/auth/exceptionHandler.jsp"%>
 
 <%@page import="java.util.List"%>
+<%@page import="java.text.DecimalFormat"%>
 <%@page import="edu.ncsu.csc.itrust.dao.DAOFactory"%>
 <%@page import="edu.ncsu.csc.itrust.action.EditHealthHistoryAction"%>
 <%@page import="edu.ncsu.csc.itrust.beans.HealthRecord"%>
@@ -18,7 +19,7 @@ pageTitle = "iTrust - Edit Basic Health Record";
 %>
 
 <%@include file="/header.jsp" %>
-
+<itrust:patientNav thisTitle="Basic Health History" />
 <%
 /* Require a Patient ID first */
 String pidString = (String)session.getAttribute("pid");
@@ -29,7 +30,6 @@ if (pidString == null || 1 > pidString.length()) {
 //else {
 //	session.removeAttribute("pid");
 //}
-	
 EditHealthHistoryAction action = new EditHealthHistoryAction(prodDAO,loggedInMID.longValue(), pidString);
 long pid = action.getPid();
 String patientName = action.getPatientName();
@@ -37,6 +37,7 @@ String confirm = "";
 if ("true".equals(request.getParameter("formIsFilled"))) {
 	try { 
 		confirm = action.addHealthRecord(pid, new BeanBuilder<HealthRecordForm>().build(request.getParameterMap(), new HealthRecordForm()));
+		loggingAction.logEvent(TransactionType.PATIENT_HEALTH_INFORMATION_EDIT, loggedInMID.longValue(), pid, "");
 	} catch(FormValidationException e){
 %>
 		<div align=center>
@@ -62,9 +63,11 @@ function showAddRow(){
 if (!"".equals(confirm)) {
 %>
 	<div align=center>
-		<span class="iTrustMessage"><%=confirm%></span>
+		<span class="iTrustMessage"><%= StringEscapeUtils.escapeHtml("" + (confirm)) %></span>
 	</div>
 <%
+} else {
+	loggingAction.logEvent(TransactionType.PATIENT_HEALTH_INFORMATION_VIEW, loggedInMID.longValue(), pid, "");
 }
 %>
 
@@ -72,11 +75,12 @@ if (!"".equals(confirm)) {
 <div align=center>
 	<table align="center" class="fTable">
 		<tr>
-			<th colspan="10">Basic Health History</th>
+			<th colspan="11">Basic Health History</th>
 		</tr>
 		<tr class = "subHeader">
-			<td>Height</td>
-			<td>Weight</td>
+			<td>Height<br />(<a href="/iTrust/auth/hcp-uap/healthDataChart.jsp?dataType=Height" id="viewHeightChart">View Chart</a>)</td>
+			<td>Weight<br />(<a href="/iTrust/auth/hcp-uap/healthDataChart.jsp?dataType=Weight" id="viewWeightChart">View Chart</a>)</td>
+			<td>BMI<br />(<a href="/iTrust/auth/hcp-uap/healthDataChart.jsp?dataType=BMI" id="viewBmiChart">View Chart</a>)</td>
 			<td>Smokes?</td>
 			<td>Blood Pressure</td>
 			<td>HDL</td>
@@ -87,22 +91,29 @@ if (!"".equals(confirm)) {
 			<td>By Personnel</td>
 		</tr>
 	<%
+	//(weight in pounds * 703)/(height in inches * height in inches)
 	for (HealthRecord hr : records) {
+		DecimalFormat df = new DecimalFormat("00.00");
+		String bmiString = "Invalid height value of 0!";
+		if(hr.getHeight() != 0) {
+			bmiString = df.format((hr.getWeight()*703)/(hr.getHeight()*hr.getHeight()));
+		}
 	%>
 		<tr>
-			<td align=center><%=hr.getHeight()%>in</td>
-			<td align=center><%=hr.getWeight()%>lbs</td>
-			<td align=center><%=hr.isSmoker() ? "Y" : "N"%></td>
-			<td align=center><%=hr.getBloodPressure()%> mmHg</td>
-			<td align=center><%=hr.getCholesterolHDL()%> mg/dL</td>
-			<td align=center><%=hr.getCholesterolLDL()%> mg/dL</td>
-			<td align=center><%=hr.getCholesterolTri()%> mg/dL</td>
-			<td align=center><%=hr.getTotalCholesterol()%> mg/dL</td>
-			<td align=center><%=hr.getDateRecorded()%></td>
+			<td align=center><%= StringEscapeUtils.escapeHtml("" + (hr.getHeight())) %>in</td>
+			<td align=center><%= StringEscapeUtils.escapeHtml("" + (hr.getWeight())) %>lbs</td>
+			<td align=center><%= StringEscapeUtils.escapeHtml("" + (bmiString)) %></td>
+			<td align=center><%= StringEscapeUtils.escapeHtml("" + (hr.isSmoker() ? "Y" : "N")) %></td>
+			<td align=center><%= StringEscapeUtils.escapeHtml("" + (hr.getBloodPressure())) %> mmHg</td>
+			<td align=center><%= StringEscapeUtils.escapeHtml("" + (hr.getCholesterolHDL())) %> mg/dL</td>
+			<td align=center><%= StringEscapeUtils.escapeHtml("" + (hr.getCholesterolLDL())) %> mg/dL</td>
+			<td align=center><%= StringEscapeUtils.escapeHtml("" + (hr.getCholesterolTri())) %> mg/dL</td>
+			<td align=center><%= StringEscapeUtils.escapeHtml("" + (hr.getTotalCholesterol())) %> mg/dL</td>
+			<td align=center><%= StringEscapeUtils.escapeHtml("" + (hr.getDateRecorded())) %></td>
 <%
 		PersonnelBean p = prodDAO.getPersonnelDAO().getPersonnel(hr.getPersonnelID());
 %>
-			<td align=center><%=p.getFullName()%></td>
+			<td align=center><%= StringEscapeUtils.escapeHtml("" + (p.getFullName())) %></td>
 		</tr>
 	<%
 	}
@@ -124,13 +135,13 @@ if (!"".equals(confirm)) {
 	<tr>
 		<td class="subHeader">Height (in.):</td>
 		<td ><input name="height"
-			value="<%=mostRecent.getHeight()%>" style="width: 50px" type="text"
+			value="<%= StringEscapeUtils.escapeHtml("" + (mostRecent.getHeight())) %>" style="width: 50px" type="text"
 			maxlength="5"></td>
 	</tr>
 	<tr>
 		<td class="subHeader">Weight (lbs.):</td>
 		<td ><input name="weight"
-			value="<%=mostRecent.getWeight()%>" style="width: 50px" type="text"
+			value="<%= StringEscapeUtils.escapeHtml("" + (mostRecent.getWeight())) %>" style="width: 50px" type="text"
 			maxlength="5"></td>
 	</tr>
 	<tr>
@@ -142,8 +153,8 @@ if (!"".equals(confirm)) {
 	<tr>
 		<td class="subHeader">Blood Pressure (mmHg):</td>
 		<td >
-			<input name="bloodPressureN" value="<%=mostRecent.getBloodPressureN()%>" style="width: 40px" maxlength="3" type="text" /> 
-			/ <input name="bloodPressureD" value="<%=mostRecent.getBloodPressureD()%>" style="width: 40px" maxlength="3" type="text" />
+			<input name="bloodPressureN" value="<%= StringEscapeUtils.escapeHtml("" + (mostRecent.getBloodPressureN())) %>" style="width: 40px" maxlength="3" type="text" /> 
+			/ <input name="bloodPressureD" value="<%= StringEscapeUtils.escapeHtml("" + (mostRecent.getBloodPressureD())) %>" style="width: 40px" maxlength="3" type="text" />
 		</td>
 	</tr>
 	<tr>
@@ -152,19 +163,19 @@ if (!"".equals(confirm)) {
 		<table>
 			<tr>
 				<td style="text-align: right">HDL:</td>
-				<td><input name="cholesterolHDL" value="<%=mostRecent.getCholesterolHDL()%>" 
+				<td><input name="cholesterolHDL" value="<%= StringEscapeUtils.escapeHtml("" + (mostRecent.getCholesterolHDL())) %>" 
 				style="width: 38px" maxlength="3" type="text"></td>
 			</tr>
 			<tr>
 				<td style="text-align: right">LDL:</td>
 				<td>
-					<input name="cholesterolLDL" value="<%=mostRecent.getCholesterolLDL()%>" style="width: 38px" maxlength="3" type="text">
+					<input name="cholesterolLDL" value="<%= StringEscapeUtils.escapeHtml("" + (mostRecent.getCholesterolLDL())) %>" style="width: 38px" maxlength="3" type="text">
 				</td>
 			</tr>
 			<tr>
 				<td style="text-align: right">Tri:</td>
 				<td>
-					<input name="cholesterolTri" value="<%=mostRecent.getCholesterolTri()%>" style="width: 38px" maxlength="3" type="text">
+					<input name="cholesterolTri" value="<%= StringEscapeUtils.escapeHtml("" + (mostRecent.getCholesterolTri())) %>" style="width: 38px" maxlength="3" type="text">
 			    </td>
 			</tr>
 		</table>

@@ -21,7 +21,6 @@ import edu.ncsu.csc.itrust.dao.mysql.OfficeVisitDAO;
 import edu.ncsu.csc.itrust.dao.mysql.PatientDAO;
 import edu.ncsu.csc.itrust.dao.mysql.TransactionDAO;
 import edu.ncsu.csc.itrust.dao.mysql.PersonnelDAO;
-import edu.ncsu.csc.itrust.enums.TransactionType;
 import edu.ncsu.csc.itrust.exception.DBException;
 import edu.ncsu.csc.itrust.exception.FormValidationException;
 import edu.ncsu.csc.itrust.exception.NoHealthRecordsException;
@@ -88,26 +87,17 @@ public class EditPHRAction extends PatientBaseAction {
 	 * @param description
 	 * @return "Allergy Added", exception message, a list of invalid fields, or "" (only if description is
 	 *         null)
+	 * @throws DBException 
 	 * @throws iTrustException
 	 */
-	public String updateAllergies(long pid, String description) throws iTrustException {
-		
+	public String updateAllergies(long pid, String description) throws FormValidationException, DBException {
+		AllergyBean bean = new AllergyBean();
+		bean.setDescription(description);
+		AllergyBeanValidator abv = new AllergyBeanValidator();
+		abv.validate(bean);
+		allergyDAO.addAllergy(pid, description);
 		emailutil.sendEmail(makeEmail());
-		
-		if (description != null && !description.equals("")) {
-			try {
-				AllergyBean bean = new AllergyBean();
-				bean.setDescription(description);
-				AllergyBeanValidator abv = new AllergyBeanValidator();
-				abv.validate(bean);
-				allergyDAO.addAllergy(pid, description);
-				transDAO.logTransaction(TransactionType.ENTER_EDIT_PHR, loggedInMID, pid, "EditPHR - added allergy " + description);
-				return "Allergy Added";
-			} catch (FormValidationException e2) {
-				return "<span class=error>Error: Invalid Fields--" + e2.getErrorList() + "</span><p />";
-			}
-		} else
-			return "";
+		return "Allergy Added";
 	}
 
 	/**
@@ -117,7 +107,6 @@ public class EditPHRAction extends PatientBaseAction {
 	 * @throws iTrustException
 	 */
 	public PatientBean getPatient() throws iTrustException {
-		transDAO.logTransaction(TransactionType.VIEW_RECORDS, loggedInMID, pid, "EditPHR - view patient record ");
 		return patientDAO.getPatient(pid);
 	}
 
@@ -158,7 +147,6 @@ public class EditPHRAction extends PatientBaseAction {
 				gp.setRelation("Grandparent");
 			}
 		}
-		transDAO.logTransaction(TransactionType.VIEW_RECORDS, loggedInMID, pid, "EditPHR - view patient family information ");
 		return fam;
 	}
 
@@ -171,7 +159,6 @@ public class EditPHRAction extends PatientBaseAction {
 	 */
 	public List<HealthRecord> getAllHealthRecords() throws iTrustException {
 		List<HealthRecord> allHealthRecords = hrDAO.getAllHealthRecords(pid);
-		transDAO.logTransaction(TransactionType.VIEW_HEALTH_RECORDS, loggedInMID, pid, "EditPHR - Viewed patient records");
 		return allHealthRecords;
 	}
 
@@ -182,7 +169,6 @@ public class EditPHRAction extends PatientBaseAction {
 	 * @throws iTrustException
 	 */
 	public List<OfficeVisitBean> getAllOfficeVisits() throws iTrustException {
-		transDAO.logTransaction(TransactionType.VIEW_OFFICE_VISIT, loggedInMID, pid, "EditPHR - view patient office visits ");
 		return ovDAO.getAllOfficeVisits(pid);
 	}
 
@@ -205,7 +191,6 @@ public class EditPHRAction extends PatientBaseAction {
 	 */
 	public List<RiskChecker> getDiseasesAtRisk() throws NoHealthRecordsException,iTrustException,DBException {
 		this.diseaseMediator = new ChronicDiseaseMediator(factory, pid);
-		transDAO.logTransaction(TransactionType.IDENTIFY_RISK_FACTORS, loggedInMID, pid, "Check for risk factors");
 		return diseaseMediator.getDiseaseAtRisk();
 	}
 	

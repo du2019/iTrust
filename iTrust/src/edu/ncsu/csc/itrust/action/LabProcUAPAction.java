@@ -10,7 +10,6 @@ import edu.ncsu.csc.itrust.dao.DAOFactory;
 import edu.ncsu.csc.itrust.dao.mysql.LabProcedureDAO;
 import edu.ncsu.csc.itrust.dao.mysql.PatientDAO;
 import edu.ncsu.csc.itrust.dao.mysql.TransactionDAO;
-import edu.ncsu.csc.itrust.enums.TransactionType;
 import edu.ncsu.csc.itrust.exception.DBException;
 import edu.ncsu.csc.itrust.exception.FormValidationException;
 import edu.ncsu.csc.itrust.validate.LabProcedureValidator;
@@ -51,9 +50,6 @@ public class LabProcUAPAction {
 			new EmailUtil(factory).sendEmail(makeEmail(b));
 		}
 		lpDAO.updateLabProcedure(b);
-		transDAO.logTransaction(TransactionType.ENTER_EDIT_LAB_PROCEDURE, loggedInMID, 
-				b.getPid(), "UAP updated procedure id: "
-				+ b.getProcedureID());
 	}
 	
 	/**
@@ -83,8 +79,6 @@ public class LabProcUAPAction {
 	 * @throws DBException
 	 */
 	public List<LabProcedureBean> viewProcedures(long id) throws DBException {
-		transDAO.logTransaction(TransactionType.VIEW_LAB_PROCEDURE, loggedInMID,
-				id, "UAP viewed procedures");
 		return lpDAO.getAllLabProceduresDate(id);
 	}
 }

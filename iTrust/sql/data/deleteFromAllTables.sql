@@ -40,3 +40,8 @@ DELETE FROM Users;
 
 DELETE FROM RemoteMonitoringData;
 DELETE FROM RemoteMonitoringLists;
+
+DELETE FROM DrugReactionOverrideCodes;
+DELETE FROM OVReactionOverride;
+
+DELETE FROM ProfilePhotos;

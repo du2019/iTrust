@@ -31,6 +31,9 @@ pageTitle = "iTrust - Reply";
 			messageNew.setRead(0);
 			messageNew.setParentMessageId(original.getMessageId());
 			action.sendMessage(messageNew);
+			
+			loggingAction.logEvent(TransactionType.MESSAGE_SEND, messageNew.getFrom(), messageNew.getTo() , "");
+
 			response.sendRedirect("messageInbox.jsp");
 		} 
 	} else {
@@ -40,9 +43,9 @@ pageTitle = "iTrust - Reply";
 %>
 
 	<h2>Reply</h2>
-	<h4>to a message from <%= action.getPatientName(original.getFrom()) %>:</h4>
+	<h4>to a message from <%= StringEscapeUtils.escapeHtml("" + ( action.getPatientName(original.getFrom()) )) %>:</h4>
 	<form id="mainForm" method="post" action="reply.jsp">
-		<span>Subject: </span><input type="text" name="subject" size="50" value="RE: <%= original.getSubject() %>" /><br /><br />
+		<span>Subject: </span><input type="text" name="subject" size="50" value="RE: <%= StringEscapeUtils.escapeHtml("" + ( original.getSubject() )) %>" /><br /><br />
 		<span>Message: </span><br />
 		<textarea name="messageBody" cols="100" rows="10"></textarea><br />
 		<br />

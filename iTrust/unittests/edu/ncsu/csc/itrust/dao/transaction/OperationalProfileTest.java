@@ -23,12 +23,23 @@ public class OperationalProfileTest extends TestCase {
 
 	public void testGetOperationalProfile() throws Exception {
 		OperationalProfile op = transDAO.getOperationalProfile();
-		Integer[] totalCounts =     {0, 1, 2, 2, 4, 5, 1, 1, 1, 1, 2, 1, 1, 2, 1, 1, 1, 1, 2, 1, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-		Integer[] patientCounts =   {0, 1, 2, 1, 2, 0, 1, 1, 1, 1, 2, 1, 1, 2, 1, 1, 1, 1, 2, 1, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-		Integer[] personnelCounts = {0, 0, 0, 1, 2, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-		assertEquals(34, op.getNumTotalTransactions());
-		assertEquals(26, op.getNumPatientTransactions());
-		assertEquals(8, op.getNumPersonnelTransactions());
+		Integer[] totalCounts = new Integer[43000];
+		Integer[] patientCounts = new Integer[43000];
+		Integer[] personnelCounts = new Integer[43000];
+		
+		for(int i=0;i<43000;i++)
+		{
+			totalCounts[i]=0;
+			patientCounts[i]=0;
+			personnelCounts[i]=0;
+		}
+		
+		totalCounts[1]=1;
+		personnelCounts[1]=1;
+		
+		assertEquals(1, op.getNumTotalTransactions());
+		assertEquals(0, op.getNumPatientTransactions());
+		assertEquals(1, op.getNumPersonnelTransactions());
 		for (TransactionType type : TransactionType.values()) {
 			assertEquals("for type " + type.getDescription() + "(" + type.getCode() + ")", totalCounts[type.getCode()],
 					op.getTotalCount().get(type));

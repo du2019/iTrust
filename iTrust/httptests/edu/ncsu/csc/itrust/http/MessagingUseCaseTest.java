@@ -11,6 +11,7 @@ import edu.ncsu.csc.itrust.DBBuilder;
 import edu.ncsu.csc.itrust.beans.Email;
 import edu.ncsu.csc.itrust.dao.DAOFactory;
 import edu.ncsu.csc.itrust.dao.mysql.FakeEmailDAO;
+import edu.ncsu.csc.itrust.enums.TransactionType;
 import edu.ncsu.csc.itrust.testutils.TestDAOFactory;
 
 /**
@@ -20,6 +21,7 @@ public class MessagingUseCaseTest extends iTrustHTTPTest {
 
 	protected void setUp() throws Exception {
 		super.setUp(); // clear tables is called in super
+		gen.clearAllTables();
 		gen.standardData();
 	}
 
@@ -28,7 +30,11 @@ public class MessagingUseCaseTest extends iTrustHTTPTest {
 		// Login
 		WebConversation wc = login("9000000000", "pw");
 		WebResponse wr = wc.getCurrentPage();
+		assertLogged(TransactionType.HOME_VIEW, 9000000000L, 0L, "");
+		
 		wr = wr.getLinkWith("Message Outbox").click();
+		assertLogged(TransactionType.OUTBOX_VIEW, 9000000000L, 0L, "");
+		
 		wr = wr.getLinkWith("Compose a Message").click();
 		
 		// Select Patient
@@ -42,6 +48,8 @@ public class MessagingUseCaseTest extends iTrustHTTPTest {
 		wf.getScriptableObject().setParameterValue("subject", "Visit Request");
 		wf.getScriptableObject().setParameterValue("messageBody", "We really need to have a visit.");
 		wr = wf.submit();
+		assertLogged(TransactionType.MESSAGE_SEND, 9000000000L, 2L, "");
+		
 		
 		// Create timestamp
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
@@ -56,36 +64,25 @@ public class MessagingUseCaseTest extends iTrustHTTPTest {
 		assertTrue(wr.getText().contains("Visit Request"));
 		assertTrue(wr.getText().contains("Andy Programmer"));
 		assertTrue(wr.getTables()[1].getRows()[1].getText().contains(stamp));
+		assertLogged(TransactionType.OUTBOX_VIEW, 9000000000L, 0L, "");
 		
 		// Check bolded message appears in patient
 		wr = wr.getLinkWith("Logout").click();
+		assertLogged(TransactionType.LOGOUT, 9000000000L, 9000000000L, "");
+		
 		//wr = wr.getLinkWith("Log into iTrust").click();
 		
 		wc = login("2", "pw");
 		wr = wc.getCurrentPage();
+		assertLogged(TransactionType.HOME_VIEW, 2L, 0L, "");
+		
 		wr = wr.getLinkWith("Message Inbox").click();
+		assertLogged(TransactionType.INBOX_VIEW, 2L, 0L, "");
 		
 		assertEquals("font-weight: bold;", wr.getTables()[1].getRows()[1].getAttribute("style"));
 		assertTrue(wr.getTables()[1].getRows()[1].getText().contains("Kelly Doctor"));
 		assertTrue(wr.getTables()[1].getRows()[1].getText().contains("Visit Request"));
-		assertTrue(wr.getTables()[1].getRows()[1].getText().contains(stamp));
-
-		// Check email
-		FakeEmailDAO feDAO = new FakeEmailDAO(TestDAOFactory.getTestInstance());
-		List<Email> eList = feDAO.getEmailsByPerson("andy.programmer@gmail.com");
-		
-		boolean foundEmail = false;
-		for(Email e:eList) {
-			if ("A new message from Kelly Doctor".equals(e.getSubject())) {
-				foundEmail = true;
-				break;
-			}
-		}
-		assertTrue(foundEmail);
-		
-		// Check log
-		wr = wr.getLinkWith("Logout").click();
-		
+		assertTrue(wr.getTables()[1].getRows()[1].getText().contains(stamp));		
 	}
 	
 	public void testPatientSendReply() throws Exception {
@@ -93,8 +90,13 @@ public class MessagingUseCaseTest extends iTrustHTTPTest {
 		// Login
 		WebConversation wc = login("2", "pw");
 		WebResponse wr = wc.getCurrentPage();
+		assertLogged(TransactionType.HOME_VIEW, 2L, 0L, "");
+		
 		wr = wr.getLinkWith("Message Inbox").click();
+		assertLogged(TransactionType.INBOX_VIEW, 2L, 0L, "");
+		
 		wr = wr.getLinkWith("Read").click();
+		assertLogged(TransactionType.MESSAGE_VIEW, 2L, 0L, "");
 		
 		// Message List 
 		wr = wr.getLinkWith("Reply").click();
@@ -103,6 +105,7 @@ public class MessagingUseCaseTest extends iTrustHTTPTest {
 		WebForm wf = wr.getFormWithID("mainForm");
 		wf.getScriptableObject().setParameterValue("messageBody", "Which office visit did you update?");
 		wr = wf.submit();
+		assertLogged(TransactionType.MESSAGE_SEND, 2L, 9000000000L, "");
 		
 		// Create timestamp
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
@@ -114,35 +117,25 @@ public class MessagingUseCaseTest extends iTrustHTTPTest {
 		assertTrue(wr.getText().contains("RE: Office Visit Updated"));
 		assertTrue(wr.getText().contains("Kelly Doctor"));
 		assertTrue(wr.getTables()[1].getRows()[1].getText().contains(stamp));
+		assertLogged(TransactionType.OUTBOX_VIEW, 2L, 2L, "");
 		
 		// Check bolded message appears in hcp
 		wr = wr.getLinkWith("Logout").click();
+		assertLogged(TransactionType.LOGOUT, 2L, 2L, "");
+		
 		//wr = wr.getLinkWith("Log into iTrust").click();
 		
 		wc = login("9000000000", "pw");
 		wr = wc.getCurrentPage();
+		assertLogged(TransactionType.HOME_VIEW, 9000000000L, 0L, "");
+		
 		wr = wr.getLinkWith("Message Inbox").click();
+		assertLogged(TransactionType.INBOX_VIEW, 9000000000L, 0L, "");
 		
 		assertEquals("font-weight: bold;", wr.getTables()[1].getRows()[1].getAttribute("style"));
 		assertTrue(wr.getTables()[1].getRows()[1].getText().contains("Andy Programmer"));
 		assertTrue(wr.getTables()[1].getRows()[1].getText().contains("RE: Office Visit Updated"));
 		assertTrue(wr.getTables()[1].getRows()[1].getText().contains(stamp));
-
-		// Check email
-		FakeEmailDAO feDAO = new FakeEmailDAO(TestDAOFactory.getTestInstance());
-		List<Email> eList = feDAO.getEmailsByPerson("kdoctor@iTrust.org");
-		
-		boolean foundEmail = false;
-		for(Email e:eList) {
-			if ("A new message from Andy Programmer".equals(e.getSubject())) {
-				foundEmail = true;
-				break;
-			}
-		}
-		assertTrue(foundEmail);
-		
-		// Check log
-		wr = wr.getLinkWith("Logout").click();
 	}
 	
 	public void testHCPSortInboxBySender() throws Exception {
@@ -155,7 +148,10 @@ public class MessagingUseCaseTest extends iTrustHTTPTest {
 		// Login
 		WebConversation wc = login("9000000000", "pw");
 		WebResponse wr = wc.getCurrentPage();
-		wr = wr.getLinkWith("Message Inbox").click();		
+		assertLogged(TransactionType.HOME_VIEW, 9000000000L, 0L, "");
+		
+		wr = wr.getLinkWith("Message Inbox").click();	
+		assertLogged(TransactionType.INBOX_VIEW, 9000000000L, 0L, "");
 		
 		// Sort by name in ascending order
 		wr.getForms()[0].setParameter("sortby", "name");
@@ -190,10 +186,6 @@ public class MessagingUseCaseTest extends iTrustHTTPTest {
 		assertTrue(wr.getTables()[1].getRows()[7].getText().contains("Baby Programmer"));
 		assertTrue(wr.getTables()[1].getRows()[7].getText().contains("Remote Monitoring Question"));
 		assertTrue(wr.getTables()[1].getRows()[7].getText().contains("2010-01-07 09:15:00.0"));
-		
-		// Check log
-		wr = wr.getLinkWith("Logout").click();
-		
 	}
 	
 	public void testPatientSortOutboxByTimestamp() throws Exception {
@@ -206,7 +198,10 @@ public class MessagingUseCaseTest extends iTrustHTTPTest {
 		// Login
 		WebConversation wc = login("1", "pw");
 		WebResponse wr = wc.getCurrentPage();
+		assertLogged(TransactionType.HOME_VIEW, 1L, 0L, "");
+		
 		wr = wr.getLinkWith("Message Outbox").click();
+		assertLogged(TransactionType.OUTBOX_VIEW, 1L, 1L, "");
 		
 		// Sort by timestamp in descending order
 		wr.getForms()[0].setParameter("sortby", "time");
@@ -237,10 +232,6 @@ public class MessagingUseCaseTest extends iTrustHTTPTest {
 		assertTrue(wr.getTables()[1].getRows()[6].getText().contains("Kelly Doctor"));
 		assertTrue(wr.getTables()[1].getRows()[6].getText().contains("Old Medicine"));
 		assertTrue(wr.getTables()[1].getRows()[6].getText().contains("2009-12-02 11:15:00.0"));
-		
-		// Check log
-		wr = wr.getLinkWith("Logout").click();
-		
 	}
 	
 	public void testHCPtestMessageFilter() throws Exception {
@@ -253,8 +244,11 @@ public class MessagingUseCaseTest extends iTrustHTTPTest {
 		// Login
 		WebConversation wc = login("9000000000", "pw");
 		WebResponse wr = wc.getCurrentPage();
+		assertLogged(TransactionType.HOME_VIEW, 9000000000L, 0L, "");
 		
 		wr = wr.getLinkWith("Message Inbox").click();
+		assertLogged(TransactionType.INBOX_VIEW, 9000000000L, 0L, "");
+		
 		wr = wr.getLinkWith("Edit Filter").click();
 		
 		// Enter filter information where has words is influenza
@@ -281,11 +275,7 @@ public class MessagingUseCaseTest extends iTrustHTTPTest {
 		
 		assertTrue(wr.getTables()[2].getRows()[4].getText().contains("Baby Programmer"));
 		assertTrue(wr.getTables()[2].getRows()[4].getText().contains("Bad cough"));
-		assertTrue(wr.getTables()[2].getRows()[4].getText().contains("2008-06-02 20:46:00.0"));
-		
-		// Check log
-		wr = wr.getLinkWith("Logout").click();
-		
+		assertTrue(wr.getTables()[2].getRows()[4].getText().contains("2008-06-02 20:46:00.0"));	
 	}
 	
 	public void testpatientApplyMessageFilter() throws Exception {
@@ -298,8 +288,10 @@ public class MessagingUseCaseTest extends iTrustHTTPTest {
 		// Login
 		WebConversation wc = login("2", "pw");
 		WebResponse wr = wc.getCurrentPage();
+		assertLogged(TransactionType.HOME_VIEW, 2L, 0L, "");
 		
 		wr = wr.getLinkWith("Message Inbox").click();
+		assertLogged(TransactionType.INBOX_VIEW, 2L, 0L, "");
 		wr = wr.getLinkWith("Apply Filter").click();
 		
 		// Make sure the proper message exists in the right order
@@ -309,11 +301,7 @@ public class MessagingUseCaseTest extends iTrustHTTPTest {
 		
 		assertTrue(wr.getTables()[1].getRows()[2].getText().contains("Kelly Doctor"));
 		assertTrue(wr.getTables()[1].getRows()[2].getText().contains("RE: Vaccines"));
-		assertTrue(wr.getTables()[1].getRows()[2].getText().contains("2010-01-21 20:22:00.0"));
-		
-		// Check log
-		wr = wr.getLinkWith("Logout").click();
-		
+		assertTrue(wr.getTables()[1].getRows()[2].getText().contains("2010-01-21 20:22:00.0"));	
 	}
 	
 	public void testpatientApplyMessageFilter2() throws Exception {
@@ -326,8 +314,10 @@ public class MessagingUseCaseTest extends iTrustHTTPTest {
 		// Login
 		WebConversation wc = login("2", "pw");
 		WebResponse wr = wc.getCurrentPage();
+		assertLogged(TransactionType.HOME_VIEW, 2L, 0L, "");
 		
 		wr = wr.getLinkWith("Message Inbox").click();
+		assertLogged(TransactionType.INBOX_VIEW, 2L, 0L, "");
 		wr = wr.getLinkWith("Edit Filter").click();
 		
 		// Enter filter information where has words is influenza
@@ -340,11 +330,7 @@ public class MessagingUseCaseTest extends iTrustHTTPTest {
 		wr = wr.getForms()[0].submit(wr.getForms()[0].getSubmitButton("test"));
 		
 		// Make sure error message is displayed
-		assertTrue(wr.getText().contains("Error: The end date cannot be before the start date."));
-		
-		// Check log
-		wr = wr.getLinkWith("Logout").click();
-		
+		assertTrue(wr.getText().contains("Error: The end date cannot be before the start date."));	
 	}
 	
 	public void testHCPtestMessageFilter2 () throws Exception {
@@ -357,8 +343,11 @@ public class MessagingUseCaseTest extends iTrustHTTPTest {
 		// Login
 		WebConversation wc = login("9000000000", "pw");
 		WebResponse wr = wc.getCurrentPage();
+		assertLogged(TransactionType.HOME_VIEW, 9000000000L, 0L, "");
 		
 		wr = wr.getLinkWith("Message Inbox").click();
+		assertLogged(TransactionType.INBOX_VIEW, 9000000000L, 0L, "");
+		
 		wr = wr.getLinkWith("Edit Filter").click();
 		
 		// Enter filter information where has words is influenza
@@ -374,10 +363,6 @@ public class MessagingUseCaseTest extends iTrustHTTPTest {
 		assertTrue(wr.getTables()[2].getRows()[1].getText().contains("Andy Programmer"));
 		assertTrue(wr.getTables()[2].getRows()[1].getText().contains("Influenza Vaccine"));
 		assertTrue(wr.getTables()[2].getRows()[1].getText().contains("2010-03-25 16:15:00.0"));
-		
-		// Check log
-		wr = wr.getLinkWith("Logout").click();
-		
 	}
 
 }

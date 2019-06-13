@@ -1,5 +1,547 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <BlackBoxTestPlan>
+	<test id="testRemoveAppt">
+		<role>HCP</role>
+		<dateAdded>11/28/2010</dateAdded>
+		<usecase>UC22</usecase>
+		<description>
+			<precondition>HCP 9000000000 and Bad Horse (Patient 42) are registered iTrust users.</precondition>
+			<precondition>HCP 9000000000 is Bad Horse's designated HCP.</precondition>
+			<precondition>Bad Horse has only one appointment, scheduled for tomorrow at 3pm with HCP 9000000000.</precondition>
+			<step>HCP 9000000000 logs in.</step>
+			<step>HCP 9000000000 clicks the "View My Appointments" link.</step>
+			<step>HCP 9000000000 clicks the "Edit/Remove" link for Bad Horse's appointment.</step>
+			<step>HCP 9000000000 clicks the "Remove" button.</step>
+		</description>
+		<expectedResults>
+			<eResult>A message saying "Success: Appointment removed" is displayed.</eResult>
+		</expectedResults>
+	</test>
+	<test id="testSetPassedDate">
+		<role>HCP</role>
+		<dateAdded>11/28/2010</dateAdded>
+		<usecase>UC22</usecase>
+		<description>
+			<precondition>HCP 9000000000 and Bad Horse (Patient 42) are registered iTrust users.</precondition>
+			<precondition>HCP 9000000000 is Bad Horse's designated HCP.</precondition>
+			<precondition>Bad Horse has only one appointment, scheduled for tomorrow at 3pm with HCP 9000000000.</precondition>
+			<step>HCP 9000000000 logs in.</step>
+			<step>HCP 9000000000 clicks the "View My Appointments" link.</step>
+			<step>HCP 9000000000 clicks the "Edit/Remove" link for Bad Horse's appointment.</step>
+			<step>HCP 9000000000 changes the date to "10/10/2009" and submits the form.</step>
+		</description>
+		<expectedResults>
+			<eResult>A message saying "The scheduled date of this appointment (2009-10-10 15:00:00.0) has already passed." is displayed.</eResult>
+		</expectedResults>
+	</test>
+	<test id="testEditAppt">
+		<role>HCP</role>
+		<dateAdded>11/28/2010</dateAdded>
+		<usecase>UC22</usecase>
+		<description>
+			<precondition>HCP 9000000000 and Bad Horse (Patient 42) are registered iTrust users.</precondition>
+			<precondition>HCP 9000000000 is Bad Horse's designated HCP.</precondition>
+			<precondition>Bad Horse has only one appointment, scheduled for tomorrow at 3pm with HCP 9000000000.</precondition>
+			<step>HCP 9000000000 logs in.</step>
+			<step>HCP 9000000000 clicks the "View My Appointments" link.</step>
+			<step>HCP 9000000000 clicks the "Edit/Remove" link for Bad Horse's appointment.</step>
+			<step>HCP 9000000000 changes the comment to "New comment!" and submits the form.</step>
+		</description>
+		<expectedResults>
+			<eResult>A message saying "Success: Appointment changed" is displayed.</eResult>
+		</expectedResults>
+	</test>
+	<test id="testPHAHome">
+		<role>PHA</role>
+		<dateAdded>11/11/2010</dateAdded>
+		<usecase>UC5</usecase>
+		<description>
+			<precondition>PHA exists</precondition>
+			<step>PHA authenticates and is forwarded to the home page</step>
+		</description>
+		<expectedResults>
+			<eResult>It is logged that PHA has visited the home page</eResult>
+		</expectedResults>
+	</test>
+	
+	<test id="testMonitorPatientsList">
+		<role>UAP</role>
+		<dateAdded>11/11/2010</dateAdded>
+		<usecase>UC5</usecase>
+		<description>
+			<precondition>UAP exists</precondition>
+			<step>UAP authenticates and is forwarded to the home page</step>
+			<step>UAP clicks on link "Report Weight/Pedometer Status" and is forwarded to a page with his remote monitoring patient list</step>
+		</description>
+		<expectedResults>
+			<eResult>It is logged that UAP has viewed his remote monitoring patient list</eResult>
+		</expectedResults>
+	</test>
+	
+	<test id="testEmailHistory">
+		<role>HCP</role>
+		<dateAdded>11/11/2010</dateAdded>
+		<usecase>UC5</usecase>
+		<description>
+			<precondition>HCP exists</precondition>
+			<step>HCP authenticates and is forwarded to the home page</step>
+			<step>HCP clicks on link "Email History"</step>
+		</description>
+		<expectedResults>
+			<eResult>It is logged that HCP has viewed his email history</eResult>
+		</expectedResults>
+	</test>
+	
+	<test id="testPHAHome">
+		<role>PHA</role>
+		<dateAdded>11/11/2010</dateAdded>
+		<usecase>UC5</usecase>
+		<description>
+			<precondition>PHA exists</precondition>
+			<step>PHA authenticates and is forwarded to the home page</step>
+		</description>
+		<expectedResults>
+			<eResult>It is logged that PHA has visited the home page</eResult>
+		</expectedResults>
+	</test>
+	
+	<test id="testOlderActivities">
+		<role>Patient</role>
+		<dateAdded>11/11/2010</dateAdded>
+   		<usecase>UC43</usecase>
+   		<description>
+   			<precondition>Patient 2 exists</precondition>
+   			<precondiiton>Patient 2 has at least 60 logs to view in his activity feed</precondiiton>
+   			<step>Patient 2 authenticates and is forwarded to patient/home.jsp</step>
+   			<step>Patient 2 clicks on "Older Activities"</step>
+   			<step>Patient 2 clicks on "Older Activities"</step>
+   		</description>
+   		<expectedResult>
+   			<eResult>60 activities are displayed in the activity table</eResult>
+   		</expectedResult>
+	</test>
+	
+	<test id="testUpdateActivityFeed">
+		<role>Patient</role>
+		<dateAdded>11/11/2010</dateAdded>
+		<usecase>UC43</usecase>
+		<description>
+			<precondition>Patient 2 exists</precondition>
+			<precondiiton>Patient 2 has at least 60 logs to view in his activity feed</precondiiton>
+			<step>Patient 2 logs in</step>
+			<step>Patient 2 clicks on "Older Activities"</step>
+			<step>Patient 2 clicks on "Older Activities"</step>
+			<step>Patient 2 clicks on "Again!"</step>
+		</description>
+		<expectedResults>
+			<eResult>The activity feed displays 20 logs</eResult>
+		</expectedResults>
+	</test>
+	
+	<test id="testViewActivityFeed">
+		<role>Patient</role>
+		<dateAdded>11/11/2010</dateAdded>
+		<usecase>UC43</usecase>
+		<description>
+			<precondition>→LHCP 90000000000, LHCP 90000000003, ER 90000000006, UAP 80000000009, Patient 2, and Patient 1 are registered iTrust users.</precondition>
+			<precondition>→LHCP 90000000000 has viewed Patient 1's prescription report on yesterday at 8:15AM.</precondition>
+			<precondition>→Patient 2 has viewed Patient 1's prescription report on yesterday at 9:43AM.</precondition>
+			<precondition>→ER 90000000006 has generated an Emergency Patient Report for Patient 1 on yesterday at 10:04AM.</precondition>
+			<precondition>→LHCP 90000000003 has successfully edited the 10/10/2005 Office Visit (ID 1) for Patient 1 on yesterday at 11:18AM.</precondition>
+			<precondition>→UAP 80000000009 has successfully updated the status of laboratory procedure 10763-1 from Office Visit 11 on yesterday at 12:02PM.</precondition>
+			<precondition>→LHCP 90000000003 has checked Patient 1's risk factors on yesterday at 12:58PM.</precondition>
+			<precondition>→UAP 80000000009 has checked Patient 1's risk factors on yesterday at 1:02PM.</precondition>
+			<precondition>→LHCP 90000000000 has checked Patient 1's risk factors on yesterday at 1:15PM.</precondition>
+			<precondition>→LHCP 90000000000 has successfully edited Patient 1's 10/10/2005 office visit (ID 11) on three days ago at 2:23PM.</precondition>
+			<precondition>→Patient 2 is a representative for Patient 1.</precondition>
+			<precondition>→ LHCP 90000000003 is a declared LHCP for Patient 1. </precondition>
+			<step>Patient 2 logs in</step>
+		</description>
+		<expectedResults>
+			<eResult>The activity feed should contain the following information:
+				Kelly Doctor has viewed your prescription report yesterday at 8:15AM.
+				Andy Programmer viewed your prescription report yesterday at 9:43AM.
+				Justin Time generated an Emergency Patient Report for you yesterday at 10:04AM.
+				Gandolf Stormcrow edited your 10/10/2005 Office Visit yesterday at 11:18AM.
+				FirstUAP LastUAP updated the status of laboratory procedure 10763-1 yesterday at 12:02PM.
+				Gandolf Stormcrow checked your risk factors yesterday at 12:58PM.
+				FirstUAP LastUAP checked your risk factors yesterday at 1:02PM.
+				Kelly Doctor checked your risk factors yesterday at 1:15PM.
+				Kelly Doctor edited your 10/10/2005 office visit on [date for three days ago] at 2:23PM.
+			</eResult>
+		</expectedResults>
+	</test>
+
+   <test id="testReportPatientHeight">
+    <role>Patient</role>
+    <dateAdded>11/10/2010</dateAdded>
+    <usecase>UC34</usecase>
+    <description>
+    	<precondition>Patient 1 is a registered iTrust user.</precondition>
+    	<precondition>Patient 1 has authenticated successfully.</precondition>
+    	<step>Patient 1 clicks the "Report External Status" link.</step>
+    	<step>Patient 1 enters 73.2 for height, and clicks "Report".</step>
+    	<step>Patient 1 clicks the "Report External Status" link.</step>
+    	<step>Patient 1 enters 73.2 for height, and clicks "Report".</step>
+    </description>
+    <expectedResults>
+    	<eResult>After step 2, Patient 1 should see the message "Information Successfully Added".</eResult>
+    	<eResult>After step 4, Patient 1 should see the message "Invalid entry: Patient height entries for today cannot exceed 1.".</eResult>
+    </expectedResults>
+    <actualResults>
+    </actualResults>
+  </test>
+   <test id="testDetailedExternalData">
+    <role>Patient</role>
+    <dateAdded>11/10/2010</dateAdded>
+    <usecase>UC34</usecase>
+    <description>
+    	<precondition>HCP 90000000000, Patient 1, and Patient 2 are registered iTrust users.</precondition>
+		<precondition>Patient 1 is currently being monitored by HCP 9000000000.</precondition>
+		<precondition>Patient 2 is a representative for Patient 1.</precondition>
+		<precondition>Patient 1 has entered height and weight values of 70in. and 180lbs two days ago, at 8;19AM.</precondition>
+		<precondition>Patient 2 has entered height and pedometer reading values of 70in. and 8153 steps for Patient 1 one day ago, at 7:48AM.</precondition>
+		<precondition>Patient 1 has entered height and weight values of 70in. and 192.58lbs today at 7:17AM.</precondition>
+    	<precondition>LHCP 90000000000 has authenticated successfully.</precondition>
+    	<step>HCP clicks the “Monitor Patients” link under the “Telemedicine” menu subtitle.</step>
+    	<step>HCP clicks the "Random Person (MID 1)" link in the table.</step>
+    	<step>HCP views the telemedicine data for Patient 1 from three days ago to the current date.</step>
+    </description>
+    <expectedResults>
+    	<eResult>Report at 8:19AM two days ago by Random Person, with height value of 70.0 and weight value of 180.0.</eResult>
+    	<eResult>Report at 7:48AM one day ago by Andy Programmer, with height value of 70.0 and pedometer reading of 8153.</eResult>
+    	<eResult>Report at 7:17AM today by Random Person, with height value of 70.0 and weight value of 192.5.</eResult>
+    </expectedResults>
+    <actualResults>
+    </actualResults>
+  </test>
+   <test id="testWeightHighlighting">
+    <role>Patient</role>
+    <dateAdded>11/10/2010</dateAdded>
+    <usecase>UC34</usecase>
+    <description>
+    	<precondition>HCP 90000000000, Patient 1, and Patient 2 are registered iTrust users.</precondition>
+		<precondition>Patient 1 is currently being monitored by HCP 9000000000.</precondition>
+		<precondition>Patient 2 is a representative for Patient 1.</precondition>
+		<precondition>Patient 1 has entered height and weight values of 70in. and 180lbs two days ago, at 8;19AM.</precondition>
+		<precondition>Patient 2 has entered height and pedometer reading values of 70in. and 8153 steps for Patient 1 one day ago, at 7:48AM.</precondition>
+		<precondition>Patient 1 has entered height and weight values of 70in. and 192.58lbs today at 7:17AM.</precondition>
+    	<precondition>LHCP 90000000000 has authenticated successfully.</precondition>
+    	<step>HCP clicks the “Monitor Patients” link under the “Telemedicine” menu subtitle.</step>
+    </description>
+    <expectedResults>
+    	<eResult>Entry for today at 7:17AM should be highlighted in yellow.</eResult>
+    </expectedResults>
+    <actualResults>
+    </actualResults>
+  </test>
+   <test id="testActivityFeed">
+    <role>Patient</role>
+    <dateAdded>11/4/2010</dateAdded>
+    <usecase>UC43</usecase>
+    <description>
+    	<precondition>LHCP 90000000000, LHCP 90000000003, ER 90000000006, UAP 80000000009, Patient 2, and Patient 1 are registered iTrust users.</precondition>
+		<precondition>LHCP 90000000000 has viewed Patient 1's prescription report on yesterday at 8:15AM.</precondition>
+		<precondition>Patient 2 has viewed Patient 1's prescription report on yesterday at 9:43AM.</precondition>
+		<precondition>ER 90000000006 has generated an Emergency Patient Report for Patient 1 on yesterday at 10:04AM.</precondition>
+		<precondition>LHCP 90000000003 has successfully edited the 10/10/2005 Office Visit (ID 1) for Patient 1 on yesterday at 11:18AM.</precondition>
+		<precondition>UAP 80000000009 has successfully updated the status of laboratory procedure 10763-1 from Office Visit 11 on yesterday at 12:02PM.</precondition>
+		<precondition>LHCP 90000000003 has checked Patient 1's risk factors on yesterday at 12:58PM.</precondition>
+		<precondition>UAP 80000000009 has checked Patient 1's risk factors on yesterday at 1:02PM.</precondition>
+		<precondition>LHCP 90000000000 has checked Patient 1's risk factors on yesterday at 1:15PM.</precondition>
+		<precondition>LHCP 90000000000 has successfully edited Patient 1's 10/10/2005 office visit (ID 11) on three days ago at 2:23PM.</precondition>
+		<precondition>Patient 2 is a representative for Patient 1.</precondition>
+		<precondition> LHCP 90000000003 is a declared LHCP for Patient 1.</precondition>
+    	<step>Patient 1 authenticates successfully.</step>
+    </description>
+    <expectedResults>
+    <eResult>The activity feed should contain the following information:</eResult>
+		<eResult> Kelly Doctor has viewed your prescription report yesterday at 8:15AM.</eResult>
+		<eResult> Andy Programmer viewed your prescription report yesterday at 9:43AM.</eResult>
+		<eResult> Justin Time generated an Emergency Patient Report for you yesterday at 10:04AM.</eResult>
+		<eResult> Gandalf Stormcrow edited your 10/10/2005 Office Visit yesterday at 11:18AM.</eResult>
+		<eResult> FirstUAP LastUAP updated the status of laboratory procedure 10763-1 yesterday at 12:02PM.</eResult>
+		<eResult> Gandalf Stormcrow checked your risk factors yesterday at 12:58PM.</eResult>
+		<eResult> FirstUAP LastUAP checked your risk factors yesterday at 1:02PM.</eResult>
+		<eResult> Kelly Doctor checked your risk factors yesterday at 1:15PM.</eResult>
+		<eResult> Kelly Doctor edited your 10/10/2005 office visit on [date for three days ago] at 2:23PM.</eResult>
+    </expectedResults>
+    <actualResults>
+    </actualResults>
+  </test>
+   <test id="testCalculateBMI">
+    <role>HCP</role>
+    <dateAdded>10/28/2010</dateAdded>
+    <usecase>UC10</usecase>
+    <description>
+		<precondition>LHCP 9000000000 and Patient 2 are registered users of the iTrust system.</precondition>
+		<precondition>LHCP 9000000000 has reported Basic Health History for Patient 2 on 08-12-2007 at 8:34:58AM: Height 62.2, Weight 205.5, Smokes Y, Blood Pressure 165/220, HDL 40, LDL 255, Triglycerides 230.</precondition>
+		<precondition>LHCP 9000000000 has reported Basic Health History for Patient 2 on 10-30-2007 at 10:54:22AM: Height 62, Weight 209.1, Smokes Y, Blood Pressure 170/200, HDL 70, LDL 200, Triglycerides 290.</precondition>
+		<precondition>LHCP 9000000000 has authenticated successfully.</precondition>
+    	<step>LHCP 9000000000 clicks the “Basic Health Information” link in the iTrust menu and selects Patient 2.</step>
+    </description>
+    <expectedResults>
+      <eResult>The BMI is automatically calculated and displayed as 37.3 for the 8-12-2007 recording.</eResult>
+      <eResult>The BMI is automatically calculated and displayed as 38.2 for the 10-30-2007 recording.</eResult>
+    </expectedResults>
+    <actualResults>
+    </actualResults>
+  </test>
+   <test id="testGetWeightLineChart">
+    <role>HCP</role>
+    <dateAdded>10/28/2010</dateAdded>
+    <usecase>UC10</usecase>
+    <description>
+		<precondition>LHCP 9000000000 and Patient 2 are registered users of the iTrust system.</precondition>
+		<precondition>LHCP 9000000000 has reported Basic Health History for Patient 2 on 08-12-[two years ago] at 8:34:58AM: Height 62.2, Weight 205.5, Smokes Y, Blood Pressure 165/220, HDL 40, LDL 255, Triglycerides 230.</precondition> 
+		<precondition>LHCP 9000000000 has reported Basic Health History for Patient 2 on 10-30-[two years ago] at 10:54:22AM: Height 62, Weight 209.1, Smokes Y, Blood Pressure 170/200, HDL 70, LDL 200, Triglycerides 290.</precondition>
+		<precondition>LHCP 9000000000 has reported Basic Health History for Patient 2 on 11-30-[two years ago] at 2:14:22PM: Height 62, Weight 220.5, Smokes Y, Blood Pressure 190/300, HDL 35, LDL 219, Triglycerides 160. </precondition>
+		<precondition>LHCP 9000000000 has reported Basic Health History for Patient 2 on 1-4-[one year ago] at 12:54:48PM: Height 62, Weight 218.5, Smokes N, Blood Pressure 165/220, HDL 30, LDL 255, Triglycerides 220. </precondition>
+		<precondition>LHCP 9000000000 has authenticated successfully. </precondition>
+    	<step>LHCP 9000000000 clicks the “Basic Health Information” link in the iTrust menu and chooses Patient 2.</step>
+    	<step>LHCP 9000000000 views the patient's weight chart.</step>
+    </description>
+    <expectedResults>
+      <eResult>A line chart is successfully displayed with quarter-year groups along the x-axis and weight averages along the y-axis.  Data points are at (July/August/September [two years ago], 205.5), (October/November/December [two years ago], 215), (January/February/March [one year ago], 218.5). The event is logged.</eResult>
+    </expectedResults>
+    <actualResults>
+    </actualResults>
+  </test>
+   <test id="adminAddNewOverrideReason">
+    <role>Admin</role>
+    <dateAdded>10/27/2010</dateAdded>
+    <usecase>UC37</usecase>
+    <description>
+    	<precondition>Admin 9000000001 is a registered user of the iTrust system.</precondition>
+    	<precondition>Admin 9000000001 has authenticated successfully.</precondition>
+    	<step>Admin 9000000001 clicks the “Edit Override Reason Codes” link under the “Edit” menu subheading.</step>
+    	<step>Admin 9000000001 enters the reason, "Interaction not applicable to this patient."</step>
+    	<step>Admin 9000000001 enters the code, "22222"</step>
+    	<step>Admin 9000000001 clicks the "Add Override Reason" button.</step>
+    </description>
+    <expectedResults>
+      <eResult>The new override reason "Interaction not applicable to this patient" is successfully added.</eResult>
+      <eResult>The information is logged.</eResult>
+    </expectedResults>
+    <actualResults>
+    </actualResults>
+  </test>
+   <test id="allergicPrescribeOverride">
+    <role>HCP</role>
+    <dateAdded>10/27/2010</dateAdded>
+    <usecase>UC37</usecase>
+    <description>
+    	<precondition>LHCP 9000000000 and Patient 2 are registered users of the iTrust system.</precondition>
+    	<precondition>LHCP 9000000000 has documented an office visit for Patient 2 for 09/15/2009.</precondition>
+    	<precondition>Patient 2 has an Aspirin allergy, first found on 12/10/2008.</precondition>
+    	<precondition>Patient 2 has a Penicillin allergy, first found on 06/04/2007.</precondition>
+    	<precondition>LHCP 9000000000 has authenticated successfully.</precondition>
+    	<step>LHCP 9000000000 clicks the “Document Office Visit” link under the “Other” menu subheading.</step>
+    	<step>LHCP 9000000000 selects Patient 2.</step>
+    	<step>LHCP 9000000000 clicks the “09/15/2009” link.</step>
+    	<step>LHCP 9000000000 selects medication: 081096-Aspirin, dosage: 15mg, dates from 9/22/2009 to 10/22/2009, instructions: “Take twice daily with water”</step>
+    	<step>LHCP 9000000000 clicks the “Add Prescription” button.</step>
+    	<step>LHCP 9000000000 reviews the allergy information and chooses to proceed with the prescription.</step>
+    </description>
+    <expectedResults>
+      <eResult>LHCP 9000000000 is presented with the following information:  Patient: Andy Programmer  Allergy: Aspirin. First Found: 12/20/2008.  Aspirin is successfully prescribed to Andy Programmer.</eResult>
+      <eResult>An email is sent to Andy Programmer: “Kelly Doctor has prescribed a medication that you are allergic to or that has a known interaction with a drug you are currently taking. Allergy: Aspirin. First Found: 12/20/2008.”</eResult>
+      <eResult>The event is logged.</eResult>
+    </expectedResults>
+    <actualResults>
+    </actualResults>
+  </test>
+  <test id="testHCPMessageDetailsFromNotificationCenter ">
+    <role>HCP</role>
+    <dateAdded>9/28/2010</dateAdded>
+    <usecase>UC42</usecase>
+    <description>
+    	<precondition>HCP 9000000000 and Patient 1 are registered users of the iTrust system.</precondition>
+    	<precondition>Patient 1 is currently being monitored by HCP 9000000000. </precondition>
+    	<precondition>Patient 1 has sent a message to HCP 9000000000 whose subject read "foo" and body read "bar".</precondition>
+    	<precondition>Patient 1 has sent a message to HCP 9000000000 whose subject read "hello" and body read "world".</precondition>
+    	<step>HCP 9000000000 logs into iTrust with MID: 9000000000, password: pw. </step>
+    </description>
+    <expectedResults>
+		<eResult>In the homepage notification center there should be displayed a notification that informs the HCP that there are two unread messages.
+		</eResult>
+    </expectedResults>
+    <actualResults>
+    </actualResults>
+  </test>
+  <test id="testHCPTelemedicineDetailsFromNotificationCenter ">
+    <role>HCP</role>
+    <dateAdded>9/28/2010</dateAdded>
+    <usecase>UC42</usecase>
+    <description>
+    	<precondition>HCP 9000000000 and Patient 1 are registered users of the iTrust system.</precondition>
+    	<precondition>Patient 1 is currently being monitored by HCP 9000000000. </precondition>
+    	<precondition>Patient 1 has entered a pedometer reading of 8324 today at 9:30</precondition>
+    	<precondition>Patient 1 has entered a weight of 8324 today at 10:00</precondition>
+    	<step>HCP 9000000000 logs into iTrust with MID: 9000000000, password: pw. </step>
+    </description>
+    <expectedResults>
+		<eResult>
+		In the homepage notification center under the “Telemedicine” heading, the following information is displayed: 0 physiological status reports (displayed as a link to the monitor patients page) 2 weight/pedometer status reports. 
+		</eResult>
+    </expectedResults>
+    <actualResults>
+    </actualResults>
+  </test>
+  <test id="testSelfReportWeight">
+    <role>Patient</role>
+    <dateAdded>9/9/2010</dateAdded>
+    <usecase>UC34</usecase>
+    <description>
+    	<precondition>HCP 9000000000 and Patient 1 are registered users of the iTrust system.</precondition>
+    	<precondition>Patient 1 is currently being monitored by HCP 9000000000. </precondition>
+    	<precondition>Patient 1 has authenticated successfully.</precondition>
+    	<step>Patient 1 clicks the “Report Weight/Pedometer Status” link under the “Telemedicine” menu subtitle.</step>
+		<step>Patient 1 enters the following information: pedometer reading: 8324; weight: 200.</step>
+		<step>Patient 1 clicks the “Report” button.</step>
+    </description>
+    <expectedResults>
+      <eResult>Patient 1's report should be successfully reported. A timestamp, weight, and pedometer reading are saved as reported by “self-reported.” The event is logged. </eResult>
+    </expectedResults>
+    <actualResults>
+    </actualResults>
+  </test>
+  <test id="testRepresentativeReportWeight">
+    <role>Patient</role>
+    <dateAdded>9/9/2010</dateAdded>
+    <usecase>UC34</usecase>
+    <description>
+    	<precondition>Patient 2 and Patient 1 are registered users of the iTrust system.</precondition>
+    	<precondition>Patient 2 is represented by Patient 1.</precondition>
+    	<precondition>Patient 1 has authenticated successfully.</precondition>
+    	<step>Patient 1 clicks the “Report External Status” link under the “Telemedicine” menu subtitle.</step>
+    	<step>Patient 1 selects Random Person from the list of Patients.</step>
+		<step>Patient 1 enters the following information for Patient 2: pedometer reading: 8324.</step>
+		<step>Patient 1 clicks the “Report” button.</step>
+    </description>
+    <expectedResults>
+      <eResult>Patient 2's pedometer reading reported. A timestamp and the pedometer reading are saved as reported by “case manager.” The event is logged. </eResult>
+    </expectedResults>
+    <actualResults>
+    </actualResults>
+  </test>
+  <test id="testRepresentativeReportWeightValidation">
+    <role>Patient</role>
+    <dateAdded>9/9/2010</dateAdded>
+    <usecase>UC34</usecase>
+    <description>
+    	<precondition>Patient 2 and Patient 1 are registered users of the iTrust system.</precondition>
+    	<precondition>Patient 2 is represented by Patient 1.</precondition>
+    	<precondition>Patient 1 has authenticated successfully.</precondition>
+    	<step>Patient 1 clicks the “Report External Status” link under the “Telemedicine” menu subtitle.</step>
+    	<step>Patient 1 selects Random Person from the list of Patients.</step>
+		<step>Patient 1 enters the following information for Patient 2: pedometer reading: ABC.</step>
+		<step>Patient 1 clicks the “Report” button.</step>
+    </description>
+    <expectedResults>
+      <eResult>Error message is reported "Invalid pedometer reading, user must enter an integer."</eResult>
+    </expectedResults>
+    <actualResults>
+    </actualResults>
+  </test>
+  <test id="testViewWeightAndPedometerReports">
+    <role>HCP</role>
+    <dateAdded>9/9/2010</dateAdded>
+    <usecase>UC34</usecase>
+    <description>
+    	<precondition>HCP 9000000000, Patient 1, and Patient 2 are registered users of the iTrust system. </precondition>
+    	<precondition>Patient 1 is currently being monitored by HCP 9000000000.</precondition>
+    	<precondition>Patient 1 is represented by Patient 2.</precondition>
+    	<precondition>Patient 1 has reported weight 180lbs two days ago at 11:54AM </precondition>
+    	<precondition>Patient 2 has reported Patient 1's weight as 455 and pedometer reading 3456 yesterday at 9:28AM.</precondition>
+    	<precondition>Patient 1 has reported weight 196lbs today at 11:19AM.</precondition>
+    	<precondition>HCP 9000000000 has authenticated successfully.</precondition>
+    	<step>HCP clicks the “Monitor Patients” link under the “Telemedicine” menu subtitle.</step>
+    </description>
+    <expectedResults>
+      <eResult>Because of massive increase in weight between two days ago and yesterday, yesterday's entry should be 
+      highlighted in yellow. Also, because of a massive decrease in weight between yesterday and today, today's entry should
+      be highlighted in yellow.</eResult>
+    </expectedResults>
+    <actualResults>
+    </actualResults>
+  </test>
+  <test id="testScheduleAppointment">
+    <role>HCP</role>
+    <dateAdded>9/7/2010</dateAdded>
+    <description>
+    	<precondition>UAP with MID 8000000009 exists and has authenticated.</precondition>
+		<step>Log in as HCP (used button on login page)</step>
+		<step>Click "Schedule Appointment"</step>
+		<step>Click "Find User"  </step>
+		<step>input "2", this user should be "Andy Programmer"</step>
+		<step>Click "Select Patient"</step>
+		<step>Selected the date "8/27/2010" (tomorrow) and clicked "Schedule"</step>
+		<step>Was redirected to home page.</step>
+    </description>
+    <expectedResults>
+      <eResult>The page should stay the same and not redirect and display a success message.</eResult>
+    </expectedResults>
+    <actualResults>
+    </actualResults>
+  </test>
+  <test id="testUpdateOfficeVisitOctothorpe">
+    <role>HCP</role>
+    <dateAdded>9/7/2010</dateAdded>
+    <usecase>UC11</usecase>
+    <description>
+    	<precondition>UAP with MID 8000000009 exists and has authenticated.</precondition>
+		<step>Clicked "Document Office Visit"</step>
+		<step>Clicked "Find User" button</step>
+		<step>Entered 1, then clicked This user is correct</step>
+		<step>Clicked "Select Patient"</step>
+		<step>Click "Yes, Document Office Visit"</step>
+		<step>Enter date 11/21/2005</step>
+		<step>Under office visit notes field enter a "I like diet-coke #".</step>
+    </description>
+    <expectedResults>
+      <eResult>The page is reloaded with message "Information Successfully Updated".</eResult>
+    </expectedResults>
+    <actualResults>
+    </actualResults>
+  </test>
+  <test id="testCauseOfDeathValidation">
+    <role>HCP</role>
+    <dateAdded>9/2/2010</dateAdded>
+    <description>
+    	<precondition>HCP with MID 9000000000 exists and has authenticated.</precondition>
+		<step>Log in as HCP </step>
+<step>Select "Patient Information"</step>
+<step>Click "Find User"  </step>
+<step>input "2", this user should be "Andy Programmer"</step>
+<step>Click "Select Patient"</step>
+<step>Do not provide a date of death however give a cause of death.</step>
+<step>Click "Edit Patient Record" Button</step>
+<step>Message "Information Successfully Updated" was displayed.</step>
+    </description>
+    <expectedResults>
+      <eResult>The page is reloaded with a new error of "This form has not been validated correctly. The following field are not properly filled in: [Cause of Death cannot be specified without Date of Death!]".</eResult>
+    </expectedResults>
+    <actualResults>
+    </actualResults>
+  </test>
+  <test id="testEditAppointmentTypeDurationStringInput">
+    <role>Admin</role>
+    <dateAdded>9/2/2010</dateAdded>
+    <description>
+    	<precondition>Admin with MID 9000000001 exists and has authenticated.</precondition>
+    	<step>Logged in as admin (clicked admin button)</step>
+		<step>Clicked "Edit Appointment Types"</step>
+		<step>Selected the "General Checkup" appointment type</step>
+		<step>Altered duration to be "foo" instead of 45</step>
+		<step>Clicked "Update Type" button.</step>
+    </description>
+    <expectedResults>
+      <eResult>The page is reloaded with a new error of "Error: Physical - Duration: must be an integer value.".</eResult>
+    </expectedResults>
+    <actualResults>
+    </actualResults>
+  </test>
   <test id="AddER">
     <role>Admin</role>
     <dateAdded>8/17/2010</dateAdded>
@@ -1072,107 +1614,6 @@
     <expectedResults>
       <eResult>The correct information for the appointment is displayed.</eResult>
 		<eResult>The event is logged. </eResult>
-    </expectedResults>
-    <actualResults>
-    </actualResults>
-  </test>
-  <test id="adminSendReminder">
-    <role>Admin</role>
-    <dateAdded>8/17/2010</dateAdded>
-    <usecase>UC 41</usecase>
-    <description>
-		<precondition>Admin 9000000001, LHCP 90000000000, LHCP 90000000003, Patient 1, Patient 4, and Patient 2 are registered iTrust users.</precondition>
-		<precondition>Appointment type General Checkup with duration 45 minutes exists in the system.</precondition>
-		<precondition>Appointment type Physical with duration 15 minutes exists in the system.</precondition>
-		<precondition>Appointment type Colonoscopy with duration 90 minutes exists in the system.</precondition>
-		<precondition>LHCP 90000000003 has scheduled a General Checkup with Patient 2 for [current date+1 day] at 4:00PM with no comments.</precondition>
-		<precondition>LHCP 90000000003 has scheduled a Physical with Patient 1 for [current date+2 days] at 9:00AM with no comments.</precondition>
-		<precondition>LHCP 90000000000 has scheduled a Colonoscopy with Patient 2 for [current date+3 days] at 8:00AM with no comments.</precondition>
-		<precondition>LHCP 90000000000 has scheduled a General Checkup with Patient 4 for [current date+1] at 9:15AM with comment “Follow-up for immunization”</precondition>
-		<step>Admin 90000000001 logs into iTrust with password “pw”</step>
-		<step>Admin 90000000001 clicks the “Send Appointment Reminders” link.</step>
-		<step>Admin 90000000001 enters reminder threshold: 3 days.</step>
-		<step>Admin 90000000001 clicks the “Send Reminders” button.</step> 
-    </description>
-    <expectedResults>
-      <eResult>The following messages are sent:</eResult>
-		<eResult>To: Andy Programmer. From: System Reminder. Subject: Reminder: upcoming appointment in 1 day(s). Message body: You have an appointment on [current date+1 day] at 4:00PM with Dr. Gandalf Stormcrow.</eResult>
-		<eResult>To: Random Person. From: System Reminder. Subject: Reminder: upcoming appointment in 2 day(s). Message body: You have an appointment on [current date+2 days] at 9:00AM with Dr. Gandalf Stormcrow.</eResult>
-		<eResult>To: Andy Programmer. From: System Reminder. Subject: Reminder: upcoming appointment in 3 day(s). Message body: You have an appointment on [current date+3 days] at 8:00AM with Dr. Kelly Doctor.</eResult>
-		<eResult>To: Baby Programmer. From: System Reminder. Subject: Reminder: upcoming appointment in 1 day(s). Message body: You have an appointment on [current date+1 day] at 9:15AM with Dr. Kelly Doctor.</eResult>
-		<eResult>The event is logged. </eResult>
-    </expectedResults>
-    <actualResults>
-    </actualResults>
-  </test>
-  <test id="adminCheck SystemReminder Outbox">
-    <role>Admin</role>
-    <dateAdded>8/17/2010</dateAdded>
-    <usecase>UC 41</usecase>
-    <description>
-		<precondition>Admin 9000000001, LHCP 90000000000, LHCP 90000000003, Patient 1, Patient 4, and Patient 2 are registered iTrust users.</precondition>
-		<precondition>Appointment type General Checkup with duration 45 minutes exists in the system.</precondition>
-		<precondition>Appointment type Physical with duration 15 minutes exists in the system.</precondition>
-		<precondition>Appointment type Colonoscopy with duration 90 minutes exists in the system.</precondition>
-		<precondition>LHCP 90000000000 has scheduled a General Checkup with Patient 2 for [current date+1 day] at 2:00PM with comment “monthly checkup”.</precondition>
-		<precondition>LHCP 90000000003 has scheduled a Physical with Patient 2 for [current date+2 days] at 10:30AM with comment “yearly physical”.</precondition>
-		<precondition>LHCP 90000000003 has scheduled a Colonoscopy with Patient 1 for [current date+3 days] at 7:45AM with no comments.</precondition>
-		<precondition>LHCP 90000000000 has scheduled a General Checkup with Patient 4 for [current date+1 day] at 11:30AM with no comment.</precondition>
-		<precondition>LHCP 90000000003 has scheduled a General Checkup with Patient 4 for [current date+6 days] at 2:45PM with comment “Follow-up for new medication”</precondition>
-		<step>Admin 90000000001 logs into iTrust with password “pw”</step>
-		<step>Admin 90000000001 clicks the “Send Appointment Reminders” link.</step>
-		<step>Admin 90000000001 enters reminder threshold: 2 days.</step>
-		<step>Admin 90000000001 clicks the “Send Reminders” button.</step>
-		<step>Admin 90000000001 clicks the “System Reminder Outbox” link under the “View” menu subheading.</step> 
-    </description>
-    <expectedResults>
-      <eResult>The following messages are displayed:</eResult>
-		<eResult>To: Andy Programmer. From: System Reminder. Subject: Reminder: upcoming appointment in 1 day(s). Timestamp: [correct timestamp].</eResult>
-		<eResult>To: Andy Programmer. From: System Reminder. Subject: Reminder: upcoming appointment in 2 day(s). Timestamp: [correct timestamp]</eResult>
-		<eResult>To: Baby Programmer. From: System Reminder. Subject: Reminder: upcoming appointment in 1 day(s). Timestamp: [correct timestamp]</eResult>
-		<eResult>The event is logged. </eResult>
-    </expectedResults>
-    <actualResults>
-    </actualResults>
-  </test>
-  <test id="adminSystem Reminder OutboxDetail">
-    <role>Admin</role>
-    <dateAdded>8/17/2010</dateAdded>
-    <usecase>UC 41</usecase>
-    <description>
-		<precondition>Admin 9000000001, LHCP 90000000000, LHCP 90000000003, Patient 1, Patient 4, and Patient 2 are registered iTrust users.</precondition>
-		<precondition>Appointment type General Checkup with duration 45 minutes exists in the system.</precondition>
-		<precondition>Appointment type Physical with duration 15 minutes exists in the system.</precondition>
-		<precondition>Appointment type Colonoscopy with duration 90 minutes exists in the system.</precondition>
-		<precondition>LHCP 90000000000 has scheduled a General Checkup with Patient 2 for [current date+1 day] at 2:00PM with comment “monthly checkup”.</precondition>
-		<step>Admin 90000000001 logs into iTrust with password “pw”</step>
-		<step>Admin 90000000001 clicks the “Send Appointment Reminders” link.</step>
-		<step>Admin 90000000001 enters reminder threshold: 2 days.</step>
-		<step>Admin 90000000001 clicks the “Send Reminders” button.</step>
-		<step>Admin 90000000001 clicks the “System Reminder Outbox” link under the “View” menu subheading.</step>
-		<step>Admin 90000000001 clicks the “Read” link to the right of the first message in the outbox.</step> 
-    </description>
-    <expectedResults>
-      <eResult>The details of the message are displayed:</eResult>
-		<eResult>To: Andy Programmer. From: System Reminder. Subject: Reminder: upcoming appointment in 1 day(s). Timestamp: [correct timestamp]. </eResult>
-    </expectedResults>
-    <actualResults>
-    </actualResults>
-  </test>
-  <test id="adminSystemNoSystemReminders ">
-    <role>Admin</role>
-    <dateAdded>8/17/2010</dateAdded>
-    <usecase>UC 41</usecase>
-    <description>
-		<precondition>Admin 9000000001, LHCP 90000000000, LHCP 90000000003, Patient 1, Patient 4, and Patient 2 are registered iTrust users.</precondition>
-		<precondition>No appointments exist in the system.</precondition>
-		<step>Admin 90000000001 logs into iTrust with password “pw”</step>
-		<step>Admin 90000000001 clicks the “Send Appointment Reminders” link.</step>
-		<step>Admin 90000000001 enters reminder threshold: 2 days.</step>
-		<step>Admin 90000000001 clicks the “Send Reminders” button.</step> 
-    </description>
-    <expectedResults>
-      <eResult>Text should appear that reads “0 message(s) sent.” </eResult>
     </expectedResults>
     <actualResults>
     </actualResults>

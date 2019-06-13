@@ -17,6 +17,8 @@
 <%@include file="/header.jsp"%>
 
 <%
+loggingAction.logEvent(TransactionType.EXPIRED_PRESCRIPTION_VIEW, loggedInMID.longValue(), loggedInMID.longValue(), "");
+
 PatientBean patient = new PatientDAO(prodDAO).getPatient(loggedInMID.longValue()); 
 
 ViewExpiredPrescriptionsAction expAction = new ViewExpiredPrescriptionsAction(prodDAO, loggedInMID.longValue());
@@ -47,7 +49,7 @@ session.setAttribute("personnelList", personnelList);
 		} else { 
 %>
 		<tr>
-			<th colspan=4><%= patient.getFullName() %></th>
+			<th colspan=4><%= StringEscapeUtils.escapeHtml("" + ( patient.getFullName() )) %></th>
 		</tr>
 		<tr class="subHeader">
 			<td>ND Code</td>
@@ -60,10 +62,10 @@ session.setAttribute("personnelList", personnelList);
 		PersonnelBean doctor = expAction.getPrescribingDoctor(prescription);
 %>
 		<tr>
-			<td ><a href="viewPrescriptionInformation.jsp?visitID=<%=prescription.getVisitID()%>&presID=<%=prescription.getId()%>"><%=prescription.getMedication().getNDCodeFormatted() %></a></td>
-			<td ><%=prescription.getMedication().getDescription() %></td>
-			<td ><%=prescription.getStartDateStr() %> to <%=prescription.getEndDateStr() %></td>
-			<td ><a href=viewLHCP.jsp?index=<%=doctor.getIndexIn(personnelList) %> ><%=doctor.getFullName() %></a></td>
+			<td ><a href="viewPrescriptionInformation.jsp?visitID=<%= StringEscapeUtils.escapeHtml("" + (prescription.getVisitID())) %>&presID=<%= StringEscapeUtils.escapeHtml("" + (prescription.getId())) %>"><%= StringEscapeUtils.escapeHtml("" + (prescription.getMedication().getNDCodeFormatted() )) %></a></td>
+			<td ><%= StringEscapeUtils.escapeHtml("" + (prescription.getMedication().getDescription() )) %></td>
+			<td ><%= StringEscapeUtils.escapeHtml("" + (prescription.getStartDateStr() )) %> to <%= StringEscapeUtils.escapeHtml("" + (prescription.getEndDateStr() )) %></td>
+			<td ><a href=viewLHCP.jsp?index=<%= StringEscapeUtils.escapeHtml("" + (doctor.getIndexIn(personnelList) )) %> ><%= StringEscapeUtils.escapeHtml("" + (doctor.getFullName() )) %></a></td>
 			
 			
 			

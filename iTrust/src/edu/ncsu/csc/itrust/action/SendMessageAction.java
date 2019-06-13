@@ -13,7 +13,6 @@ import edu.ncsu.csc.itrust.dao.mysql.MessageDAO;
 import edu.ncsu.csc.itrust.dao.mysql.PatientDAO;
 import edu.ncsu.csc.itrust.dao.mysql.PersonnelDAO;
 import edu.ncsu.csc.itrust.dao.mysql.TransactionDAO;
-import edu.ncsu.csc.itrust.enums.TransactionType;
 import edu.ncsu.csc.itrust.exception.DBException;
 import edu.ncsu.csc.itrust.exception.FormValidationException;
 import edu.ncsu.csc.itrust.exception.iTrustException;
@@ -111,7 +110,6 @@ public class SendMessageAction {
 		email.setBody(String.format("You have received a new message from %s in iTrust. To view it, log in to iTrust and go to \"View My Messages\"", senderName));
 		emailer.sendEmail(email);
 		
-		transactionDAO.logTransaction(TransactionType.SEND_MESSAGE, loggedInMID);
 	}
 	
 	/**

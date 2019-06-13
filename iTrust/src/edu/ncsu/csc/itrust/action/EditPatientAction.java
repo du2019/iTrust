@@ -8,7 +8,6 @@ import edu.ncsu.csc.itrust.beans.PatientBean;
 import edu.ncsu.csc.itrust.dao.DAOFactory;
 import edu.ncsu.csc.itrust.dao.mysql.PatientDAO;
 import edu.ncsu.csc.itrust.dao.mysql.TransactionDAO;
-import edu.ncsu.csc.itrust.enums.TransactionType;
 import edu.ncsu.csc.itrust.exception.DBException;
 import edu.ncsu.csc.itrust.exception.FormValidationException;
 import edu.ncsu.csc.itrust.exception.iTrustException;
@@ -57,7 +56,6 @@ public class EditPatientAction extends PatientBaseAction {
 		p.setMID(pid); // for security reasons
 		validator.validate(p);
 		patientDAO.editPatient(p);
-		transDAO.logTransaction(TransactionType.ENTER_EDIT_DEMOGRAPHICS, loggedInMID, pid, "EditPatient - Made Changes");
 		emailutil.sendEmail(makeEmail());
 	}
 
@@ -68,7 +66,6 @@ public class EditPatientAction extends PatientBaseAction {
 	 * @throws DBException
 	 */
 	public PatientBean getPatient() throws DBException {
-		transDAO.logTransaction(TransactionType.ENTER_EDIT_DEMOGRAPHICS, loggedInMID, pid, "EditPatient - View Patient");
 		return patientDAO.getPatient(this.getPid());
 	}
 

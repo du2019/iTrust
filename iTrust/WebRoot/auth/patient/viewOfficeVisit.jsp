@@ -20,10 +20,20 @@
 
 <%@include file="/header.jsp"%>
 <%
+
 session.removeAttribute("personnelList");
 
 	String ovID = request.getParameter("ovID");
 	String repMID = request.getParameter("repMID");
+	
+	long logMID;
+	if(repMID == null){
+		logMID = 0; 
+	} else {
+		logMID = Long.parseLong(repMID);
+	}
+		
+	loggingAction.logEvent(TransactionType.OFFICE_VISIT_VIEW, loggedInMID.longValue(), logMID, "Office Visit: " + ovID);
 	
 	ViewOfficeVisitAction action = null;
 	
@@ -39,12 +49,13 @@ session.removeAttribute("personnelList");
 	OfficeVisitBean ov = action.getOfficeVisit();	
 	String hcpName = action.getHCPName(ov.getHcpID());
 %>
+
 <br />
 <table class="fTable" align="center">
 	<tr><th colspan=2>Office Visit Details</th></tr>
 	<tr>
 		<td  class="subHeader">Date:</td>
-		<td><%=ov.getVisitDateStr()%></td>
+		<td><%= StringEscapeUtils.escapeHtml("" + (ov.getVisitDateStr())) %></td>
 	</tr>
 	<tr>
 		<td  class="subHeader">HCP:</td>
@@ -52,7 +63,7 @@ session.removeAttribute("personnelList");
 		List<PersonnelBean> personnelList = new ArrayList<PersonnelBean>();
 		int index = 0;
 %>
-		<td><a href="/iTrust/auth/viewPersonnel.jsp?personnel=<%=index%>"><%=hcpName%></a></td>
+		<td><a href="/iTrust/auth/viewPersonnel.jsp?personnel=<%= StringEscapeUtils.escapeHtml("" + (index)) %>"><%= StringEscapeUtils.escapeHtml("" + (hcpName)) %></a></td>
 <%
 		PersonnelBean personnel = new PersonnelDAO(prodDAO).getPersonnel(ov.getHcpID());
 		personnelList.add(personnel);
@@ -63,7 +74,7 @@ session.removeAttribute("personnelList");
 	<tr>
 		<td  class="subHeader">Notes:</td>
 		<td>
-			<%= ov.getNotes() %>
+			<%= StringEscapeUtils.escapeHtml("" + ( ov.getNotes() )) %>
 		</td>
 	</tr>
 </table>
@@ -83,8 +94,8 @@ session.removeAttribute("personnelList");
 	<% } else { 
 		for(DiagnosisBean d : ov.getDiagnoses()) {%>
 		<tr>
-			<td ><itrust:icd9cm code="<%=d.getICDCode()%>"/></td>
-			<td  style="white-space: nowrap;"><%=d.getDescription() %></td>
+			<td ><itrust:icd9cm code="<%= StringEscapeUtils.escapeHtml(d.getICDCode()) %>"/></td>
+			<td  style="white-space: nowrap;"><%= StringEscapeUtils.escapeHtml("" + (d.getDescription() )) %></td>
 		</tr>
 	   <%} 
   	   }  %>
@@ -108,11 +119,11 @@ session.removeAttribute("personnelList");
 	<% } else { 
 		for(PrescriptionBean m : ov.getPrescriptions()) { %>
 		<tr>
-			<td class = "valueCell"><%=m.getMedication().getNDCodeFormatted()%></td>
-			<td class = "valueCell"><%=m.getMedication().getDescription() %></td>
-			<td class = "valueCell"><%=m.getStartDateStr()%> to <%=m.getEndDateStr()%></td>
-			<td class = "valueCell"><%=m.getDosage()%>mg</td>
-			<td class = "valueCell"><%=m.getInstructions()%></td>
+			<td class = "valueCell"><%= StringEscapeUtils.escapeHtml("" + (m.getMedication().getNDCodeFormatted())) %></td>
+			<td class = "valueCell"><%= StringEscapeUtils.escapeHtml("" + (m.getMedication().getDescription() )) %></td>
+			<td class = "valueCell"><%= StringEscapeUtils.escapeHtml("" + (m.getStartDateStr())) %> to <%= StringEscapeUtils.escapeHtml("" + (m.getEndDateStr())) %></td>
+			<td class = "valueCell"><%= StringEscapeUtils.escapeHtml("" + (m.getDosage())) %>mg</td>
+			<td class = "valueCell"><%= StringEscapeUtils.escapeHtml("" + (m.getInstructions())) %></td>
 		</tr>
 	<%  } 
 	  } %>
@@ -133,8 +144,8 @@ session.removeAttribute("personnelList");
 	<% } else { 
 		for(ProcedureBean p : ov.getProcedures()) {%>
 		<tr>
-			<td ><%=p.getCPTCode() %></td>
-			<td ><%=p.getDescription() %></td>
+			<td ><%= StringEscapeUtils.escapeHtml("" + (p.getCPTCode() )) %></td>
+			<td ><%= StringEscapeUtils.escapeHtml("" + (p.getDescription() )) %></td>
 		</tr>
 	<%  } 
 	   }  %>

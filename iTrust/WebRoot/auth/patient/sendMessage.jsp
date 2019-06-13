@@ -32,10 +32,14 @@
 		message.setRead(0);
 		action.sendMessage(message);
 		session.removeAttribute("dlhcp");
+		
+		loggingAction.logEvent(TransactionType.MESSAGE_SEND, message.getFrom(), message.getTo() , "");
+
+		
 		response.sendRedirect("messageOutbox.jsp");
 		} catch (FormValidationException e){
 			%>
-			<div align=center><span class="iTrustError"><%=e.getMessage()%></span></div>
+			<div align=center><span class="iTrustError"><%=StringEscapeUtils.escapeHtml(e.getMessage())%></span></div>
 			<%
 		}
 	}
@@ -65,7 +69,7 @@
 		<option value="-1"></option>
 <%			index = 0; %>
 <%			for(PersonnelBean dlhcp : dlhcps) { %>
-		<option value="<%= index %>"><%= dlhcp.getFullName() %></option>
+		<option value="<%= index %>"><%= StringEscapeUtils.escapeHtml("" + ( dlhcp.getFullName() )) %></option>
 <%				index ++; %>
 <%			} %>
 	</select>
@@ -80,7 +84,7 @@
 		<option value="-1"></option>
 <%			index = 0; %>
 <%			for(PatientBean representee : representees) { %>
-		<option value="<%= index %>"><%= representee.getFullName() %></option>
+		<option value="<%= index %>"><%= StringEscapeUtils.escapeHtml("" + ( representee.getFullName() )) %></option>
 <%				index ++; %>
 <%			} %>
 	</select>
@@ -94,7 +98,7 @@
 		PersonnelBean dlhcp = dlhcps.get(dlhcpIndex);
 		session.setAttribute("dlhcp", dlhcp);
 %>
-	<h4>To <%= dlhcp.getFullName() %></h4>
+	<h4>To <%= StringEscapeUtils.escapeHtml("" + ( dlhcp.getFullName() )) %></h4>
 	<span>Subject: </span><input type="text" name="subject" size="50" /><br /><br />
 	<span>Message: </span><br />
 	<textarea name="messageBody" cols="100" rows="10"></textarea><br />
@@ -108,7 +112,7 @@
 		List<PatientBean> representees = (List<PatientBean>) session.getAttribute("representees");
 		PatientBean representee = representees.get(representeeIndex);
 %>
-	<h4>To <%= dlhcp.getFullName() %> on Behalf of <%= representee.getFullName() %></h4>
+	<h4>To <%= StringEscapeUtils.escapeHtml("" + ( dlhcp.getFullName() )) %> on Behalf of <%= StringEscapeUtils.escapeHtml("" + ( representee.getFullName() )) %></h4>
 	<span>Subject: </span><input type="text" name="subject" size="50" /><br /><br />
 	<span>Message: </span><br />
 	<textarea name="messageBody" cols="100" rows="10"></textarea><br />
@@ -121,20 +125,20 @@
 		List<PersonnelBean> repDLHCPs = action.getDLHCPsFor(representee.getMID());
 		session.setAttribute("repDLHCPs", repDLHCPs);
 %>
-	<h4>To One of <%= representee.getFullName() %>'s DLHCPs</h4>
-	<input type="hidden" name="representee" value="<%= representeeIndex %>"/>
+	<h4>To One of <%= StringEscapeUtils.escapeHtml("" + ( representee.getFullName() )) %>'s DLHCPs</h4>
+	<input type="hidden" name="representee" value="<%= StringEscapeUtils.escapeHtml("" + ( representeeIndex )) %>"/>
 <%		if (repDLHCPs.size() > 0) { %>
 	<select name="repDLHCP">
 		<option value="-1"></option>
 <%			index = 0; %>
 <%			for(PersonnelBean repDLHCP : repDLHCPs) { %>
-		<option value="<%= index %>"><%= repDLHCP.getFullName() %></option>
+		<option value="<%= index %>"><%= StringEscapeUtils.escapeHtml("" + ( repDLHCP.getFullName() )) %></option>
 <%				index ++; %>
 <%			} %>
 	</select>
 	<input type="submit" value="Select" name="selectRepDLHCP"/>
 <%		} else { %>
-	<i><%= representee.getFullName() %> has not declared any HCPs.</i>
+	<i><%= StringEscapeUtils.escapeHtml("" + ( representee.getFullName() )) %> has not declared any HCPs.</i>
 <%		} %>
 <%	} %>
 </form>

@@ -16,7 +16,6 @@ import edu.ncsu.csc.itrust.dao.DAOFactory;
 import edu.ncsu.csc.itrust.dao.mysql.AdverseEventDAO;
 import edu.ncsu.csc.itrust.dao.mysql.PatientDAO;
 import edu.ncsu.csc.itrust.dao.mysql.TransactionDAO;
-import edu.ncsu.csc.itrust.enums.TransactionType;
 import edu.ncsu.csc.itrust.exception.DBException;
 import edu.ncsu.csc.itrust.exception.FormValidationException;
 import edu.ncsu.csc.itrust.exception.iTrustException;
@@ -57,10 +56,8 @@ public class MonitorAdverseEventAction {
 	 */
 	public List<AdverseEventBean> getReports(boolean isPrescription, String start, String end)throws iTrustException, FormValidationException, SQLException, ParseException {
 		if(isPrescription) {
-			transactionDAO.logTransaction(TransactionType.ADVERSE_EVENT, loggedInMID, 0L, "Adverse Prescription Reports Requested.");
 			return adverseEventDAO.getPerscriptions(start, end);
 		} else { //is Immunization
-			transactionDAO.logTransaction(TransactionType.ADVERSE_EVENT, loggedInMID, 0L, "Adverse Immunization Report Requested.");
 			return adverseEventDAO.getImmunizations(start, end);
 		}
 		
@@ -98,7 +95,6 @@ public class MonitorAdverseEventAction {
 		mail.setFrom(loggedInMID + "");
 		mail.setToList(toList);
 		emailer.sendEmail(mail);
-		transactionDAO.logTransaction(TransactionType.ADVERSE_EVENT, loggedInMID, 0L, "Requested more information");
 		rValue = "" + mail.getFrom() + " " + mail.getBody();
 		return rValue;
 	}
@@ -129,7 +125,6 @@ public class MonitorAdverseEventAction {
 		mBeanTwo.setFrom(loggedInMID);
 		messenger.sendMessage(mBeanOne);
 		messenger.sendMessage(mBeanTwo);
-		transactionDAO.logTransaction(TransactionType.ADVERSE_EVENT, loggedInMID, 0L, "Adverse Event Report Removed");
 		}catch(SQLException e){
 			throw new DBException(e);
 		} 

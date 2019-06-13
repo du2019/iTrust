@@ -3,6 +3,7 @@ package edu.ncsu.csc.itrust.http;
 import com.meterware.httpunit.WebConversation;
 import com.meterware.httpunit.WebForm;
 import com.meterware.httpunit.WebResponse;
+import edu.ncsu.csc.itrust.enums.TransactionType;
 
 public class DrugInteractionTest extends iTrustHTTPTest {
 	@Override
@@ -40,9 +41,8 @@ public class DrugInteractionTest extends iTrustHTTPTest {
 		form.getButtons()[0].click();
 		wr = wc.getCurrentPage();
 		assertTrue(wr.getText().contains("Interaction recorded successfully"));
-		
-		
-		
+		assertLogged(TransactionType.DRUG_INTERACTION_ADD, 9000000001L, 0L, "Drug");
+
 	}
 	
 	/*
@@ -71,6 +71,7 @@ public class DrugInteractionTest extends iTrustHTTPTest {
 		form.getSubmitButton("delete").click();
 		wr = wc.getCurrentPage();
 		assertTrue(wr.getText().contains("Interaction deleted successfully"));
+		assertLogged(TransactionType.DRUG_INTERACTION_DELETE, 9000000001L, 0L, "Drug");
 		
 	}
 	
@@ -101,6 +102,48 @@ public class DrugInteractionTest extends iTrustHTTPTest {
 		form.getButtons()[0].click();
 		wr = wc.getCurrentPage();
 		assertTrue(wr.getText().contains("Interactions can only be recorded between two different drugs"));
+		assertNotLogged(TransactionType.DRUG_INTERACTION_EDIT, 9000000001L, 0L, "Drug");
 	}
 	
+	public void testAddNewOverrideReason() throws Exception {
+		// login admin
+		WebConversation wc = login("9000000001", "pw");
+		WebResponse wr = wc.getCurrentPage();
+		assertEquals("iTrust - Admin Home", wr.getTitle());
+		// click on Edit OR Codes
+		wr = wr.getLinkWith("Edit Override Reason Codes").click();
+		// add the codes and description
+		assertEquals("iTrust - Maintain Override Reason Codes", wr.getTitle());
+		WebForm form = wr.getForms()[0];
+		form.setParameter("description", "Interaction not applicable to this patient");
+		form.setParameter("code", "22222");
+		form.getSubmitButtons()[0].click();
+		wr = wc.getCurrentPage();
+		// verify change
+		assertTrue(wr.getURL().toString().contains("auth/admin/editORCodes"));
+		assertTrue(wr.getText().contains("Success: 22222 - Interaction not applicable to this patient added"));
+		assertLogged(TransactionType.OVERRIDE_CODE_ADD, 9000000001L, 0L, "");
+	}
+	
+	public void testEditOverrideReason() throws Exception {
+		gen.ORCodes();
+		
+		WebConversation wc = login("9000000001", "pw");
+		WebResponse wr = wc.getCurrentPage();
+		assertEquals("iTrust - Admin Home", wr.getTitle());
+		// click on Edit OR Codes
+		wr = wr.getLinkWith("Edit Override Reason Codes").click();
+		// add the codes and description
+		assertEquals("iTrust - Maintain Override Reason Codes", wr.getTitle());
+		WebForm form = wr.getForms()[0];
+		form.setParameter("code", "00001");
+		form.setParameter("description", "Alerted interaction not super duper significant");
+		form.getSubmitButtons()[1].click();
+		wr = wc.getCurrentPage();
+		// verify change
+		assertTrue(wr.getURL().toString().contains("auth/admin/editORCodes"));
+		assertTrue(wr.getText().contains("Success"));
+		assertLogged(TransactionType.OVERRIDE_CODE_EDIT, 9000000001L, 0L, "");
+	
+	}
 }

@@ -3,6 +3,7 @@ package edu.ncsu.csc.itrust.http;
 import com.meterware.httpunit.WebConversation;
 import com.meterware.httpunit.WebForm;
 import com.meterware.httpunit.WebResponse;
+import edu.ncsu.csc.itrust.enums.TransactionType;
 
 
 /**
@@ -29,6 +30,8 @@ public class MaintainStandardsUseCase extends iTrustHTTPTest {
 		WebConversation wc = login("9000000001", "pw");
 		WebResponse wr = wc.getCurrentPage();
 		assertEquals("iTrust - Admin Home", wr.getTitle());
+		assertLogged(TransactionType.HOME_VIEW, 9000000001L, 0L, "");
+		
 		// click on Edit ND Codes
 		wr = wr.getLinkWith("Edit LOINC Codes").click();
 		// add the codes and description
@@ -46,6 +49,7 @@ public class MaintainStandardsUseCase extends iTrustHTTPTest {
 		// verify change
 		assertTrue(wr.getURL().toString().contains("auth/admin/editLOINCCodes.jsp"));
 		assertTrue(wr.getText().contains("Success: 10834-7 added"));
+		assertLogged(TransactionType.LOINC_CODE_ADD, 9000000001L, 0L, "");
 	}
 	
 	/*
@@ -62,6 +66,8 @@ public class MaintainStandardsUseCase extends iTrustHTTPTest {
 		WebConversation wc = login("9000000001", "pw");
 		WebResponse wr = wc.getCurrentPage();
 		assertEquals("iTrust - Admin Home", wr.getTitle());
+		assertLogged(TransactionType.HOME_VIEW, 9000000001L, 0L, "");
+		
 		// click on Edit ND Codes
 		wr = wr.getLinkWith("Edit LOINC Codes").click();
 		// add the codes and description
@@ -79,6 +85,7 @@ public class MaintainStandardsUseCase extends iTrustHTTPTest {
 		// verify change
 		assertTrue(wr.getURL().toString().contains("auth/admin/editLOINCCodes.jsp"));
 		assertTrue(wr.getText().contains("Success: 10666-6 updated"));
+		assertLogged(TransactionType.LOINC_CODE_EDIT, 9000000001L, 0L, "");
 	}
 	
 	public void testAdminEnterNewICDCode() throws Exception {
@@ -89,6 +96,8 @@ public class MaintainStandardsUseCase extends iTrustHTTPTest {
 		WebConversation wc = login("9000000001", "pw");
 		WebResponse wr = wc.getCurrentPage();
 		assertEquals("iTrust - Admin Home", wr.getTitle());
+		assertLogged(TransactionType.HOME_VIEW, 9000000001L, 0L, "");
+		
 		// click on Edit ND Codes
 		wr = wr.getLinkWith("Edit ICD Codes").click();
 		// add the codes and description
@@ -101,6 +110,7 @@ public class MaintainStandardsUseCase extends iTrustHTTPTest {
 		
 		wr = wc.getCurrentPage();
 		assertTrue(wr.getText().contains("Success: 99.3 - Tintinnabulum Bovi Deficiency added"));
+		assertLogged(TransactionType.DIAGNOSIS_CODE_ADD, 9000000001L, 0L, "");
 	}
 	
 	public void testAdminUpdateICDCode() throws Exception {
@@ -111,6 +121,8 @@ public class MaintainStandardsUseCase extends iTrustHTTPTest {
 		WebConversation wc = login("9000000001", "pw");
 		WebResponse wr = wc.getCurrentPage();
 		assertEquals("iTrust - Admin Home", wr.getTitle());
+		assertLogged(TransactionType.HOME_VIEW, 9000000001L, 0L, "");
+		
 		// click on Edit ND Codes
 		wr = wr.getLinkWith("Edit ICD Codes").click();
 		// add the codes and description
@@ -131,6 +143,7 @@ public class MaintainStandardsUseCase extends iTrustHTTPTest {
 	
 		wr = wc.getCurrentPage();
 		assertTrue(wr.getText().contains("Success: 1 row(s) updated"));
+		assertLogged(TransactionType.DIAGNOSIS_CODE_EDIT, 9000000001L, 0L, "");
 	}
 	
 	public void testAdminUpdateICDCode2() throws Exception {
@@ -141,6 +154,8 @@ public class MaintainStandardsUseCase extends iTrustHTTPTest {
 		WebConversation wc = login("9000000001", "pw");
 		WebResponse wr = wc.getCurrentPage();
 		assertEquals("iTrust - Admin Home", wr.getTitle());
+		assertLogged(TransactionType.HOME_VIEW, 9000000001L, 0L, "");
+		
 		// click on Edit ND Codes
 		wr = wr.getLinkWith("Edit ICD Codes").click();
 		// add the codes and description
@@ -153,6 +168,7 @@ public class MaintainStandardsUseCase extends iTrustHTTPTest {
 	
 		wr = wc.getCurrentPage();
 		assertTrue(wr.getText().contains("Description: Up to 30 characters, letters, numbers, and a space"));
+		assertNotLogged(TransactionType.DIAGNOSIS_CODE_EDIT, 9000000001L, 0L, "");
 	}
 	
 }

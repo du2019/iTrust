@@ -1,13 +1,12 @@
 package edu.ncsu.csc.itrust.action;
 
-import static edu.ncsu.csc.itrust.testutils.JUnitiTrustUtils.assertTransactionOnly;
 import junit.framework.TestCase;
 import edu.ncsu.csc.itrust.beans.PatientBean;
 import edu.ncsu.csc.itrust.dao.DAOFactory;
 import edu.ncsu.csc.itrust.datagenerators.TestDataGenerator;
-import edu.ncsu.csc.itrust.enums.TransactionType;
 import edu.ncsu.csc.itrust.testutils.TestDAOFactory;
 import java.util.List;
+import edu.ncsu.csc.itrust.testutils.EvilDAOFactory;
 
 
 public class ViewPrescriptionRenewalNeedsActionTest extends TestCase {
@@ -43,9 +42,6 @@ public class ViewPrescriptionRenewalNeedsActionTest extends TestCase {
 		assertEquals("919-212-3433", patients.get(1).getPhone());
 		assertEquals("prince@gmail.com", patients.get(1).getEmail());
 		
-		
-		assertTransactionOnly(TransactionType.VIEW_RENEWAL_NEEDS_PATIENTS, 9000000003L, 0L,
-				"9000000003 viewed renewal needs patients");
 	}
 
 	public void testThreePatients() throws Exception {
@@ -55,28 +51,24 @@ public class ViewPrescriptionRenewalNeedsActionTest extends TestCase {
 		assertEquals("Zack", patients.get(0).getFirstName());
 		assertEquals("Darryl", patients.get(1).getFirstName());
 		assertEquals("Marie", patients.get(2).getFirstName());
-		
-		
-		assertTransactionOnly(TransactionType.VIEW_RENEWAL_NEEDS_PATIENTS, 9900000000L, 0L,
-				"9900000000 viewed renewal needs patients");
 	}
-	
+
 	public void testZeroPatients() throws Exception {
 		action = new ViewPrescriptionRenewalNeedsAction(factory, 9990000000L);
 		List<PatientBean> patients = action.getRenewalNeedsPatients();
 		assertNotNull(patients);
 		assertEquals(0, patients.size());
 		
-		
-		assertTransactionOnly(TransactionType.VIEW_RENEWAL_NEEDS_PATIENTS, 9990000000L, 0L,
-				"9990000000 viewed renewal needs patients");
 	}
 	
 	public void testDBException() throws Exception {
+		factory = EvilDAOFactory.getEvilInstance();
+		
 		action = new ViewPrescriptionRenewalNeedsAction(factory, -1L);
 		List<PatientBean> patients = action.getRenewalNeedsPatients();
-		assertNull(patients);
+		assert(patients.size()==0);
 		
 	}
+	
 
 }

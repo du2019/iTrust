@@ -15,6 +15,7 @@ pageTitle = "iTrust - Tester Home";
 <%
 	try {
 		OperationalProfile op = prodDAO.getTransactionDAO().getOperationalProfile();
+		loggingAction.logEvent(TransactionType.OPERATIONAL_PROFILE_VIEW, loggedInMID, 0, "");
 		
 		NumberFormat formatter = NumberFormat.getPercentInstance();
 		
@@ -32,22 +33,29 @@ pageTitle = "iTrust - Tester Home";
 	for (TransactionType type : TransactionType.values()) {
 %>
 	<tr <%= (i++%2 == 0)?" class=\"alt\"":"" %>>
-		<td align=left><%=type.getDescription()%></td>
-		<td align=center><%=op.getTotalCount().get(type)%></td>
-		<td align=center><%=formatter.format((double)op.getTotalCount().get(type) / op.getNumTotalTransactions())%></td>
-		<td align=center><%=op.getPatientCount().get(type)%></td>
-		<td align=center><%=formatter.format((double)op.getPatientCount().get(type) / op.getNumPatientTransactions())%></td>
-		<td align=center><%=op.getPersonnelCount().get(type)%></td>
-		<td align=center><%=formatter.format((double)op.getPersonnelCount().get(type) / op.getNumPersonnelTransactions())%></td>
+		<td align=left><%= StringEscapeUtils.escapeHtml("" + (type.getDescription())) %></td>
+		<td align=center><%= StringEscapeUtils.escapeHtml("" + (op.getTotalCount().get(type))) %></td>
+		<td align=center><%= StringEscapeUtils.escapeHtml("" + (formatter.format((double)op.getTotalCount().get(type) / op.getNumTotalTransactions()))) %></td>
+		<td align=center><%= StringEscapeUtils.escapeHtml("" + (op.getPatientCount().get(type))) %></td>
+		<td align=center><%= StringEscapeUtils.escapeHtml("" + (formatter.format((double)op.getPatientCount().get(type) / op.getNumPatientTransactions()))) %></td>
+		<td align=center><%= StringEscapeUtils.escapeHtml("" + (op.getPersonnelCount().get(type))) %></td>
+		
+<% 
+	double personnelPercent = 0;
+	if(op.getNumPersonnelTransactions() != 0)
+		personnelPercent = (double)op.getPersonnelCount().get(type) / op.getNumPersonnelTransactions();
+			
+%>
+		<td align=center><%= StringEscapeUtils.escapeHtml("" + (formatter.format(personnelPercent))) %></td>
 	</tr>
 <%
 	}
 %>
 	<tr>
 		<td><b>Totals</b></td>
-		<td colspan=2 align=center><%=op.getNumTotalTransactions()%></td>
-		<td colspan=2 align=center><%=op.getNumPatientTransactions()%></td>
-		<td colspan=2 align=center><%=op.getNumPersonnelTransactions()%></td>
+		<td colspan=2 align=center><%= StringEscapeUtils.escapeHtml("" + (op.getNumTotalTransactions())) %></td>
+		<td colspan=2 align=center><%= StringEscapeUtils.escapeHtml("" + (op.getNumPatientTransactions())) %></td>
+		<td colspan=2 align=center><%= StringEscapeUtils.escapeHtml("" + (op.getNumPersonnelTransactions())) %></td>
 	</tr>
 </table>
 
@@ -58,7 +66,7 @@ pageTitle = "iTrust - Tester Home";
 %>
 	<span >Exception Occurred</span>
 	<br />
-	<%=e.getMessage()%>
+	<%=StringEscapeUtils.escapeHtml(e.getMessage())%>
 <%
 e.printStackTrace();
 }

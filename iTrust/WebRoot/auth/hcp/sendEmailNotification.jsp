@@ -51,12 +51,12 @@ if (flag) {
 	<table>
 	<tr>
 		<td>From: </td>
-		<td><%=self.getFullName() %> </td>
+		<td><%= StringEscapeUtils.escapeHtml("" + (self.getFullName() )) %> </td>
 	</tr>
 	<tr>
 		<td>To: </td>
 		<td>
-			<input type=text name="email" value="<%=myPatient.getEmail() %>"> (<%=myPatient.getFullName() %>)
+			<input type=text name="email" value="<%=myPatient.getEmail() %>"> (<%= StringEscapeUtils.escapeHtml("" + (myPatient.getFullName() )) %>)
 		</td>
 	</tr>
 	<tr>
@@ -67,13 +67,13 @@ if (flag) {
 	</tr>
 	<tr>
 		<td colspan=2>
-			<textarea name="thetext" rows="15" cols="43">Dear <%=myPatient.getFirstName() %>,</textarea>
+			<textarea name="thetext" rows="15" cols="43">Dear <%= StringEscapeUtils.escapeHtml("" + (myPatient.getFirstName() )) %>,</textarea>
 		</td>
 	</tr>
 	</table>
 	<br />
 
-	<input type=hidden name="id" value="<%=myPatient.getMID() %>">
+	<input type=hidden name="id" value="<%= StringEscapeUtils.escapeHtml("" + (myPatient.getMID() )) %>">
 	<input type=submit value="Send Email">
 	<input type=reset value="Reset">
 
@@ -108,6 +108,8 @@ if (flag) {
 	
 	PatientDAO patients = new PatientDAO(prodDAO);
 	PatientBean myPatient = patients.getPatient(id);
+	loggingAction.logEvent(TransactionType.MESSAGE_SEND, loggedInMID, myPatient.getMID() , "");
+
 %>
 <center>
 <table border=10 bordercolor=darkgreen>
@@ -118,23 +120,23 @@ if (flag) {
 	<table>
 	<tr>
 		<td>From: </td>
-		<td><%=self.getFullName() %> </td>
+		<td><%= StringEscapeUtils.escapeHtml("" + (self.getFullName() )) %> </td>
 	</tr>
 	<tr>
 		<td>To: </td>
 		<td>
-			<input type=text readonly value="<%=email %>" style="background-color: lightgrey"> (<%=myPatient.getFullName() %>)
+			<input type=text readonly value="<%=email %>" style="background-color: lightgrey"> (<%= StringEscapeUtils.escapeHtml("" + (myPatient.getFullName() )) %>)
 		</td>
 	</tr>
 	<tr>
 		<td>Subject:</td>
 		<td>
-			<input type=text readonly value="<%= subject %>" style="background-color: lightgrey">
+			<input type=text readonly value="<%= StringEscapeUtils.escapeHtml("" + ( subject )) %>" style="background-color: lightgrey">
 		</td>
 	</tr>
 	<tr>
 		<td colspan=2>
-			<textarea readonly name="thetext" rows="15" cols="43" style="background-color: lightgrey"><%=message %></textarea>
+			<textarea readonly name="thetext" rows="15" cols="43" style="background-color: lightgrey"><%= StringEscapeUtils.escapeHtml("" + (message )) %></textarea>
 		</td>
 	</tr>
 	</table>

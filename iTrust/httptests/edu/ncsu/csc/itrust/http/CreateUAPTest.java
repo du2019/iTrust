@@ -3,6 +3,8 @@ package edu.ncsu.csc.itrust.http;
 import com.meterware.httpunit.WebConversation;
 import com.meterware.httpunit.WebForm;
 import com.meterware.httpunit.WebResponse;
+import com.meterware.httpunit.WebTable;
+import edu.ncsu.csc.itrust.enums.TransactionType;
 
 public class CreateUAPTest extends iTrustHTTPTest {
 	@Override
@@ -31,6 +33,8 @@ public class CreateUAPTest extends iTrustHTTPTest {
 		WebConversation wc = login("9000000000", "pw");
 		WebResponse wr = wc.getCurrentPage();
 		assertEquals("iTrust - HCP Home", wr.getTitle());
+		assertLogged(TransactionType.HOME_VIEW, 9000000000L, 0L, "");
+		
 		// click on Add UAP
 		wr = wr.getLinkWith("UAP").click();
 		// add the UAP
@@ -40,6 +44,8 @@ public class CreateUAPTest extends iTrustHTTPTest {
 		form.setParameter("lastName", "Ramoray");
 		form.setParameter("email", "drake@drake.com");
 		wr = form.submit();
+		WebTable table = wr.getTables()[0];
+		String newMID = table.getCellAsText(1,1);
 		// edit the UAP
 		wr = wr.getLinkWith("Continue").click();
 		assertEquals("iTrust - Edit Personnel", wr.getTitle());
@@ -58,5 +64,6 @@ public class CreateUAPTest extends iTrustHTTPTest {
 		form.getSubmitButtons()[0].click();
 		wr = wc.getCurrentPage();
 		assertTrue(wr.getText().contains("Information Successfully Updated"));
+		assertLogged(TransactionType.UAP_CREATE, 9000000000L, Long.parseLong(newMID), "");
 	}
 }

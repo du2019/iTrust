@@ -18,6 +18,8 @@ pageTitle = "iTrust - View All Patients";
 <%
 ViewPatientOfficeVisitHistoryAction action = new ViewPatientOfficeVisitHistoryAction(prodDAO, loggedInMID.longValue());
 List<PatientVisitBean> patientVisits = action.getPatients();
+loggingAction.logEvent(TransactionType.PATIENT_LIST_VIEW, loggedInMID, 0, "");
+
 %>
 <br />
 
@@ -41,16 +43,16 @@ List<PatientVisitBean> patientVisits = action.getPatients();
 	%>
 	<tr>
 		<td >
-			<a href="editPHR.jsp?patient=<%=index%>">
+			<a href="editPHR.jsp?patient=<%= StringEscapeUtils.escapeHtml("" + (index)) %>">
 		
 		
-			<%=bean.getPatientName()%>	
+			<%= StringEscapeUtils.escapeHtml("" + (bean.getPatientName())) %>	
 		
 		
 			</a>
 			</td>
-		<td ><%=bean.getAddress1() +" " +bean.getAddress2()%></td>
-		<td ><%=bean.getLastOVDateM() +"/" +bean.getLastOVDateD() +"/" +bean.getLastOVDateY()%></td>
+		<td ><%= StringEscapeUtils.escapeHtml("" + (bean.getAddress1() +" " +bean.getAddress2())) %></td>
+		<td ><%= StringEscapeUtils.escapeHtml("" + (bean.getLastOVDateM() +"/" +bean.getLastOVDateD() +"/" +bean.getLastOVDateY())) %></td>
 	</tr>
 	<%
 			index ++;

@@ -1,6 +1,5 @@
 package edu.ncsu.csc.itrust.action;
 
-
 import java.util.List;
 import junit.framework.TestCase;
 import edu.ncsu.csc.itrust.beans.PatientVisitBean;
@@ -8,7 +7,6 @@ import edu.ncsu.csc.itrust.beans.PersonnelBean;
 import edu.ncsu.csc.itrust.dao.DAOFactory;
 import edu.ncsu.csc.itrust.datagenerators.TestDataGenerator;
 import edu.ncsu.csc.itrust.testutils.TestDAOFactory;
-
 
 public class ViewPatientOfficeVisitHistoryActionTest extends TestCase{
 
@@ -29,11 +27,8 @@ public class ViewPatientOfficeVisitHistoryActionTest extends TestCase{
 	
 	public void testGetPatients() throws Exception {
 		List<PatientVisitBean> list = action.getPatients();
-		assertEquals(7,list.size());
-		assertEquals("10",list.get(0).getLastOVDateD());
-		assertEquals("06",list.get(0).getLastOVDateM());
-		
+		assertEquals(8,list.size());
+		assertEquals("10",list.get(1).getLastOVDateD());
+		assertEquals("06",list.get(1).getLastOVDateM());
 	}
 }
-
-

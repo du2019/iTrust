@@ -3,6 +3,7 @@ package edu.ncsu.csc.itrust.http;
 import com.meterware.httpunit.WebConversation;
 import com.meterware.httpunit.WebResponse;
 import com.meterware.httpunit.WebTable;
+import edu.ncsu.csc.itrust.enums.TransactionType;
 
 /**
  * Use Case 28
@@ -32,22 +33,23 @@ public class ViewPatientsUseCaseTest extends iTrustHTTPTest {
 		WebConversation wc = login("9000000000", "pw");
 		WebResponse wr = wc.getCurrentPage();
 		assertEquals("iTrust - HCP Home", wr.getTitle());
+		assertLogged(TransactionType.HOME_VIEW, 9000000000L, 0L, "");
+		
 		wr = wr.getLinkWith("All Patients").click();
 		assertEquals("iTrust - View All Patients", wr.getTitle());
+		assertLogged(TransactionType.PATIENT_LIST_VIEW, 9000000000L, 0L, "");
+		
 		WebTable wt = wr.getTableStartingWith("Past Patients");
-		assertEquals("06/10/2007", wt.getTableCell(2,2).getText());
-		assertEquals("05/10/2006", wt.getTableCell(3,2).getText());
+		assertEquals("11/28/2010", wt.getTableCell(2,2).getText());
+		assertEquals("06/10/2007", wt.getTableCell(3,2).getText());
 		assertEquals("05/10/2006", wt.getTableCell(4,2).getText());
-		assertEquals("10/10/2005", wt.getTableCell(5,2).getText());
+		assertEquals("05/10/2006", wt.getTableCell(5,2).getText());
 		assertEquals("10/10/2005", wt.getTableCell(6,2).getText());
-		assertEquals("07/10/2004", wt.getTableCell(7,2).getText());
-		assertEquals("05/10/1999", wt.getTableCell(8,2).getText());
-		assertEquals("344 Bob Street Raleigh NC 27607", wt.getTableCell(2,1).getText());
+		assertEquals("10/10/2005", wt.getTableCell(7,2).getText());
+		assertEquals("07/10/2004", wt.getTableCell(8,2).getText());
+		assertEquals("05/10/1999", wt.getTableCell(9,2).getText());
+		assertEquals("344 Bob Street Raleigh NC 27607", wt.getTableCell(3,1).getText());
 		wr = wr.getLinkWith("Andy Programmer").click();
 		assertEquals("iTrust - Edit Personal Health Record", wr.getTitle());
-		
-		//make sure event is logged
-		wr = wr.getLinkWith("Transaction Log").click();
-		assertTrue(wr.getText().contains("View Patient List"));	
 	}
 }

@@ -5,6 +5,7 @@ import java.util.Date;
 import com.meterware.httpunit.WebConversation;
 import com.meterware.httpunit.WebForm;
 import com.meterware.httpunit.WebResponse;
+import edu.ncsu.csc.itrust.enums.TransactionType;
 
 /**
  * Use Case 37
@@ -24,6 +25,8 @@ public class PrescriptionInteractionAndAllergyTest extends iTrustHTTPTest {
 		WebConversation wc = login("9000000000", "pw");
 		WebResponse wr = wc.getCurrentPage();
 		assertEquals("iTrust - HCP Home", wr.getTitle());
+		assertLogged(TransactionType.HOME_VIEW, 9000000000L, 0L, "");
+		
 		wr = wr.getLinkWith("Document Office Visit").click();
 		WebForm patientForm = wr.getForms()[0];
 		patientForm.getScriptableObject().setParameterValue("UID_PATIENTID", "2");
@@ -31,6 +34,8 @@ public class PrescriptionInteractionAndAllergyTest extends iTrustHTTPTest {
 		wr = wc.getCurrentPage();
 		assertEquals("iTrust - Document Office Visit", wr.getTitle());
 		wr = wr.getLinkWith("7/15/2009").click();
+		assertLogged(TransactionType.OFFICE_VISIT_VIEW, 9000000000L, 2L, "Office visit");
+		
 		patientForm = wr.getForms()[0];
 		patientForm.getScriptableObject().setParameterValue("addMedID", "081096");
 		patientForm.getScriptableObject().setParameterValue("dosage", "15");
@@ -40,15 +45,20 @@ public class PrescriptionInteractionAndAllergyTest extends iTrustHTTPTest {
 		patientForm.getScriptableObject().setParameterValue("instructions", "Take twice daily with water");
 		wr = patientForm.submit();
 		assertTrue(wr.getText().contains("Information Successfully Updated"));
+		assertLogged(TransactionType.PRESCRIPTION_ADD, 9000000000L, 2L, "");
 	}
 
 	public void testAllergicPrescribe() throws Exception{
 		gen.patient2();
 		gen.officeVisit4();
 		gen.ndCodes1();
+		gen.ORCodes();
+		
 		WebConversation wc = login("9000000000", "pw");
 		WebResponse wr = wc.getCurrentPage();
 		assertEquals("iTrust - HCP Home", wr.getTitle());
+		assertLogged(TransactionType.HOME_VIEW, 9000000000L, 0L, "");
+		
 		wr = wr.getLinkWith("Document Office Visit").click();
 		WebForm patientForm = wr.getForms()[0];
 		patientForm.getScriptableObject().setParameterValue("UID_PATIENTID", "2");
@@ -56,6 +66,8 @@ public class PrescriptionInteractionAndAllergyTest extends iTrustHTTPTest {
 		wr = wc.getCurrentPage();
 		assertEquals("iTrust - Document Office Visit", wr.getTitle());
 		wr = wr.getLinkWith("9/15/2009").click();
+		assertLogged(TransactionType.OFFICE_VISIT_VIEW, 9000000000L, 2L, "Office visit");
+		
 		patientForm = wr.getForms()[0];
 		patientForm.getScriptableObject().setParameterValue("addMedID", "081096");
 		patientForm.getScriptableObject().setParameterValue("dosage", "15");
@@ -74,9 +86,11 @@ public class PrescriptionInteractionAndAllergyTest extends iTrustHTTPTest {
 		wr = patientForm.submit();
 		assertTrue(wr.getText().contains("Allergy: Aspirin"));
 		patientForm = wr.getForms()[0];
+		patientForm.getScriptableObject().setParameterValue("overrideReasonCode", "00001");
 		patientForm.getButtonWithID("continue").click();
 		wr = wc.getCurrentPage();
 		assertTrue(wr.getText().contains("Information Successfully Updated"));
+		assertLogged(TransactionType.PRESCRIPTION_ADD, 9000000000L, 2L, "");
 		
 	}
 
@@ -86,10 +100,13 @@ public class PrescriptionInteractionAndAllergyTest extends iTrustHTTPTest {
 		gen.officeVisit4();
 		gen.ndCodes1();
 		gen.drugInteractions3();
+		gen.ORCodes();
 		
 		WebConversation wc = login("9000000000", "pw");
 		WebResponse wr = wc.getCurrentPage();
 		assertEquals("iTrust - HCP Home", wr.getTitle());
+		assertLogged(TransactionType.HOME_VIEW, 9000000000L, 0L, "");
+		
 		wr = wr.getLinkWith("Document Office Visit").click();
 		WebForm patientForm = wr.getForms()[0];
 		patientForm.getScriptableObject().setParameterValue("UID_PATIENTID", "2");
@@ -97,6 +114,7 @@ public class PrescriptionInteractionAndAllergyTest extends iTrustHTTPTest {
 		wr = wc.getCurrentPage();
 		assertEquals("iTrust - Document Office Visit", wr.getTitle());
 		wr = wr.getLinkWith("9/15/2009").click();
+		assertLogged(TransactionType.OFFICE_VISIT_VIEW, 9000000000L, 2L, "Office visit");
 		patientForm = wr.getForms()[0];
 
 		patientForm.getScriptableObject().setParameterValue("addMedID", "619580501");
@@ -115,6 +133,7 @@ public class PrescriptionInteractionAndAllergyTest extends iTrustHTTPTest {
 	
 		wr = patientForm.submit();
 		assertTrue(wr.getText().contains("Information Successfully Updated"));
+		assertLogged(TransactionType.PRESCRIPTION_ADD, 9000000000L, 2L, "");
 		
 		
 		patientForm = wr.getForms()[0];
@@ -136,12 +155,59 @@ public class PrescriptionInteractionAndAllergyTest extends iTrustHTTPTest {
 		assertTrue(wr.getText().contains("Allergy: Aspirin"));
 		assertTrue(wr.getText().contains("Currently Prescribed: Adefovir"));
 		patientForm = wr.getForms()[0];
+		patientForm.getScriptableObject().setParameterValue("overrideReasonCode", "00001");
 		patientForm.getButtonWithID("continue").click();
 		wr = wc.getCurrentPage();
 		assertTrue(wr.getText().contains("Information Successfully Updated"));
+		assertLogged(TransactionType.PRESCRIPTION_ADD, 9000000000L, 2L, "");
+	}
+	
+	public void testAllergicPrescribeOverride() throws Exception{
+
+		gen.patient2();
+		gen.officeVisit4();
+		gen.ndCodes1();
+		gen.drugInteractions3();
+		gen.ORCodes();
+
+		WebConversation wc = login("9000000000", "pw");
+		WebResponse wr = wc.getCurrentPage();
+		assertEquals("iTrust - HCP Home", wr.getTitle());
+		assertLogged(TransactionType.HOME_VIEW, 9000000000L, 0L, "");
 		
+		wr = wr.getLinkWith("Document Office Visit").click();
+		WebForm patientForm = wr.getForms()[0];
+		patientForm.getScriptableObject().setParameterValue("UID_PATIENTID", "2");
+		patientForm.getButtons()[1].click();
+		wr = wc.getCurrentPage();
+		assertEquals("iTrust - Document Office Visit", wr.getTitle());
+		wr = wr.getLinkWith("9/15/2009").click();
+		assertLogged(TransactionType.OFFICE_VISIT_VIEW, 9000000000L, 2L, "Office visit");
+		
+		patientForm = wr.getForms()[0];
+	
+		patientForm = wr.getForms()[0];
+		patientForm.getScriptableObject().setParameterValue("addMedID", "081096");
+		patientForm.getScriptableObject().setParameterValue("dosage", "15");
+		
+		patientForm.getScriptableObject().setParameterValue("startDate", new SimpleDateFormat("9/22/2009").format(new Date()));
+		patientForm.getScriptableObject().setParameterValue("endDate", new SimpleDateFormat("10/22/2009").format(new Date()));
+		patientForm.getScriptableObject().setParameterValue("instructions", "Take twice daily with water");
+		
+		patientForm.getScriptableObject().setParameterValue("testMed", "081096");
+		patientForm.getScriptableObject().setParameterValue("medDos", "15");
+		patientForm.getScriptableObject().setParameterValue("medStart", new SimpleDateFormat("10/15/2009").format(new Date()));
+		patientForm.getScriptableObject().setParameterValue("medEnd", new SimpleDateFormat("10/31/2009").format(new Date()));
+		patientForm.getScriptableObject().setParameterValue("medInst", "Take twice daily with water");
 
-
+		wr = patientForm.submit();
+		assertTrue(wr.getText().contains("Allergy: Aspirin"));
+		patientForm = wr.getForms()[0];
+		patientForm.getScriptableObject().setParameterValue("overrideReasonCode", "00006");
+		patientForm.getButtonWithID("continue").click();
+		wr = wc.getCurrentPage();
+		assertTrue(wr.getText().contains("Information Successfully Updated"));
+		assertLogged(TransactionType.PRESCRIPTION_ADD, 9000000000L, 2L, "");
 	}
 
 	public void testInteractionNoPrescribe() throws Exception{
@@ -153,6 +219,8 @@ public class PrescriptionInteractionAndAllergyTest extends iTrustHTTPTest {
 		WebConversation wc = login("9000000000", "pw");
 		WebResponse wr = wc.getCurrentPage();
 		assertEquals("iTrust - HCP Home", wr.getTitle());
+		assertLogged(TransactionType.HOME_VIEW, 9000000000L, 0L, "");
+		
 		wr = wr.getLinkWith("Document Office Visit").click();
 		WebForm patientForm = wr.getForms()[0];
 		patientForm.getScriptableObject().setParameterValue("UID_PATIENTID", "1");
@@ -160,6 +228,8 @@ public class PrescriptionInteractionAndAllergyTest extends iTrustHTTPTest {
 		wr = wc.getCurrentPage();
 		assertEquals("iTrust - Document Office Visit", wr.getTitle());
 		wr = wr.getLinkWith("9/17/2009").click();
+		assertLogged(TransactionType.OFFICE_VISIT_VIEW, 9000000000L, 1L, "Office visit");
+		
 		patientForm = wr.getForms()[0];
 		
 		patientForm.getScriptableObject().setParameterValue("addMedID", "619580501");
@@ -182,8 +252,7 @@ public class PrescriptionInteractionAndAllergyTest extends iTrustHTTPTest {
 		wr = wc.getCurrentPage();
 		assertEquals("iTrust - Edit Personal Health Record",wr.getTitle());
 		assertTrue(wr.getText().contains("Random Person"));
-
-		
+		assertNotLogged(TransactionType.PRESCRIPTION_ADD, 9000000000L, 1L, "");
 	}
 
 }

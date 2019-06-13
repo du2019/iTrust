@@ -39,7 +39,7 @@ if (actionString != null && !actionString.equals("")) {
 		} catch (Exception e) {
 %>
 	<div align=center>
-		<span class="iTrustError"><%=e.getMessage() %></span>
+		<span class="iTrustError"><%=StringEscapeUtils.escapeHtml(e.getMessage()) %></span>
 	</div>
 <%
 		}
@@ -58,7 +58,7 @@ if (actionString != null && !actionString.equals("")) {
 		} catch (Exception e) {
 %>
 	<div align=center>
-		<span class="iTrustError"><%=e.getMessage() %></span>
+		<span class="iTrustError"><%=StringEscapeUtils.escapeHtml(e.getMessage()) %></span>
 	</div>
 <%
 		}
@@ -90,17 +90,17 @@ List<ReportRequestBean> list = action.getAllReportRequests();
   		PersonnelBean approver = (bean.getApproverMID() == 0L) ? null : personnelDAO.getPersonnel(bean.getApproverMID());
   		%>
 			<tr>
-				<td ><%=bean.getID()%></td>
-				<td ><%=patient.getFullName()%></td>
-				<td ><%=(approver == null) ? "" : approver.getFullName()%><!--  --></td>
-				<td ><%=bean.getRequestedDateString()%></td>
-				<td ><%=bean.getApprovedDateString()%></td>
-				<td ><%=bean.getViewedDateString()%></td>
-				<td ><%=bean.getStatus()%></td>
-				<td ><%=bean.getComment() == null ? "" : bean.getComment()%></td>
+				<td ><%= StringEscapeUtils.escapeHtml("" + (bean.getID())) %></td>
+				<td ><%= StringEscapeUtils.escapeHtml("" + (patient.getFullName())) %></td>
+				<td ><%= StringEscapeUtils.escapeHtml("" + ((approver == null) ? "" : approver.getFullName())) %><!--  --></td>
+				<td ><%= StringEscapeUtils.escapeHtml("" + (bean.getRequestedDateString())) %></td>
+				<td ><%= StringEscapeUtils.escapeHtml("" + (bean.getApprovedDateString())) %></td>
+				<td ><%= StringEscapeUtils.escapeHtml("" + (bean.getViewedDateString())) %></td>
+				<td ><%= StringEscapeUtils.escapeHtml("" + (bean.getStatus())) %></td>
+				<td ><%= StringEscapeUtils.escapeHtml("" + (bean.getComment() == null ? "" : bean.getComment())) %></td>
 				<td ><%if(bean.getStatus().equals(ReportRequestBean.Requested)){ %>
-					<a href="viewAllReportRequests.jsp?Action=Approve&ID=<%=bean.getID()%>">Approve</a>
-					<a href="viewAllReportRequests.jsp?Action=Reject&ID=<%=bean.getID()%>">Reject</a>
+					<a href="viewAllReportRequests.jsp?Action=Approve&ID=<%= StringEscapeUtils.escapeHtml("" + (bean.getID())) %>">Approve</a>
+					<a href="viewAllReportRequests.jsp?Action=Reject&ID=<%= StringEscapeUtils.escapeHtml("" + (bean.getID())) %>">Reject</a>
 				<%}else{%>&nbsp;<%} %></td>
 			</tr>
 			<%if (actionString != null && actionString.equals("Reject")) {
@@ -110,7 +110,7 @@ List<ReportRequestBean> list = action.getAllReportRequests();
 					<td colspan=4>
 					<form action="viewAllReportRequests.jsp" method="post" name="mainForm">
 					<input type="hidden" name="Action" value="Confirm"> 
-					<input type="hidden" name="ID" value="<%=bean.getID()%>"> 
+					<input type="hidden" name="ID" value="<%= StringEscapeUtils.escapeHtml("" + (bean.getID())) %>"> 
 					<input type="text" name="Comment" size=40>
 					<input type="submit" value="Confirm">
 					</form>

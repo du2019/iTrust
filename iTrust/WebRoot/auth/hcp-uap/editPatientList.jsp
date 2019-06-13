@@ -2,6 +2,7 @@
 <%@page errorPage="/auth/exceptionHandler.jsp"%>
 
 <%@page import="edu.ncsu.csc.itrust.action.EditMonitoringListAction"%>
+<%@page import="edu.ncsu.csc.itrust.beans.TelemedicineBean"%>
 
 <%@include file="/global.jsp" %>
 
@@ -10,19 +11,14 @@ pageTitle = "iTrust - Edit Patient List";
 %>
 
 <%@include file="/header.jsp" %>
-
 <%
 /* Require a Patient ID first */
 String pidString = (String)session.getAttribute("pid");
 String addOrRemove = "Add";
 if (pidString == null || 1 > pidString.length() || "false".equals(request.getParameter("confirmAction"))) {
-	session.removeAttribute("pid");
 	response.sendRedirect("/iTrust/auth/getPatientID.jsp?forward=hcp-uap/editPatientList.jsp");
    	return;
 }
-//else {
-//	session.removeAttribute("pid");
-//}
 	
 EditMonitoringListAction action = new EditMonitoringListAction(prodDAO,loggedInMID.longValue());
 long pid = Long.parseLong(pidString);
@@ -35,23 +31,35 @@ boolean conf_bool = false;
 
 if ("true".equals(request.getParameter("confirmAction"))) {
 	if(addOrRemove.equals("Add")) {
-		conf_bool = action.addToList(pid);
-		if(conf_bool)
+		// Add patient to remote monitoring list without changing permissions. 
+		TelemedicineBean tBean = new TelemedicineBean();
+		tBean.setSystolicBloodPressureAllowed(false);
+		tBean.setDiastolicBloodPressureAllowed(false);
+		tBean.setGlucoseLevelAllowed(false);
+		tBean.setHeightAllowed(false);
+		tBean.setWeightAllowed(false);
+		tBean.setPedometerReadingAllowed(false);
+		conf_bool = action.addToList(pid, tBean);
+		
+		if(conf_bool) {
 			confirm = "Patient " + patientName + " Added";
+			loggingAction.logEvent(TransactionType.PATIENT_LIST_ADD, loggedInMID, pid, "");
+		}
 	} else {
 		conf_bool = action.removeFromList(pid);
-		if(conf_bool)
+		
+		if(conf_bool) {
 			confirm = "Patient " + patientName + " Removed";
+			loggingAction.logEvent(TransactionType.PATIENT_LIST_REMOVE, loggedInMID, pid, "");
+		}
 	}
-	
-	session.removeAttribute("pid");
 	
 }
 
 if (!"".equals(confirm)) {
 %>
 	<div align=center>
-		<span class="iTrustMessage"><%=confirm%></span>
+		<span class="iTrustMessage"><%= StringEscapeUtils.escapeHtml("" + (confirm)) %></span>
 	</div>
 <%
 } else {
@@ -61,7 +69,7 @@ if (!"".equals(confirm)) {
 
 <form action="editPatientList.jsp" method="post">
 	<input type="hidden" name="confirmAction" value="true"></input>
-	<input type="submit" value="<%=addOrRemove %> <%=patientName %>">
+	<input type="submit" value="<%=addOrRemove %> <%= StringEscapeUtils.escapeHtml("" + (patientName )) %>">
 	<input type="submit" value="Choose Different Patient" onClick="javascript:differentPatient();">
 </form>
 

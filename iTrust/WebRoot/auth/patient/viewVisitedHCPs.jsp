@@ -44,19 +44,24 @@ String confirm = "";
 try {
 	if (removeID != null && !removeID.equals("")) {
 		confirm = action.undeclareHCP(removeID);
+		loggingAction.logEvent(TransactionType.LHCP_UNDECLARE_DLHCP, loggedInMID, loggedInMID, "Undeclared "+removeID);
 	}
 	else if (designateHCPs != null && !designateHCPs[0].equals("")) {
 		for (String designateHCP : designateHCPs) {
 			confirm = action.declareHCP(designateHCP);
+			loggingAction.logEvent(TransactionType.LHCP_DECLARE_DLHCP, loggedInMID, loggedInMID, "Declared "+designateHCP);
 		}
+	}
+	else {
+		loggingAction.logEvent(TransactionType.LHCP_VIEW, loggedInMID, 0L, "");
 	}
 }
 catch (iTrustException ie) {
 %>
-<span ><%=ie.getMessage()%></span>
+<span ><%=StringEscapeUtils.escapeHtml(ie.getMessage())%></span>
 <% 
 }
-if(!"".equals(confirm)){%><span><%=confirm%></span><%}
+if(!"".equals(confirm)){%><span><%= StringEscapeUtils.escapeHtml("" + (confirm)) %></span><%}
 
 List<PersonnelBean> personnel = null;
 if (filterName != null && !filterName.equals("")) {
@@ -71,7 +76,7 @@ if (filterName != null && !filterName.equals("")) {
 
 <div align=center>
 <% if (!filtered) { %>
-	<h3>Provider list for <%=patient.getFullName()%></h3>
+	<h3>Provider list for <%= StringEscapeUtils.escapeHtml("" + (patient.getFullName())) %></h3>
 	<br />
 
 	<form name="mainForm" id="mainForm" action="viewVisitedHCPs.jsp" method="post" onSubmit="return false;" target="_top">
@@ -92,14 +97,14 @@ if (filterName != null && !filterName.equals("")) {
 	for (HCPVisitBean vb: hcpVisits) { 
 %>
 			<tr>
-				<td><%=vb.getHCPName()%></td>
-				<td><%=vb.getHCPSpecialty()%></td>
-				<td><%=vb.getHCPAddr()%></td>
-				<td><%=vb.getOVDate()%></td>
+				<td><%= StringEscapeUtils.escapeHtml("" + (vb.getHCPName())) %></td>
+				<td><%= StringEscapeUtils.escapeHtml("" + (vb.getHCPSpecialty())) %></td>
+				<td><%= StringEscapeUtils.escapeHtml("" + (vb.getHCPAddr())) %></td>
+				<td><%= StringEscapeUtils.escapeHtml("" + (vb.getOVDate())) %></td>
 				<td>
-					<input name="doctor" value="<%=vb.getHCPName()%>" 
-							type="checkbox"<%=vb.isDesignated()?"checked=\"checked\"":""%> 
-							onClick="if(document.getElementsByName('doctor')[<%=i%>].checked) {this.form.submit();} else {removeHCP('<%=vb.getHCPName()%>', 'mainForm');}"/>
+					<input name="doctor" value="<%= StringEscapeUtils.escapeHtml("" + (vb.getHCPName())) %>" 
+							type="checkbox"<%= StringEscapeUtils.escapeHtml("" + (vb.isDesignated()?"checked=\"checked\"":"")) %> 
+							onClick="if(document.getElementsByName('doctor')[<%= StringEscapeUtils.escapeHtml("" + (i)) %>].checked) {this.form.submit();} else {removeHCP('<%= StringEscapeUtils.escapeHtml("" + (vb.getHCPName())) %>', 'mainForm');}"/>
 				</td>
 			</tr> 
 <%
@@ -137,13 +142,13 @@ else {
 		
 %>
 			<tr>
-				<td><%=ele.getFullName() %></td>
-				<td><%=ele.getSpecialty() == null?"none":ele.getSpecialty()%></td>
-				<td><%=new String(ele.getStreetAddress1() +" "+ ele.getStreetAddress2() +" "+ ele.getCity() +", "+ ele.getState() +" "+ ele.getZip()) %></td>
+				<td><%= StringEscapeUtils.escapeHtml("" + (ele.getFullName() )) %></td>
+				<td><%= StringEscapeUtils.escapeHtml("" + (ele.getSpecialty() == null?"none":ele.getSpecialty())) %></td>
+				<td><%= StringEscapeUtils.escapeHtml("" + (new String(ele.getStreetAddress1() +" "+ ele.getStreetAddress2() +" "+ ele.getCity() +", "+ ele.getState() +" "+ ele.getZip()) )) %></td>
 				<td>
-					<input name="doctor" value="<%=ele.getFullName()%>" 
-							type="checkbox"<%=action.checkDeclared(ele.getMID())?"checked=\"checked\"":""%> 
-							onClick="if(document.getElementsByName('doctor')[<%=i%>].checked) {this.form.submit();} else {removeHCP('<%=ele.getFullName()%>','filterForm');}"/>
+					<input name="doctor" value="<%= StringEscapeUtils.escapeHtml("" + (ele.getFullName())) %>" 
+							type="checkbox"<%= StringEscapeUtils.escapeHtml("" + (action.checkDeclared(ele.getMID())?"checked=\"checked\"":"")) %> 
+							onClick="if(document.getElementsByName('doctor')[<%= StringEscapeUtils.escapeHtml("" + (i)) %>].checked) {this.form.submit();} else {removeHCP('<%= StringEscapeUtils.escapeHtml("" + (ele.getFullName())) %>','filterForm');}"/>
 				</td>
 			</tr> 
 <%

@@ -3,7 +3,6 @@ package edu.ncsu.csc.itrust.action;
 import junit.framework.TestCase;
 import edu.ncsu.csc.itrust.beans.HospitalBean;
 import edu.ncsu.csc.itrust.dao.DAOFactory;
-import edu.ncsu.csc.itrust.dao.mysql.TransactionDAO;
 import edu.ncsu.csc.itrust.datagenerators.TestDataGenerator;
 import edu.ncsu.csc.itrust.testutils.EvilDAOFactory;
 import edu.ncsu.csc.itrust.testutils.TestDAOFactory;
@@ -85,9 +84,6 @@ public class UpdateHospitalListActionTest extends TestCase {
 		assertEquals(getAddHospitalSuccessString(hosp), action.addHospital(hosp));
 		hosp = factory.getHospitalsDAO().getHospital(id);
 		assertEquals(name, hosp.getHospitalName());
-		TransactionDAO dao = new TransactionDAO(factory);
-		assertEquals(0L, dao.getAllTransactions().get(0).getSecondaryMID());
-		assertTrue(dao.getAllTransactions().get(0).getAddedInfo().contains("added hospital"));
 
 	}
 

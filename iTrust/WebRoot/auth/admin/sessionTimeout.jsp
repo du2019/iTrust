@@ -26,7 +26,7 @@ pageTitle = "iTrust - Change Session Timeout";
 <input type=hidden name="formIsFilled" value="true">
 
 Change the timeout to  
-<input name="minutes" value="<%=action.getSessionTimeout()%>" size="3"> minutes (minimum 1).<br /><br />
+<input name="minutes" value="<%= StringEscapeUtils.escapeHtml("" + (action.getSessionTimeout())) %>" size="3"> minutes (minimum 1).<br /><br />
 <input type=submit value="Change">
 </form>
 <br /><br />

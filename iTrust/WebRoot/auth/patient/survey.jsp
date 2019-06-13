@@ -82,10 +82,10 @@ if(formIsFilled) {
     try {
     	//add survey data
     	action.addSurvey(surveyBean, visitID);
+		loggingAction.logEvent(TransactionType.SATISFACTION_SURVEY_TAKE, loggedInMID.longValue(), action.getPatientMID(visitID), "Office visit ID for completed survey is: "+visitIDStr);
 		response.sendRedirect("viewMyRecords.jsp?message=Survey%20Successfully%20Submitted");
-		
      } catch(Exception e) {
-    	%><span ><%=e.getMessage()%></span><%
+    	%><span ><%=StringEscapeUtils.escapeHtml(e.getMessage())%></span><%
     }
 } else{
 	if(visitDateStr.contains("<")) throw new iTrustException("Illegal parameter for ovDate.");
@@ -95,12 +95,12 @@ if(formIsFilled) {
 	
 %>
 <div id=Header>
-<h1>iTrust Patient Survey for Office Visit on <%=visitDateStr %></h1></div>
+<h1>iTrust Patient Survey for Office Visit on <%= StringEscapeUtils.escapeHtml("" + (visitDateStr )) %></h1></div>
 <div id=Content>
 
 <form action="survey.jsp" method="post" name="mainForm">
 <input type="hidden" name="formIsFilled" value="true"> 
-<input type="hidden" name="ovID" value="<%=visitIDStr%>">
+<input type="hidden" name="ovID" value="<%= StringEscapeUtils.escapeHtml("" + (visitIDStr)) %>">
 <h3>How long did you have to wait during your visit?</h3>
 <table>
 	<tr>

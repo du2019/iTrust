@@ -18,6 +18,7 @@
 <%@page import="edu.ncsu.csc.itrust.beans.PersonnelBean"%>
 <%@page import="edu.ncsu.csc.itrust.dao.mysql.PersonnelDAO"%>
 <%@page import="edu.ncsu.csc.itrust.dao.mysql.PatientDAO"%>
+<%@page import="edu.ncsu.csc.itrust.enums.TransactionType"%>
 
 <%@include file="/global.jsp" %>
 
@@ -26,7 +27,7 @@ pageTitle = "iTrust - Edit Personal Health Record";
 %>
 
 <%@include file="/header.jsp" %>
-
+<itrust:patientNav thisTitle="Health Records" />
 <%
 PatientDAO patientDAO = new PatientDAO(prodDAO);
 PersonnelDAO personnelDAO = new PersonnelDAO(prodDAO);
@@ -49,34 +50,62 @@ if (request.getParameter("patient") != null) {
 }
 
 String pidString;
+long pid = 0;
+
 if (switchString.equals("true")) pidString = "";
 else if (!relativeString.equals("")) {
+
 	int relativeIndex = Integer.parseInt(relativeString);
 	List<PatientBean> relatives = (List<PatientBean>) session.getAttribute("relatives");
-	pidString = "" + relatives.get(relativeIndex).getMID();
+	pid = relatives.get(relativeIndex).getMID();
+	pidString = "" + pid;
 	session.removeAttribute("relatives");
 	session.setAttribute("pid", pidString);
 }
 else if (!patientString.equals("")) {
+
 	int patientIndex = Integer.parseInt(patientString);
 	List<PatientBean> patients = (List<PatientBean>) session.getAttribute("patients");
-	pidString = "" + patients.get(patientIndex).getMID();
+	pid = patients.get(patientIndex).getMID();
+	pidString = "" + pid;
 	session.removeAttribute("patients");
 	session.setAttribute("pid", pidString);
 }
-else pidString = (String)session.getAttribute("pid");
+else {
+	if (session.getAttribute("pid") == null) {
+		pid = 0;
+		pidString = "";
+	} else {
+		pid = (long) Long.parseLong((String) session.getAttribute("pid"));
+		pidString = ""+pid;
+	}
+}
 
 if (pidString == null || 1 > pidString.length()) {
 	response.sendRedirect("../getPatientID.jsp?forward=hcp-uap/editPHR.jsp");
+	
    	return;
 }
+loggingAction.logEvent(TransactionType.PATIENT_HEALTH_INFORMATION_VIEW, loggedInMID.longValue(), pid, "");
+
 //else {
 //	session.removeAttribute("pid");
 //}
 
+
 EditPHRAction action = new EditPHRAction(prodDAO,loggedInMID.longValue(), pidString);
-long pid = action.getPid();
-String confirm = action.updateAllergies(pid,request.getParameter("description"));
+pid = action.getPid();
+String confirm = "";
+if(request.getParameter("addA") != null)
+{
+	try{
+		confirm = action.updateAllergies(pid,request.getParameter("description"));
+		loggingAction.logEvent(TransactionType.PATIENT_HEALTH_INFORMATION_EDIT, loggedInMID.longValue(), pid, "");
+	} catch(Exception e)
+	{
+		confirm = e.getMessage();
+	}
+}
 
 PatientBean patient = action.getPatient();
 List<HealthRecord> records = action.getAllHealthRecords();
@@ -94,7 +123,7 @@ function showRisks(){
 </script>
 
 <% if (!"".equals(confirm)) {%>
-<span ><%=confirm%></span><br />
+<span class="iTrustError"><%= StringEscapeUtils.escapeHtml("" + (confirm)) %></span><br />
 <% } %>
 
 <br />
@@ -106,40 +135,40 @@ function showRisks(){
 			</tr>
 			<tr>
 				<td class="subHeaderVertical">Name:</td>
-				<td ><%=patient.getFullName()%></td>
+				<td ><%= StringEscapeUtils.escapeHtml("" + (patient.getFullName())) %></td>
 			</tr>
 			<tr>
 				<td  class="subHeaderVertical">Address:</td>
-				<td > <%=patient.getStreetAddress1()%><br />
+				<td > <%= StringEscapeUtils.escapeHtml("" + (patient.getStreetAddress1())) %><br />
 				     <%="".equals(patient.getStreetAddress2()) ? "" : patient.getStreetAddress2() + "<br />"%>
-				     <%=patient.getStreetAddress3()%><br />									  
+				     <%= StringEscapeUtils.escapeHtml("" + (patient.getStreetAddress3())) %><br />									  
 				</td>
 			</tr>
 			<tr>
 				<td class="subHeaderVertical">Phone:</td>
-				<td ><%=patient.getPhone()%></td>
+				<td ><%= StringEscapeUtils.escapeHtml("" + (patient.getPhone())) %></td>
 			</tr>
 			<tr>
 				<td class="subHeaderVertical" >Email:</td>
-				<td ><%=patient.getEmail()%></td>
+				<td ><%= StringEscapeUtils.escapeHtml("" + (patient.getEmail())) %></td>
 			</tr>
 			<tr>
 				<th colspan="2">Insurance Information</th>
 			</tr>
 			<tr>
 				<td class="subHeaderVertical" >Provider Name:</td>
-				<td ><%=patient.getIcName()%></td>
+				<td ><%= StringEscapeUtils.escapeHtml("" + (patient.getIcName())) %></td>
 			</tr>
 			<tr>
 				<td  class="subHeaderVertical">Address:</td>
-				<td > <%=patient.getIcAddress1()%><br />
+				<td > <%= StringEscapeUtils.escapeHtml("" + (patient.getIcAddress1())) %><br />
 					<%="".equals(patient.getIcAddress2()) ? "" : patient.getIcAddress2() + "<br />"%>
-					<%=patient.getIcAddress3()%><br />							
+					<%= StringEscapeUtils.escapeHtml("" + (patient.getIcAddress3())) %><br />							
 				</td>
 			</tr>
 			<tr>
 				<td class="subHeaderVertical">Phone:</td>
-				<td ><%=patient.getIcPhone()%></td>
+				<td ><%= StringEscapeUtils.escapeHtml("" + (patient.getIcPhone())) %></td>
 			</tr>
 		</table>
 		<br />
@@ -157,19 +186,19 @@ function showRisks(){
 			<% } else {%>
 			<tr>
 				<td class="subHeaderVertical">Height:</td>
-				<td ><%=mostRecent.getHeight()%>in.</td>
+				<td ><%= StringEscapeUtils.escapeHtml("" + (mostRecent.getHeight())) %>in.</td>
 			</tr>
 			<tr>
 				<td class="subHeaderVertical">Weight:</td>
-				<td ><%=mostRecent.getWeight()%>lbs.</td>
+				<td ><%= StringEscapeUtils.escapeHtml("" + (mostRecent.getWeight())) %>lbs.</td>
 			</tr>
 			<tr>
 				<td class="subHeaderVertical">Smoker?:</td>
-				<td ><%=mostRecent.isSmoker() ? "Yes" : "No"%></td>
+				<td ><%= StringEscapeUtils.escapeHtml("" + (mostRecent.isSmoker() ? "Yes" : "No")) %></td>
 			</tr>
 			<tr>
 				<td class="subHeaderVertical">Blood Pressure:</td>
-				<td ><%=mostRecent.getBloodPressureN()%>/<%=mostRecent.getBloodPressureD()%>mmHg</td>
+				<td ><%= StringEscapeUtils.escapeHtml("" + (mostRecent.getBloodPressureN())) %>/<%= StringEscapeUtils.escapeHtml("" + (mostRecent.getBloodPressureD())) %>mmHg</td>
 			</tr>
 			<tr>
 				<td class="subHeaderVertical">Cholesterol:</td>
@@ -177,20 +206,20 @@ function showRisks(){
 				<table>
 					<tr>
 						<td style="text-align: right">HDL:</td>
-						<td><%=mostRecent.getCholesterolHDL()%> mg/dL</td>
+						<td><%= StringEscapeUtils.escapeHtml("" + (mostRecent.getCholesterolHDL())) %> mg/dL</td>
 					</tr>
 					<tr>
 						<td style="text-align: right">LDL:</td>
-						<td><%=mostRecent.getCholesterolLDL()%> mg/dL</td>
+						<td><%= StringEscapeUtils.escapeHtml("" + (mostRecent.getCholesterolLDL())) %> mg/dL</td>
 					</tr>
 					<tr>
 						<td style="text-align: right">Tri:</td>
-						<td><%=mostRecent.getCholesterolTri()%> mg/dL</td>
+						<td><%= StringEscapeUtils.escapeHtml("" + (mostRecent.getCholesterolTri())) %> mg/dL</td>
 					</tr>
 					<tr>
 						<td style="text-align: right">Total:</td>
 						<td>
-							<span id="totalSpan" style="font-weight: bold; color: #000;"><%=mostRecent.getTotalCholesterol()%> mg/dL</span>
+							<span id="totalSpan" style="font-weight: bold;"><%= StringEscapeUtils.escapeHtml("" + (mostRecent.getTotalCholesterol())) %> mg/dL</span>
 						</td>
 					</tr>
 				</table>
@@ -212,7 +241,7 @@ function showRisks(){
 				<td align="center">
 					<div style="overflow:auto; height:200px; width:200px;">
 					<% for (OfficeVisitBean ov : officeVisits) { %>
-						<a href="editOfficeVisit.jsp?ovID=<%=ov.getVisitID()%>"><%=df.format(ov.getVisitDate())%></a><br />
+						<a href="editOfficeVisit.jsp?ovID=<%= StringEscapeUtils.escapeHtml("" + (ov.getVisitID())) %>"><%= StringEscapeUtils.escapeHtml("" + (df.format(ov.getVisitDate()))) %></a><br />
 					<% } %>
 					</div>
 				</td>
@@ -253,15 +282,15 @@ function showRisks(){
 			patientRelatives.add(patientDAO.getPatient(member.getMid())); 
 %>
 	<tr>					
-		<td class = "valueCell" ><a href="editPHR.jsp?relative=<%=index%>"><%=member.getFullName()%></a></td>
-		<td ><%=member.getRelation()%></td>
-		<td  align=center><%=action.doesFamilyMemberHaveHighBP(member) ? "x" : ""%></td>
-		<td  align=center><%=action.doesFamilyMemberHaveHighCholesterol(member) ? "x" : ""%></td>
-		<td  align=center><%=action.doesFamilyMemberHaveDiabetes(member) ? "x" : ""%></td>
-		<td  align=center><%=action.doesFamilyMemberHaveCancer(member) ? "x" : ""%></td>
-		<td  align=center><%=action.doesFamilyMemberHaveHeartDisease(member) ? "x" : ""%></td>
-		<td  align=center><%=action.isFamilyMemberSmoker(member) ? "x" : ""%></td>
-		<td ><%=action.getFamilyMemberCOD(member)%></td>
+		<td class = "valueCell" ><a href="editPHR.jsp?relative=<%= StringEscapeUtils.escapeHtml("" + (index)) %>"><%= StringEscapeUtils.escapeHtml("" + (member.getFullName())) %></a></td>
+		<td ><%= StringEscapeUtils.escapeHtml("" + (member.getRelation())) %></td>
+		<td  align=center><%= StringEscapeUtils.escapeHtml("" + (action.doesFamilyMemberHaveHighBP(member) ? "x" : "")) %></td>
+		<td  align=center><%= StringEscapeUtils.escapeHtml("" + (action.doesFamilyMemberHaveHighCholesterol(member) ? "x" : "")) %></td>
+		<td  align=center><%= StringEscapeUtils.escapeHtml("" + (action.doesFamilyMemberHaveDiabetes(member) ? "x" : "")) %></td>
+		<td  align=center><%= StringEscapeUtils.escapeHtml("" + (action.doesFamilyMemberHaveCancer(member) ? "x" : "")) %></td>
+		<td  align=center><%= StringEscapeUtils.escapeHtml("" + (action.doesFamilyMemberHaveHeartDisease(member) ? "x" : "")) %></td>
+		<td  align=center><%= StringEscapeUtils.escapeHtml("" + (action.isFamilyMemberSmoker(member) ? "x" : "")) %></td>
+		<td ><%= StringEscapeUtils.escapeHtml("" + (action.getFamilyMemberCOD(member))) %></td>
 	</tr>
 <%			index++;
 		}
@@ -288,8 +317,8 @@ function showRisks(){
 			<% } else {
 				for (AllergyBean allergy : allergies) {%>
 			<tr>
-				<td  style="text-align: center;"><%=allergy.getDescription()%></td>
-				<td  style="text-align: center;"><%=df.format(allergy.getFirstFound())%></td>
+				<td  style="text-align: center;"><%= StringEscapeUtils.escapeHtml("" + (allergy.getDescription())) %></td>
+				<td  style="text-align: center;"><%= StringEscapeUtils.escapeHtml("" + (df.format(allergy.getFirstFound()))) %></td>
 			</tr>			
 			<% } } %>
 			<form name="AddAllergy" action="editPHR.jsp" method="post">
@@ -307,7 +336,7 @@ function showRisks(){
 	<div style="margin-right: 10px; display: inline-table;">
 		<table class="fTable" align=center>
 			<tr>
-				<th colspan=2 style="background-color:silver;">Chronic Disease Risk Factors</th>
+				<th colspan=2>Chronic Disease Risk Factors</th>
 			</tr>
 			<tr>
 				<td align="center">
@@ -316,10 +345,10 @@ function showRisks(){
 						<% try{
 								List<RiskChecker> diseases = action.getDiseasesAtRisk();
 								for (RiskChecker disease : diseases) { %>
-						  			<span ><%=disease.getName()%></span><br />
+						  			<span ><%= StringEscapeUtils.escapeHtml("" + (disease.getName())) %></span><br />
 							<% }
 						   } catch (NoHealthRecordsException e) {
-							   %><%=e.getMessage()%><%
+							   %><%=StringEscapeUtils.escapeHtml(e.getMessage())%><%
 						   } %>
 						<a style="font-size: 80%" href="chronicDiseaseRisks.jsp">More Information</a>
 					</div>
@@ -334,7 +363,7 @@ function showRisks(){
 	<div style="display: inline-table;">
 		<table class="fTable" align=center>
 			<tr>
-				<th colspan="3" style="background-color:silver;">Immunizations</th>
+				<th colspan="3">Immunizations</th>
 			</tr>
 			<tr class="subHeader">
 	  			<td>CPT Code</td>
@@ -347,9 +376,9 @@ function showRisks(){
 				if (null != proc.getAttribute() && proc.getAttribute().equals("immunization")) { 
 %>
 			<tr>
-				<td ><%=proc.getCPTCode() %></td>
-				<td ><%=proc.getDescription() %></td>
-				<td ><a href="editOfficeVisit.jsp?ovID=<%=ov.getVisitID()%>"><%=proc.getDate() %></a></td>	
+				<td ><%= StringEscapeUtils.escapeHtml("" + (proc.getCPTCode() )) %></td>
+				<td ><%= StringEscapeUtils.escapeHtml("" + (proc.getDescription() )) %></td>
+				<td ><a href="editOfficeVisit.jsp?ovID=<%= StringEscapeUtils.escapeHtml("" + (ov.getVisitID())) %>"><%= StringEscapeUtils.escapeHtml("" + (proc.getDate() )) %></a></td>	
 			</tr>
 <%
 				}
@@ -362,5 +391,4 @@ function showRisks(){
 
 <br /><br /><br />
 <itrust:patientNav thisTitle="Health Records" />
-
 <%@include file="/footer.jsp" %>

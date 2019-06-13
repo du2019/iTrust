@@ -1,12 +1,10 @@
 				</div>
-				<div class="rightBorder" id="r"></div>
-			</div>
-			<div style="clear: both;">
+				<div id="rightBorder"></div>
 			</div>
 		</div>
 
 	
-		<div class="iTrustFooter" style="padding-left: 200px;">
+		<div id="iTrustFooter">
 			<div style="float: left; width: 48%; margin-left: 25px;">
 <%
 			if( ! "true".equals(System.getProperty("itrust.production") ) ) { 
@@ -23,7 +21,7 @@
 			<div style="float: right; width: 48%; text-align: right; margin-right: 10px;">
 				  <a class="iTrustNavlink" href="mailto:nobody@itrust.com">Contact</a>
 				| <a class="iTrustNavlink" href="/iTrust/privacyPolicy.jsp">Privacy Policy</a>
-				| <a class="iTrustNavlink" href="http://agile.csc.ncsu.edu/iTrust/">iTrust v10.0</a>
+				| <a class="iTrustNavlink" href="http://agile.csc.ncsu.edu/iTrust/">iTrust v11.0</a>
 			</div>
 			<div style="clear: both;">
 			</div>

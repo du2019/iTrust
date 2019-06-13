@@ -12,12 +12,10 @@
 <%@include file="/authenticate.jsp" %>
 
 <%
+
 if(request.getUserPrincipal() != null) {
 	long mid = Long.valueOf(request.getUserPrincipal().getName());
-	//DAOFactory.getProductionInstance().getTransactionDAO().logTransaction(TransactionType.AUTHENTICATE_USER, mid, 0L, "Authenticated, requesting home page");
-	prodDAO.getTransactionDAO()
-	       .logTransaction(TransactionType.AUTHENTICATE_USER, mid, 0L, "Authenticated, requesting home page");
-	
+	//loggingAction.logEvent(TransactionType.LOGIN_SUCCESS, mid, mid, "");
 	if (request.isUserInRole("patient")) {
 		response.sendRedirect("patient/home.jsp");
 		return;

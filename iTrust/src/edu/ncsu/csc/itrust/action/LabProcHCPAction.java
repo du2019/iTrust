@@ -8,7 +8,6 @@ import edu.ncsu.csc.itrust.dao.DAOFactory;
 import edu.ncsu.csc.itrust.dao.mysql.LabProcedureDAO;
 import edu.ncsu.csc.itrust.dao.mysql.OfficeVisitDAO;
 import edu.ncsu.csc.itrust.dao.mysql.TransactionDAO;
-import edu.ncsu.csc.itrust.enums.TransactionType;
 import edu.ncsu.csc.itrust.exception.DBException;
 import edu.ncsu.csc.itrust.exception.FormValidationException;
 import edu.ncsu.csc.itrust.validate.LabProcedureValidator;
@@ -90,8 +89,6 @@ public class LabProcHCPAction extends LabProcUAPAction {
 			}
 			validator.validate(pb);
 			lpDAO.updateRights(pb);
-			transDAO.logTransaction(TransactionType.ENTER_EDIT_LAB_PROCEDURE, loggedInMID, pb.getPid(),
-					"Privacy Changed procedure id: " + pb.getProcedureID());
 		}
 
 	}

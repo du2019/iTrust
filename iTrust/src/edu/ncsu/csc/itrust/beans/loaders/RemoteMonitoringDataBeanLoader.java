@@ -33,10 +33,12 @@ public class RemoteMonitoringDataBeanLoader implements BeanLoader<RemoteMonitori
 		d.setSystolicBloodPressure(rs.getInt("systolicBloodPressure"));
 		d.setDiastolicBloodPressure(rs.getInt("diastolicBloodPressure"));
 		d.setGlucoseLevel(rs.getInt("glucoseLevel"));
+		d.setHeight(rs.getFloat("height"));
+		d.setWeight(rs.getFloat("weight"));
+		d.setPedometerReading(rs.getInt("pedometerReading"));
 		d.setTime(rs.getTimestamp("timeLogged"));
 		d.setReporterRole(rs.getString("ReporterRole"));
 		d.setReporterMID(rs.getLong("ReporterID"));
 		return d;
 	}
-
 }

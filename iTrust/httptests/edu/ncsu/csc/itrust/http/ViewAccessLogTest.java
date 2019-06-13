@@ -6,6 +6,7 @@ import com.meterware.httpunit.WebConversation;
 import com.meterware.httpunit.WebForm;
 import com.meterware.httpunit.WebResponse;
 import com.meterware.httpunit.WebTable;
+import edu.ncsu.csc.itrust.enums.TransactionType;
 
 public class ViewAccessLogTest extends iTrustHTTPTest {
 
@@ -37,6 +38,8 @@ public class ViewAccessLogTest extends iTrustHTTPTest {
 		WebConversation wc = login("9000000000", "pw");
 		WebResponse wr = wc.getCurrentPage();
 		assertEquals("iTrust - HCP Home", wr.getTitle());
+		assertLogged(TransactionType.HOME_VIEW, 9000000000L, 0L, "");
+		
 		// click Edit PHR
 		wr = wr.getLinkWith("PHR Information").click();
 		assertEquals(ADDRESS + "auth/getPatientID.jsp?forward=hcp-uap/editPHR.jsp", wr.getURL().toString());
@@ -46,10 +49,14 @@ public class ViewAccessLogTest extends iTrustHTTPTest {
 		patientForm.getButtons()[1].click();
 		wr = wc.getCurrentPage();
 		assertEquals(ADDRESS + "auth/hcp-uap/editPHR.jsp", wr.getURL().toString());
+		assertLogged(TransactionType.PATIENT_HEALTH_INFORMATION_VIEW, 9000000000L, 2L, "");
+		
 		// login patient 2
 		wc = login("2", "pw");
 		wr = wc.getCurrentPage();
 		assertEquals("iTrust - Patient Home", wr.getTitle());
+		assertLogged(TransactionType.HOME_VIEW, 2L, 0L, "");
+		
 		// click on View Access Log
 		wr = wr.getLinkWith("Access Log").click();
 		// check the table that displays the access log
@@ -59,9 +66,10 @@ public class ViewAccessLogTest extends iTrustHTTPTest {
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         java.util.Date date = new java.util.Date();
         
-		assertTrue(table.getCellAsText(1, 0).contains(dateFormat.format(date)));
+			assertTrue(table.getCellAsText(1, 0).contains(dateFormat.format(date)));
 		assertEquals("Kelly Doctor", table.getCellAsText(1, 1));
-		//assertEquals("EditPHR - view patient record", table.getCellAsText(1, 2));		
+		assertTrue(table.getCellAsText(1, 3).contains("View personal health information"));		
+		assertLogged(TransactionType.ACCESS_LOG_VIEW, 2L, 0L, "");
 	}
 
 	/*
@@ -79,6 +87,8 @@ public class ViewAccessLogTest extends iTrustHTTPTest {
 		WebConversation wc = login("2", "pw");
 		WebResponse wr = wc.getCurrentPage();
 		assertEquals("iTrust - Patient Home", wr.getTitle());
+		assertLogged(TransactionType.HOME_VIEW, 2L, 0L, "");
+		
 		// click on View Access Log
 		wr = wr.getLinkWith("Access Log").click();
 		// select the date range and submit
@@ -88,6 +98,7 @@ public class ViewAccessLogTest extends iTrustHTTPTest {
 		form.getSubmitButtons()[0].click();
 		WebResponse add = wc.getCurrentPage();
 		assertFalse(add.getText().contains("Exception"));
+		assertLogged(TransactionType.ACCESS_LOG_VIEW, 2L, 0L, "");
 	}
 
 	/*
@@ -104,8 +115,11 @@ public class ViewAccessLogTest extends iTrustHTTPTest {
 		WebConversation wc = login("1", "pw");
 		WebResponse wr = wc.getCurrentPage();
 		assertEquals("iTrust - Patient Home", wr.getTitle());
+		assertLogged(TransactionType.HOME_VIEW, 1L, 0L, "");
+		
 		wr = wr.getLinkWith("Access Log").click();
 		assertFalse(wr.getText().contains("Exception"));
+		assertLogged(TransactionType.ACCESS_LOG_VIEW, 1L, 0L, "");
 	}
 	
 	public void testViewAccessLogByDate() throws Exception {
@@ -113,6 +127,8 @@ public class ViewAccessLogTest extends iTrustHTTPTest {
 		WebConversation wc = login("2", "pw");
 		WebResponse wr = wc.getCurrentPage();
 		assertEquals("iTrust - Patient Home", wr.getTitle());
+		assertLogged(TransactionType.HOME_VIEW, 2L, 0L, "");
+		
 		wr = wr.getLinkWith("Access Log").click();
 		assertFalse(wr.getText().contains("Exception"));
 
@@ -123,10 +139,11 @@ public class ViewAccessLogTest extends iTrustHTTPTest {
 		
 		wr = wr.getLinkWith("Date").click();
 		WebTable table = wr.getTableStartingWithPrefix("Date");
-		assertTrue(table.getCellAsText(1, 3).contains("22"));
-		assertTrue(table.getCellAsText(2, 3).contains("39"));
-		assertTrue(table.getCellAsText(3, 3).contains("19"));
-		assertTrue(table.getCellAsText(4, 3).contains("14"));
+		assertTrue(table.getCellAsText(1, 3).contains("View emergency report"));
+		assertTrue(table.getCellAsText(2, 3).contains("Edit Office Visits"));
+		assertTrue(table.getCellAsText(3, 3).contains("View prescription report"));
+		assertTrue(table.getCellAsText(4, 3).contains("View risk factors"));
+		assertLogged(TransactionType.ACCESS_LOG_VIEW, 2L, 0L, "");
 		
 	}
 	
@@ -135,6 +152,8 @@ public class ViewAccessLogTest extends iTrustHTTPTest {
 		WebConversation wc = login("1", "pw");
 		WebResponse wr = wc.getCurrentPage();
 		assertEquals("iTrust - Patient Home", wr.getTitle());
+		assertLogged(TransactionType.HOME_VIEW, 1L, 0L, "");
+		
 		wr = wr.getLinkWith("Access Log").click();
 		assertFalse(wr.getText().contains("Exception"));
 
@@ -155,6 +174,8 @@ public class ViewAccessLogTest extends iTrustHTTPTest {
 		assertTrue(table.getCellAsText(7, 2).contains("Personal Health Representative"));
 		assertTrue(table.getCellAsText(8, 2).contains("UAP"));
 		assertTrue(table.getCellAsText(9, 2).contains("UAP"));
+		
+		assertLogged(TransactionType.ACCESS_LOG_VIEW, 1L, 0L, "");
 		
 	}
 }

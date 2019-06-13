@@ -2,11 +2,11 @@ package edu.ncsu.csc.itrust.action;
 
 import java.util.List;
 import edu.ncsu.csc.itrust.beans.RemoteMonitoringDataBean;
+import edu.ncsu.csc.itrust.beans.TelemedicineBean;
 import edu.ncsu.csc.itrust.dao.DAOFactory;
 import edu.ncsu.csc.itrust.dao.mysql.AuthDAO;
 import edu.ncsu.csc.itrust.dao.mysql.RemoteMonitoringDAO;
 import edu.ncsu.csc.itrust.dao.mysql.TransactionDAO;
-import edu.ncsu.csc.itrust.enums.TransactionType;
 import edu.ncsu.csc.itrust.exception.DBException;
 import edu.ncsu.csc.itrust.exception.iTrustException;
 
@@ -37,12 +37,13 @@ public class EditMonitoringListAction {
 	 * Adds a patient to the current HCP's remote monitoring list
 	 * 
 	 * @param patientMID the patient
+	 * @param permissions Array indicating what data the patient is allowed to enter. 
+	 			Ordered by Systolic Blood Pressure, Diastolic Blood Pressure, Glucose Level, Weight, Pedometer Reading.
 	 * @return true if added successfully. False if already in list.
 	 * @throws DBException
 	 */
-	public boolean addToList(long patientMID) throws DBException {
-		transDAO.logTransaction(TransactionType.TELEMEDICINE_MONITORING, loggedInMID, patientMID, "add");
-		return rmDAO.addPatientToList(patientMID, loggedInMID);
+	public boolean addToList(long patientMID, TelemedicineBean tBean) throws DBException {
+		return rmDAO.addPatientToList(patientMID, loggedInMID, tBean);
 	}
 	
 	/**
@@ -53,7 +54,6 @@ public class EditMonitoringListAction {
 	 * @throws DBException
 	 */
 	public boolean removeFromList(long patientMID) throws DBException {
-		transDAO.logTransaction(TransactionType.TELEMEDICINE_MONITORING, loggedInMID, patientMID, "delete");
 		return rmDAO.removePatientFromList(patientMID, loggedInMID);
 	}
 	

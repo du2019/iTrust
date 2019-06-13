@@ -27,22 +27,30 @@ if(request.getParameter("remove") != null) {
 			<span class="iTrustMessage">Report successfully removed</span>
 		</div>
 		<%
+		loggingAction.logEvent(TransactionType.ADVERSE_EVENT_REMOVE, loggedInMID.longValue(), 0, "Removed event:" + Integer.parseInt(request.getParameter("id")));
 	} catch(DBException e) {
 		%>
 		<div align=center>
-			<span class="iTrustError"><%=e.getMessage()%></span>
+			<span class="iTrustError"><%=StringEscapeUtils.escapeHtml(e.getMessage())%></span>
 		</div>
 		<%
-	}catch(iTrustException e) {
+	} catch(iTrustException e) {
 		%>
 		<div align=center>
-			<span class="iTrustError"><%=e.getMessage()%></span>
+			<span class="iTrustError"><%=StringEscapeUtils.escapeHtml(e.getMessage())%></span>
+		</div>
+		<%
+	} catch(NumberFormatException e) {
+		%>
+		<div align=center>
+			<span class="iTrustError">Invalid Adverse Event ID: <%=StringEscapeUtils.escapeHtml(e.getMessage())%></span>
 		</div>
 		<%
 	}
 } else if(request.getParameter("moreInfo") != null) {
 	try{
 	action.sendEmail(Long.parseLong(request.getParameter("patientMID")), "I would like to know more about your experience with this medication");
+	loggingAction.logEvent(TransactionType.ADVERSE_EVENT_REQUEST_MORE, loggedInMID.longValue(), 0, "Requested more information on Adverse Event: " + Integer.parseInt(request.getParameter("id")));
 	%>
 	<div align=center>
 		<span class="iTrustMessage">Request sent</span>
@@ -51,7 +59,13 @@ if(request.getParameter("remove") != null) {
 	} catch(DBException e) {
 		%>
 		<div align=center>
-			<span class="iTrustError"><%=e.getMessage()%></span>
+			<span class="iTrustError"><%=StringEscapeUtils.escapeHtml(e.getMessage())%></span>
+		</div>
+		<%
+	} catch(NumberFormatException e) {
+		%>
+		<div align=center>
+			<span class="iTrustError">Invalid Adverse Event ID: <%=StringEscapeUtils.escapeHtml(e.getMessage())%></span>
 		</div>
 		<%
 	}
@@ -63,10 +77,11 @@ if(request.getParameter("remove") != null) {
 	try{
 		num = Integer.parseInt(request.getParameter("eventNumber"));
 		reporter = action.getName(Long.parseLong(events.get(num).getMID()));
+		loggingAction.logEvent(TransactionType.ADVERSE_EVENT_VIEW, loggedInMID.longValue(), 0, "Viewed event: " + num);
 	}catch(NumberFormatException e){
 		%>
 		<div align=center>
-			<span class="iTrustError"><%=e.getMessage() %></span>
+			<span class="iTrustError"><%=StringEscapeUtils.escapeHtml(e.getMessage()) %></span>
 		</div>
 	<%
 	}
@@ -76,20 +91,20 @@ if(request.getParameter("remove") != null) {
 	
 	%>
 	<form action="adverseEventDetails.jsp">
-			<input type="hidden" name="id" value="<%=events.get(num).getId() %>" />
-			<input type="hidden" name="patientMID" value="<%=Long.parseLong(events.get(num).getMID()) %>" />
+			<input type="hidden" name="id" value="<%= StringEscapeUtils.escapeHtml("" + (events.get(num).getId() )) %>" />
+			<input type="hidden" name="patientMID" value="<%= StringEscapeUtils.escapeHtml("" + (Long.parseLong(events.get(num).getMID()) )) %>" />
 	
 			<b>Reporter: </b>
-			<div><%=reporter%></div>
+			<div><%= StringEscapeUtils.escapeHtml("" + (reporter)) %></div>
 		<br />
-			<b><%=session.getAttribute("prescriptionImmunization") %>: </b>
-			<div><%=drug%></div>
+			<b><%= StringEscapeUtils.escapeHtml("" + (session.getAttribute("prescriptionImmunization") )) %>: </b>
+			<div><%= StringEscapeUtils.escapeHtml("" + (drug)) %></div>
 		<br />
 			<b>Date: </b>
-			<div><%=date%></div>
+			<div><%= StringEscapeUtils.escapeHtml("" + (date)) %></div>
 		<br />
 		<b>Description: </b>
-		<div style="width:100%;"><%=description%></div>
+		<div style="width:100%;"><%= StringEscapeUtils.escapeHtml("" + (description)) %></div>
 	<br />
 	<br />
 	

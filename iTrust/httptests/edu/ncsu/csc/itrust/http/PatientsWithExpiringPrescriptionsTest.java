@@ -4,6 +4,7 @@ import com.meterware.httpunit.TableRow;
 import com.meterware.httpunit.WebConversation;
 import com.meterware.httpunit.WebResponse;
 import com.meterware.httpunit.WebTable;
+import edu.ncsu.csc.itrust.enums.TransactionType;
 
 public class PatientsWithExpiringPrescriptionsTest extends iTrustHTTPTest {
 	@Override
@@ -37,6 +38,7 @@ public class PatientsWithExpiringPrescriptionsTest extends iTrustHTTPTest {
 		WebConversation wc = login("9900000000", "pw");
 		WebResponse wr = wc.getCurrentPage();
 		assertEquals("iTrust - HCP Home", wr.getTitle());
+		assertLogged(TransactionType.HOME_VIEW, 9900000000L, 0L, "");
 		
 		wr = wr.getLinkWith("Potential Prescription-Renewals").click();
 		assertTrue(wr.getText().contains("Tester Arehart</th>"));
@@ -45,6 +47,7 @@ public class PatientsWithExpiringPrescriptionsTest extends iTrustHTTPTest {
 		assertTrue(wr.getText().contains("Thompson"));
 		assertTrue(wr.getText().contains("a@b.com"));
 		assertTrue(wr.getText().contains("919-555-6709"));
+		assertLogged(TransactionType.PRECONFIRM_PRESCRIPTION_RENEWAL, 9900000000L, 99L, "");
 	}
 	
 	/*
@@ -56,10 +59,12 @@ public class PatientsWithExpiringPrescriptionsTest extends iTrustHTTPTest {
 		WebConversation wc = login("9900000000", "pw");
 		WebResponse wr = wc.getCurrentPage();
 		assertEquals("iTrust - HCP Home", wr.getTitle());
+		assertLogged(TransactionType.HOME_VIEW, 9900000000L, 0L, "");
 		
 		wr = wr.getLinkWith("Potential Prescription-Renewals").click();
 		assertTrue(wr.getText().contains("Tester Arehart</th>"));
 		assertFalse(wr.getText().contains("Zappic Clith"));
+		assertNotLogged(TransactionType.PRECONFIRM_PRESCRIPTION_RENEWAL, 9900000000L, 10L, "");
 	}
 	
 	/*
@@ -72,6 +77,7 @@ public class PatientsWithExpiringPrescriptionsTest extends iTrustHTTPTest {
 		WebConversation wc = login("9900000000", "pw");
 		WebResponse wr = wc.getCurrentPage();
 		assertEquals("iTrust - HCP Home", wr.getTitle());
+		assertLogged(TransactionType.HOME_VIEW, 9900000000L, 0L, "");
 		
 		wr = wr.getLinkWith("Potential Prescription-Renewals").click();
 		assertTrue(wr.getText().contains("Tester Arehart</th>"));
@@ -79,6 +85,7 @@ public class PatientsWithExpiringPrescriptionsTest extends iTrustHTTPTest {
 		assertTrue(wr.getText().contains("Thompson"));
 		assertTrue(wr.getText().contains("e@f.com"));
 		assertTrue(wr.getText().contains("919-555-9213"));
+		assertLogged(TransactionType.PRECONFIRM_PRESCRIPTION_RENEWAL, 9900000000L, 11L, "");
 	}
 	
 	/*
@@ -90,12 +97,14 @@ public class PatientsWithExpiringPrescriptionsTest extends iTrustHTTPTest {
 		WebConversation wc = login("9900000000", "pw");
 		WebResponse wr = wc.getCurrentPage();
 		assertEquals("iTrust - HCP Home", wr.getTitle());
+		assertLogged(TransactionType.HOME_VIEW, 9900000000L, 0L, "");
 		
 		wr = wr.getLinkWith("Potential Prescription-Renewals").click();
 		assertTrue(wr.getText().contains("Tester Arehart</th>"));
 		assertFalse(wr.getText().contains("9900000000"));
 		assertFalse(wr.getText().contains("Blammo"));
 		assertFalse(wr.getText().contains("Volcano"));
+		assertNotLogged(TransactionType.PRECONFIRM_PRESCRIPTION_RENEWAL, 9900000000L, 12L, "");
 	}
 	
 	/*
@@ -107,11 +116,13 @@ public class PatientsWithExpiringPrescriptionsTest extends iTrustHTTPTest {
 		WebConversation wc = login("9900000000", "pw");
 		WebResponse wr = wc.getCurrentPage();
 		assertEquals("iTrust - HCP Home", wr.getTitle());
+		assertLogged(TransactionType.HOME_VIEW, 9900000000L, 0L, "");
 		
 		wr = wr.getLinkWith("Potential Prescription-Renewals").click();
 		assertTrue(wr.getText().contains("Tester Arehart</th>"));
 		assertFalse(wr.getText().contains("9900000000"));
 		assertFalse(wr.getText().contains("Blim Cildron"));
+		assertNotLogged(TransactionType.PRECONFIRM_PRESCRIPTION_RENEWAL, 9900000000L, 13L, "");
 	}
 	
 	/*
@@ -125,6 +136,7 @@ public class PatientsWithExpiringPrescriptionsTest extends iTrustHTTPTest {
 		WebConversation wc = login("9900000000", "pw");
 		WebResponse wr = wc.getCurrentPage();
 		assertEquals("iTrust - HCP Home", wr.getTitle());
+		assertLogged(TransactionType.HOME_VIEW, 9900000000L, 0L, "");
 		
 		wr = wr.getLinkWith("Potential Prescription-Renewals").click();
 		assertTrue(wr.getText().contains("Tester Arehart</th>"));
@@ -132,7 +144,8 @@ public class PatientsWithExpiringPrescriptionsTest extends iTrustHTTPTest {
 		assertTrue(wr.getText().contains("Zack"));
 		assertTrue(wr.getText().contains("Arthur"));
 		assertTrue(wr.getText().contains("k@l.com"));
-		assertTrue(wr.getText().contains("919-555-1234"));		
+		assertTrue(wr.getText().contains("919-555-1234"));	
+		assertLogged(TransactionType.PRECONFIRM_PRESCRIPTION_RENEWAL, 9900000000L, 14L, "");
 	}
 	
 	/*
@@ -144,12 +157,14 @@ public class PatientsWithExpiringPrescriptionsTest extends iTrustHTTPTest {
 		WebConversation wc = login("9900000000", "pw");
 		WebResponse wr = wc.getCurrentPage();
 		assertEquals("iTrust - HCP Home", wr.getTitle());
+		assertLogged(TransactionType.HOME_VIEW, 9900000000L, 0L, "");
 		
 		wr = wr.getLinkWith("Potential Prescription-Renewals").click();
 		assertTrue(wr.getText().contains("Tester Arehart</th>"));
 		assertFalse(wr.getText().contains("9900000000"));
 		assertFalse(wr.getText().contains("Malk"));
 		assertFalse(wr.getText().contains("Flober"));
+		assertNotLogged(TransactionType.PRECONFIRM_PRESCRIPTION_RENEWAL, 9900000000L, 15L, "");
 	}
 	
 	/*
@@ -161,10 +176,11 @@ public class PatientsWithExpiringPrescriptionsTest extends iTrustHTTPTest {
 		WebConversation wc = login("9900000000", "pw");
 		WebResponse wr = wc.getCurrentPage();
 		assertEquals("iTrust - HCP Home", wr.getTitle());
+		assertLogged(TransactionType.HOME_VIEW, 9900000000L, 0L, "");
 		
 		wr = wr.getLinkWith("Potential Prescription-Renewals").click();
 		
-		WebTable table = (WebTable)wr.getTableStartingWith("Tester Arehart");
+		WebTable table = wr.getTableStartingWith("Tester Arehart");
 		TableRow rows[] = table.getRows();
 		
 		assertEquals("| Zack Arthur | 919-555-1234 | k@l.com", rows[2].getText());
@@ -173,6 +189,9 @@ public class PatientsWithExpiringPrescriptionsTest extends iTrustHTTPTest {
 		
 		assertTrue(wr.getText().contains("Tester Arehart</th>"));
 		assertFalse(wr.getText().contains("9900000000"));
+		assertLogged(TransactionType.PRECONFIRM_PRESCRIPTION_RENEWAL, 9900000000L, 99L, "");
+		assertLogged(TransactionType.PRECONFIRM_PRESCRIPTION_RENEWAL, 9900000000L, 11L, "");
+		assertLogged(TransactionType.PRECONFIRM_PRESCRIPTION_RENEWAL, 9900000000L, 14L, "");
 	}
 	
 	/*
@@ -185,10 +204,11 @@ public class PatientsWithExpiringPrescriptionsTest extends iTrustHTTPTest {
 		WebConversation wc = login("9000000003", "pw");
 		WebResponse wr = wc.getCurrentPage();
 		assertEquals("iTrust - HCP Home", wr.getTitle());
+		assertLogged(TransactionType.HOME_VIEW, 9000000003L, 0L, "");
 		
 		wr = wr.getLinkWith("Potential Prescription-Renewals").click();
 		
-		WebTable table = (WebTable)wr.getTableStartingWith("Gandalf Stormcrow");
+		WebTable table = wr.getTableStartingWith("Gandalf Stormcrow");
 		TableRow rows[] = table.getRows();
 		
 		assertEquals("| Andy Koopa | 919-224-3343 | ak@gmail.com", rows[2].getText());
@@ -196,6 +216,8 @@ public class PatientsWithExpiringPrescriptionsTest extends iTrustHTTPTest {
 		
 		assertTrue(wr.getText().contains("Gandalf Stormcrow</th>"));
 		assertFalse(wr.getText().contains("9000000003"));
+		assertLogged(TransactionType.PRECONFIRM_PRESCRIPTION_RENEWAL, 9000000003L, 16L, "");
+		assertLogged(TransactionType.PRECONFIRM_PRESCRIPTION_RENEWAL, 9000000003L, 17L, "");
 	}
 
 }

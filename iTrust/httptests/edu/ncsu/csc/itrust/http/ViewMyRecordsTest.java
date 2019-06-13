@@ -3,6 +3,7 @@ package edu.ncsu.csc.itrust.http;
 import com.meterware.httpunit.WebConversation;
 import com.meterware.httpunit.WebResponse;
 import com.meterware.httpunit.WebTable;
+import edu.ncsu.csc.itrust.enums.TransactionType;
 
 public class ViewMyRecordsTest extends iTrustHTTPTest {
 	@Override
@@ -31,6 +32,8 @@ public class ViewMyRecordsTest extends iTrustHTTPTest {
 		WebConversation wc = login("2", "pw");
 		WebResponse wr = wc.getCurrentPage();
 		assertEquals("iTrust - Patient Home", wr.getTitle());
+		assertLogged(TransactionType.HOME_VIEW, 2L, 0L, "");
+		
 		// click on View My Records
 		wr = wr.getLinkWith("My Records").click();
 		assertTrue(wr.getText().contains("210.0lbs"));
@@ -41,6 +44,7 @@ public class ViewMyRecordsTest extends iTrustHTTPTest {
 		assertTrue(wr.getText().contains("Prioglitazone"));
 		assertTrue(wr.getText().contains("Tetracycline"));
 		assertTrue(wr.getText().contains("Notes:"));
+		assertLogged(TransactionType.MEDICAL_RECORD_VIEW, 2L, 2L, "");
 	}
 
 	/*
@@ -54,9 +58,12 @@ public class ViewMyRecordsTest extends iTrustHTTPTest {
 		WebConversation wc = login("4", "pw");
 		WebResponse wr = wc.getCurrentPage();
 		assertEquals("iTrust - Patient Home", wr.getTitle());
+		assertLogged(TransactionType.HOME_VIEW, 4L, 0L, "");
+		
 		// upon viewing records, make sure that no exceptions are thrown
 		wr = wr.getLinkWith("My Records").click();
 		assertFalse(wr.getText().contains("Exception"));
+		assertLogged(TransactionType.MEDICAL_RECORD_VIEW, 4L, 4L, "");
 	}
 
 	/*
@@ -71,8 +78,12 @@ public class ViewMyRecordsTest extends iTrustHTTPTest {
 		WebConversation wc = login("2", "pw");
 		WebResponse wr = wc.getCurrentPage();
 		assertEquals("iTrust - Patient Home", wr.getTitle());
+		assertLogged(TransactionType.HOME_VIEW, 2L, 0L, "");
+		
 		// click View My Records
 		wr = wr.getLinkWith("My Records").click();
+		assertLogged(TransactionType.MEDICAL_RECORD_VIEW, 2L, 2L, "");
+		
 		WebTable wt = wr.getTableStartingWith("Patients Andy Represents");
 		
 		assertEquals("Random Person", wt.getTableCell(2,0).getLinkWith("Random Person").getText() );
@@ -80,5 +91,6 @@ public class ViewMyRecordsTest extends iTrustHTTPTest {
 		
 		// check to make sure you are viewing patient 1's records
 		assertTrue(wr.getText().contains("You are currently viewing your representee's records"));
+		assertLogged(TransactionType.MEDICAL_RECORD_VIEW, 2L, 1L, "");
 	}
 }

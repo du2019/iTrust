@@ -157,7 +157,6 @@ public class PatientDAO {
 			ps = conn.prepareStatement("SELECT * FROM Patients WHERE MID = ?");
 			ps.setLong(1, mid);
 			ResultSet rs = ps.executeQuery();
-			// pdao.logTransaction(type, loggedInMID, secondaryMID, addedInfo)
 			if (rs.next()) {
 				return patientLoader.loadSingle(rs);
 			} else

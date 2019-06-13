@@ -30,6 +30,7 @@ public class TestDataGenerator {
 		TestDataGenerator gen = new TestDataGenerator();
 		gen.clearAllTables();
 		gen.standardData();
+		
 	}
 
 	private String DIR = "sql/data";
@@ -93,6 +94,10 @@ public class TestDataGenerator {
 		new DBBuilder(factory).executeSQLFile(DIR + "/ovMed.sql");
 	}
 	
+	public void ovReactionOverride() throws FileNotFoundException, IOException, SQLException {
+		new DBBuilder(factory).executeSQLFile(DIR + "/ovReactionOverrides.sql");
+	}
+	
 	public void ovImmune() throws FileNotFoundException, IOException, SQLException {
 		new DBBuilder(factory).executeSQLFile(DIR + "/ovImmune.sql");
 	}
@@ -136,6 +141,10 @@ public class TestDataGenerator {
 	public void hcp3() throws FileNotFoundException, SQLException, IOException {
 		new DBBuilder(factory).executeSQLFile(DIR + "/hcp3.sql");
 	}
+	
+	public void healthData() throws SQLException, FileNotFoundException, IOException {
+		new DBBuilder(factory).executeSQLFile(DIR + "/healthdata.sql");
+	}
 
 	public void hospitals() throws SQLException, FileNotFoundException, IOException {
 		new DBBuilder(factory).executeSQLFile(DIR + "/hospitals0.sql");
@@ -159,6 +168,10 @@ public class TestDataGenerator {
 
 	public void ndCodes() throws FileNotFoundException, SQLException, IOException {
 		new DBBuilder(factory).executeSQLFile(DIR + "/ndCodes.sql");
+	}
+	
+	public void ORCodes() throws FileNotFoundException, SQLException, IOException {
+		new DBBuilder(factory).executeSQLFile(DIR + "/ORCodes.sql");
 	}
 	
 	public void ndCodes1() throws FileNotFoundException, SQLException, IOException {
@@ -196,7 +209,11 @@ public class TestDataGenerator {
 	public void patient1() throws FileNotFoundException, IOException, SQLException {
 		new DBBuilder(factory).executeSQLFile(DIR + "/patient1.sql");
 	}
-
+	
+	public void clearProfilePhotos() throws FileNotFoundException, IOException, SQLException {
+		new DBBuilder(factory).executeSQLFile(DIR + "/clearphotos.sql");
+	}
+	
 	public void patient2() throws FileNotFoundException, IOException, SQLException {
 		new DBBuilder(factory).executeSQLFile(DIR + "/patient2.sql");
 	}
@@ -264,6 +281,10 @@ public class TestDataGenerator {
 	public void patient21() throws FileNotFoundException, SQLException, IOException {
 		new DBBuilder(factory).executeSQLFile(DIR + "/patient21.sql");
 	}
+	
+	public void patient42() throws FileNotFoundException, SQLException, IOException {
+		new DBBuilder(factory).executeSQLFile(DIR + "/patient42.sql");
+	}
 
 	public void reportRequests() throws FileNotFoundException, SQLException, IOException {
 		new DBBuilder(factory).executeSQLFile(DIR + "/reportRequests.sql");
@@ -296,6 +317,14 @@ public class TestDataGenerator {
 	public void transactionLog4() throws FileNotFoundException, SQLException, IOException {
 		new DBBuilder(factory).executeSQLFile(DIR + "/transactionLog4.sql");
 	}
+	
+	public void transactionLog5() throws FileNotFoundException, SQLException, IOException {
+		new DBBuilder(factory).executeSQLFile(DIR + "/transactionLog5.sql");
+	}
+	
+	public void transactionLog6() throws FileNotFoundException, SQLException, IOException {
+		new DBBuilder(factory).executeSQLFile(DIR + "/transactionLog6.sql");
+	}
 
 	public void uap1() throws FileNotFoundException, IOException, SQLException {
 		new DBBuilder(factory).executeSQLFile(DIR + "/uap1.sql");
@@ -327,6 +356,22 @@ public class TestDataGenerator {
 	
 	public void remoteMonitoring4() throws FileNotFoundException, IOException, SQLException {
 		new DBBuilder(factory).executeSQLFile(DIR + "/remoteMonitoring4.sql");
+	}
+	
+	public void remoteMonitoring5() throws FileNotFoundException, IOException, SQLException {
+		new DBBuilder(factory).executeSQLFile(DIR + "/remoteMonitoring5.sql");
+	}
+	
+	public void remoteMonitoring6() throws FileNotFoundException, IOException, SQLException {
+		new DBBuilder(factory).executeSQLFile(DIR + "/remoteMonitoring6.sql");
+	}
+	
+	public void remoteMonitoring7() throws FileNotFoundException, IOException, SQLException {
+		new DBBuilder(factory).executeSQLFile(DIR + "/remoteMonitoring7.sql");
+	}
+	
+	public void remoteMonitoring8() throws FileNotFoundException, IOException, SQLException {
+		new DBBuilder(factory).executeSQLFile(DIR + "/remoteMonitoring8.sql");
 	}
 
 	public void remoteMonitoringUAP() throws FileNotFoundException, IOException, SQLException {
@@ -368,6 +413,10 @@ public class TestDataGenerator {
 		new DBBuilder(factory).executeSQLFile(DIR + "/appointment.sql");
 	}
 	
+	public void appointmentCase3() throws FileNotFoundException, IOException, SQLException {
+		new DBBuilder(factory).executeSQLFile(DIR + "/appointmentCase3.sql");
+	}
+	
 	public void appointmentType() throws FileNotFoundException, IOException, SQLException {
 		new DBBuilder(factory).executeSQLFile(DIR + "/appointmentType.sql");
 	}
@@ -380,6 +429,7 @@ public class TestDataGenerator {
 		cptCodes();
 		icd9cmCodes();
 		ndCodes();
+		ORCodes();
 		hospitals();
 		hcp0();
 
@@ -397,6 +447,7 @@ public class TestDataGenerator {
 		
 		patient20();
 		patient21();
+		patient42();
 		admin1();
 		admin2();
 		admin3();

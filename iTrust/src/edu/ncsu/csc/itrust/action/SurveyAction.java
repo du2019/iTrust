@@ -3,10 +3,12 @@ package edu.ncsu.csc.itrust.action;
 import java.util.Calendar;
 import edu.ncsu.csc.itrust.beans.SurveyBean;
 import edu.ncsu.csc.itrust.dao.DAOFactory;
+import edu.ncsu.csc.itrust.dao.mysql.AuthDAO;
+import edu.ncsu.csc.itrust.dao.mysql.OfficeVisitDAO;
 import edu.ncsu.csc.itrust.dao.mysql.SurveyDAO;
 import edu.ncsu.csc.itrust.dao.mysql.TransactionDAO;
-import edu.ncsu.csc.itrust.enums.TransactionType;
 import edu.ncsu.csc.itrust.exception.DBException;
+import edu.ncsu.csc.itrust.exception.iTrustException;
 
 /**
  * This class is used to add patient survey data to the database.  The office visit ID is linked with the survey ID.  Once the
@@ -16,6 +18,7 @@ import edu.ncsu.csc.itrust.exception.DBException;
 public class SurveyAction {
 	private TransactionDAO transDAO;
 	private SurveyDAO surveyDAO;
+	private OfficeVisitDAO ovDAO;
 	long loggedInMID;
 	
 	/**
@@ -26,6 +29,7 @@ public class SurveyAction {
 	public SurveyAction(DAOFactory factory, long loggedInMID) {
 		transDAO = factory.getTransactionDAO();
 		surveyDAO = factory.getSurveyDAO();
+		ovDAO = factory.getOfficeVisitDAO();
 		this.loggedInMID = loggedInMID;
 	}
 
@@ -40,8 +44,11 @@ public class SurveyAction {
 		
 		surveyBean.setVisitID(visitID); //now set visit ID in the survey bean
 		surveyDAO.addCompletedSurvey(surveyBean, Calendar.getInstance().getTime());
-		//add to transaction log
-		transDAO.logTransaction(TransactionType.ADD_PATIENT_SURVEY, loggedInMID, 0L, "office visit ID for completed survey is: " + visitID);
 		
+	}
+	
+	public long getPatientMID(long ovID) throws NumberFormatException, DBException
+	{
+		return ovDAO.getOfficeVisit(ovID).getPatientID();
 	}
 }

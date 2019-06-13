@@ -1,6 +1,7 @@
 <%@page import="edu.ncsu.csc.itrust.datagenerators.TestDataGenerator"%>
 <%@page import="java.lang.reflect.Method"%>
 <%@page import="edu.ncsu.csc.itrust.dao.DAOFactory"%>
+<%@page import="org.apache.commons.lang.StringEscapeUtils"%>
 <html>
 <head>
 <title>FOR TESTING PURPOSES ONLY</title>
@@ -15,7 +16,9 @@
 <body>
 <div align=center>
 <h1>Test Utilities</h1>
-<%if(System.getProperty("itrust.dev.home")==null){ %> 
+<%
+
+if(System.getProperty("itrust.dev.home")==null){ %> 
 <b>You are not configured to use this test utility.</b><br />
 To use this, you must add the following line to Tomcat's startup: <br />
 -Ditrust.dev.home="&lt;your workspace&gt;\iTrust"<br /><br />
@@ -32,7 +35,7 @@ For example, if you're using Eclipse WTP and your project is located at "e:\work
 You should only have to do this once per development location.<%
 } else {
 %> You specified your project
-developement location to be at <b><%=System.getProperty("itrust.dev.home")%></b><br />
+developement location to be at <b><%= StringEscapeUtils.escapeHtml("" + (System.getProperty("itrust.dev.home"))) %></b><br />
 <br />
 
 <%
@@ -40,13 +43,13 @@ TestDataGenerator gen = new TestDataGenerator(System.getProperty("itrust.dev.hom
 String methodName = request.getParameter("execute");
 if (methodName != null) {
 	gen.getClass().getMethod(methodName, new Class[]{}).invoke(gen, new Object[]{});
-	%><span >Method <%=methodName%> invoked - see console for details</span><%
+	%><span >Method <%= StringEscapeUtils.escapeHtml("" + (methodName)) %> invoked - see console for details</span><%
 }%>
 
 <h2>Execute the following test data generators</h2>
 <%
 for (Method method : gen.getClass().getDeclaredMethods()) {%> 
-	<a href="andystestutil.jsp?execute=<%=method.getName()%>"><%=method.getName()%></a><br />
+	<a href="andystestutil.jsp?execute=<%= StringEscapeUtils.escapeHtml("" + (method.getName())) %>"><%= StringEscapeUtils.escapeHtml("" + (method.getName())) %></a><br />
 <%
 }
 }

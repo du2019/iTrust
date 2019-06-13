@@ -5,7 +5,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.sql.Date;
 import java.util.List;
 import edu.ncsu.csc.itrust.DBUtil;
 import edu.ncsu.csc.itrust.beans.OperationalProfile;
@@ -130,7 +129,6 @@ public class TransactionDAO {
 			tbList = addAndSortRoles(tbList, patientID, getByRole);
 			
 			return tbList;
-			
 		} catch (SQLException e) {
 			e.printStackTrace();
 			throw new DBException(e);
@@ -141,45 +139,33 @@ public class TransactionDAO {
 	
 	/**
 	 * The Most Thorough Fetch 
-	 * @param loggedInRole Role of loggedIn
-	 * @param secondaryRole Role of secondary
-	 * @param begin Beginning of date range
-	 * @param end End of date range
-	 * @param type Type of transaction
-	 * @return
+	 * @param mid MID of the logged in user
+	 * @param start Index to start pulling entries from
+	 * @param range Number of entries to retrieve
+	 * @return List of <range> TransactionBeans affecting the user starting from the <start>th entry
 	 * @throws DBException
 	 */
-	public List<TransactionBean> getTransactionsFor(String loggedInRole, String secondaryRole, Date begin, Date end, TransactionType type) throws DBException {
+	public List<TransactionBean> getTransactionsAffecting(long mid, java.util.Date start, int range) throws DBException {
 		Connection conn = null;
 		PreparedStatement ps = null;
 
 		try {
 			conn = factory.getConnection();
-			
-			
-			
-			if(loggedInRole.compareTo("any") == 0) {
-				loggedInRole = "*";
-			}
-			if(secondaryRole.compareTo("any") == 0) {
-				secondaryRole = "*";
-			}
-			
 			ps = conn
-					.prepareStatement("SELECT * FROM TransactionLog, Users  WHERE (MID=loggedInMID OR MID=secondaryMID) AND (Role=? OR Role=?) "
-							+ " AND transactionCode=? AND timeLogged >= ? AND timeLogged <= ?" + " ORDER BY timeLogged DESC");
-			ps.setString(1, loggedInRole);
-			ps.setString(2, secondaryRole);
-			ps.setInt(3, type.getCode());
-			ps.setDate(4, begin);
-			ps.setDate(5, end);
+					.prepareStatement("SELECT * FROM TransactionLog WHERE (timeLogged < ?) " +
+							"AND  (secondaryMID=? AND transactionCode " +
+								"IN (" + 
+								TransactionType.patientViewableStr+ ")) " +
+							"OR (loggedInMID=? AND transactionCode=?) ORDER BY timeLogged DESC LIMIT 0,?");
+			ps.setString(2, mid + "");
+			ps.setString(3, mid + "");
+			ps.setInt(4, TransactionType.LOGIN_SUCCESS.getCode());
+			ps.setTimestamp(1, new Timestamp(start.getTime()));
+			ps.setInt(5, range);
 			ResultSet rs = ps.executeQuery();
 			List<TransactionBean> tbList = loader.loadList(rs);
 
-			//tbList = addAndSortRoles(tbList, patientID, getByRole);
-			
 			return tbList;
-			
 		} catch (SQLException e) {
 			e.printStackTrace();
 			throw new DBException(e);
@@ -266,7 +252,6 @@ public class TransactionDAO {
 			conn = factory.getConnection();
 			
 			for(TransactionBean t : tbList) {
-				
 				ps = conn
 						.prepareStatement("SELECT Role FROM Users WHERE MID=?");
 				ps.setLong(1, t.getLoggedInMID());
@@ -306,7 +291,6 @@ public class TransactionDAO {
 				}
 					
 				t.setRole(role);
-				
 			}
 			
 			if(sortByRole){
@@ -327,7 +311,6 @@ public class TransactionDAO {
 				int size = tbList.size();
 				for(int i = 0; i < size; i++)
 					tbList.set(i, array[i]);
-				
 			}
 		
 			return tbList;
@@ -338,6 +321,4 @@ public class TransactionDAO {
 			DBUtil.closeConnection(conn, ps);
 		}
 	}
-	
-	
 }

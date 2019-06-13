@@ -7,7 +7,6 @@ import edu.ncsu.csc.itrust.dao.mysql.AuthDAO;
 import edu.ncsu.csc.itrust.dao.mysql.PatientDAO;
 import edu.ncsu.csc.itrust.dao.mysql.TransactionDAO;
 import edu.ncsu.csc.itrust.enums.Role;
-import edu.ncsu.csc.itrust.enums.TransactionType;
 import edu.ncsu.csc.itrust.exception.iTrustException;
 
 /**
@@ -66,8 +65,6 @@ public class DeclareHCPAction {
 			boolean confirm = patientDAO.declareHCP(loggedInMID, hcpID);
 
 			if (confirm) {
-				transDAO.logTransaction(TransactionType.DECLARE_HCP, loggedInMID, hcpID,
-						"patient declared hcp");
 				return "HCP successfully declared";
 			} else
 				return "HCP not declared";
@@ -90,8 +87,6 @@ public class DeclareHCPAction {
 			long hcpID = Long.valueOf(input);
 			boolean confirm = patientDAO.undeclareHCP(loggedInMID, hcpID);
 			if (confirm) {
-				transDAO.logTransaction(TransactionType.DECLARE_HCP, loggedInMID, hcpID,
-						"patient undeclared hcp");
 				return "HCP successfully undeclared";
 			} else
 				return "HCP not undeclared";

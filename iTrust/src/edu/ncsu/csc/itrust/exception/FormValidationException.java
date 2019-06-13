@@ -3,6 +3,7 @@ package edu.ncsu.csc.itrust.exception;
 import java.io.IOException;
 import java.util.List;
 import javax.servlet.jsp.JspWriter;
+import org.apache.commons.lang.StringEscapeUtils;
 
 /**
  * This exception is used specifically for when an action involves the correct
@@ -49,6 +50,7 @@ public class FormValidationException extends Exception {
 		return "This form has not been validated correctly. The following field are not properly filled in: "
 				+ errorList.toString();
 	}
+	
 
 	/**
 	 * The special formatting for error messages is then kept in one place.
@@ -58,7 +60,7 @@ public class FormValidationException extends Exception {
 	public void printHTML(JspWriter out) throws IOException {
 		out.print("<h2>Information not valid</h2><div class=\"errorList\">");
 		for (String errorMessage : errorList) {
-			out.print(errorMessage + "<br />");
+			out.print(StringEscapeUtils.escapeHtml(errorMessage) + "<br />");
 		}
 		out.print("</div>");
 	}

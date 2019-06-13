@@ -57,10 +57,12 @@ session.removeAttribute("personnelList");
 				bean.setHCPzip(zipCode);
 				bean.setHCPspecialty(specialty);
 				resultList = action.getSurveyResultsForZip(bean);
+				loggingAction.logEvent(TransactionType.SATISFACTION_SURVEY_VIEW, loggedInMID.longValue(), 0, "searched results by HCP zip code");
 			} else if (!hospitalID.equals("") && hospitalID != null) {
 				bean.setHCPhospital(hospitalID);
 				bean.setHCPspecialty(specialty);
 				resultList = action.getSurveyResultsForHospital(bean);
+				loggingAction.logEvent(TransactionType.SATISFACTION_SURVEY_VIEW, loggedInMID.longValue(), 0, "searched results by Hospital ID");
 			} else {
 				%><span >You must enter either a zip code or a hospital ID.</span><%
 			}
@@ -81,13 +83,13 @@ This search allows you to search for a HCP based on a zip code or hospital ID.  
 <table>
 	<tr>
 		<td>Zip Code:</td>
-		<td><input type="text" name="hcpZip" maxlength="10" size="10" value="<%=zipCode%>"></td>
+		<td><input type="text" name="hcpZip" maxlength="10" size="10" value="<%= StringEscapeUtils.escapeHtml("" + (zipCode)) %>"></td>
 		<td> - OR -</td>
 		<td>Hospital ID:</td>
 		<td><select name="hcpHospitalID">
 				<option value="">N/A</option>
 				<%for(HospitalBean hos : hcpHospitals) {%>
-					<option value="<%=hos.getHospitalID()%>"<%if (hos.getHospitalID().equals(hospitalID)) {%> selected="selected"<%}%>><%=hos.getHospitalID()%></option>
+					<option value="<%=hos.getHospitalID()%>"<%if (hos.getHospitalID().equals(hospitalID)) {%> selected="selected"<%}%>><%= StringEscapeUtils.escapeHtml("" + (hos.getHospitalID())) %></option>
 				<%} %>				
 			</select>
 		</td>
@@ -97,12 +99,12 @@ This search allows you to search for a HCP based on a zip code or hospital ID.  
 	</tr>
 	<tr>
 		<td colspan="5" align="center"><select name="hcpSpecialty">
-			<option value="<%=SurveyResultBean.ANY_SPECIALTY %>"<%if (specialty.equals(SurveyResultBean.ANY_SPECIALTY)) {%> selected="selected"<%}%>>-- Any Specialty --</option>
-			<option value="<%=SurveyResultBean.GENERAL_SPECIALTY %>"<%if (specialty.equals(SurveyResultBean.GENERAL_SPECIALTY)) {%> selected="selected"<%}%>><%=SurveyResultBean.GENERAL_SPECIALTY%></option>
-			<option value="<%=SurveyResultBean.HEART_SPECIALTY %>"<%if (specialty.equals(SurveyResultBean.HEART_SPECIALTY)) {%> selected="selected"<%}%>><%=SurveyResultBean.HEART_SPECIALTY%></option>
-			<option value="<%=SurveyResultBean.OBGYN_SPECIALTY %>"<%if (specialty.equals(SurveyResultBean.OBGYN_SPECIALTY)) {%> selected="selected"<%}%>><%=SurveyResultBean.OBGYN_SPECIALTY%></option>
-			<option value="<%=SurveyResultBean.PEDIATRICIAN_SPECIALTY %>"<%if (specialty.equals(SurveyResultBean.PEDIATRICIAN_SPECIALTY)) {%> selected="selected"<%}%>><%=SurveyResultBean.PEDIATRICIAN_SPECIALTY%></option>
-			<option value="<%=SurveyResultBean.SURGEON_SPECIALTY %>"<%if (specialty.equals(SurveyResultBean.SURGEON_SPECIALTY)) {%> selected="selected"<%}%>><%=SurveyResultBean.SURGEON_SPECIALTY%></option>
+			<option value="<%= StringEscapeUtils.escapeHtml("" + (SurveyResultBean.ANY_SPECIALTY )) %>"<%if (specialty.equals(SurveyResultBean.ANY_SPECIALTY)) {%> selected="selected"<%}%>>-- Any Specialty --</option>
+			<option value="<%=SurveyResultBean.GENERAL_SPECIALTY %>"<%if (specialty.equals(SurveyResultBean.GENERAL_SPECIALTY)) {%> selected="selected"<%}%>><%= StringEscapeUtils.escapeHtml("" + (SurveyResultBean.GENERAL_SPECIALTY)) %></option>
+			<option value="<%=SurveyResultBean.HEART_SPECIALTY %>"<%if (specialty.equals(SurveyResultBean.HEART_SPECIALTY)) {%> selected="selected"<%}%>><%= StringEscapeUtils.escapeHtml("" + (SurveyResultBean.HEART_SPECIALTY)) %></option>
+			<option value="<%=SurveyResultBean.OBGYN_SPECIALTY %>"<%if (specialty.equals(SurveyResultBean.OBGYN_SPECIALTY)) {%> selected="selected"<%}%>><%= StringEscapeUtils.escapeHtml("" + (SurveyResultBean.OBGYN_SPECIALTY)) %></option>
+			<option value="<%=SurveyResultBean.PEDIATRICIAN_SPECIALTY %>"<%if (specialty.equals(SurveyResultBean.PEDIATRICIAN_SPECIALTY)) {%> selected="selected"<%}%>><%= StringEscapeUtils.escapeHtml("" + (SurveyResultBean.PEDIATRICIAN_SPECIALTY)) %></option>
+			<option value="<%=SurveyResultBean.SURGEON_SPECIALTY %>"<%if (specialty.equals(SurveyResultBean.SURGEON_SPECIALTY)) {%> selected="selected"<%}%>><%= StringEscapeUtils.escapeHtml("" + (SurveyResultBean.SURGEON_SPECIALTY)) %></option>
 			</select>
 		</td>
 	</tr>
@@ -155,14 +157,14 @@ This search allows you to search for a HCP based on a zip code or hospital ID.  
 	%>
 	<tr>
 		<td align=center >
-		<a href="/iTrust/auth/viewPersonnel.jsp?personnel=<%=index%>"><%=surveyResult.getHCPFirstName()%> <%=surveyResult.getHCPLastName()%></a></td>
-		<td align=center ><%=surveyResult.getHCPaddress1()%></td>
-		<td align=center ><%=surveyResult.getHCPaddress2()%></td>
-		<td align=center ><%=surveyResult.getHCPcity()%></td>
-		<td align=center ><%=surveyResult.getHCPstate()%></td>
-		<td align=center ><%=surveyResult.getHCPzip()%></td>
-		<td align=center ><%=surveyResult.getHCPspecialty()%></td>
-		<td align=center ><%=surveyResult.getHCPhospital()%></td>
+		<a href="/iTrust/auth/viewPersonnel.jsp?personnel=<%= StringEscapeUtils.escapeHtml("" + (index)) %>"><%= StringEscapeUtils.escapeHtml("" + (surveyResult.getHCPFirstName())) %> <%= StringEscapeUtils.escapeHtml("" + (surveyResult.getHCPLastName())) %></a></td>
+		<td align=center ><%= StringEscapeUtils.escapeHtml("" + (surveyResult.getHCPaddress1())) %></td>
+		<td align=center ><%= StringEscapeUtils.escapeHtml("" + (surveyResult.getHCPaddress2())) %></td>
+		<td align=center ><%= StringEscapeUtils.escapeHtml("" + (surveyResult.getHCPcity())) %></td>
+		<td align=center ><%= StringEscapeUtils.escapeHtml("" + (surveyResult.getHCPstate())) %></td>
+		<td align=center ><%= StringEscapeUtils.escapeHtml("" + (surveyResult.getHCPzip())) %></td>
+		<td align=center ><%= StringEscapeUtils.escapeHtml("" + (surveyResult.getHCPspecialty())) %></td>
+		<td align=center ><%= StringEscapeUtils.escapeHtml("" + (surveyResult.getHCPhospital())) %></td>
 		<td align=center ><%=String.format("%.2f", surveyResult.getAvgWaitingRoomMinutes())%></td>
 		<td align=center ><%=String.format("%.2f", surveyResult.getAvgExamRoomMinutes())%></td>
 		<td align=center ><%=String.format("%.2f", surveyResult.getAvgVisitSatisfaction())%></td>

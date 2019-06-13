@@ -1,6 +1,7 @@
 <%@ page import="java.net.URLEncoder" %>
 <%@page import="edu.ncsu.csc.itrust.dao.DAOFactory"%>
 <%@page import="edu.ncsu.csc.itrust.action.GetUserNameAction"%>
+<%@page import="org.apache.commons.lang.StringEscapeUtils"%>
 <%@page import="edu.ncsu.csc.itrust.exception.iTrustException"%>
 
 <html>
@@ -89,6 +90,8 @@
 <% 
 	String mid = request.getParameter("mid");
 	String paramS = request.getParameter("s");
+	
+	
 	if(mid != null && mid.trim() != "") {
 		try {
 				String userName = new GetUserNameAction(DAOFactory.getProductionInstance()).getUserName(mid);
@@ -99,9 +102,9 @@
 				<table align="center">
 					<tr>
 						<td style="text-align: center; white-space: nowrap;">
-							Found User: <span class="getUserName"><br /><%=userName%></span><br /><br />
+							Found User: <span class="getUserName"><br /><%= StringEscapeUtils.escapeHtml("" + (userName)) %></span><br /><br />
 							Please confirm that this is the user you wish to select.<br /><br style="line-height: 6px;" />
-							<input type="button" name="correct" value="This user is correct" class="getUserCorrect" onclick="<%=action %>" />  							
+							<input type="button" name="correct" value="This user is correct" class="getUserCorrect" onclick="<%= StringEscapeUtils.escapeHtml("" + (action )) %>" />  							
 							<input type="submit" name="incorrect" value="Find another user" class="getUserIncorrect" />&nbsp;&nbsp;&nbsp;
 						</td>
 					</tr>
@@ -135,7 +138,7 @@
 		<% } else if(request.getParameter("error") != null) { %>
 			<tr>
 				<td colspan="2" style="text-align: center; font-weight: bold; color: Red;">
-					<%=request.getParameter("error") %>
+					<%=StringEscapeUtils.escapeHtml(request.getParameter("error")) %>
 				</td>
 			</tr>
 		<% } %>

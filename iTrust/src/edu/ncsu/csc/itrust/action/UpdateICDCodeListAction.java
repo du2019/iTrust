@@ -4,7 +4,6 @@ import edu.ncsu.csc.itrust.beans.DiagnosisBean;
 import edu.ncsu.csc.itrust.dao.DAOFactory;
 import edu.ncsu.csc.itrust.dao.mysql.ICDCodesDAO;
 import edu.ncsu.csc.itrust.dao.mysql.TransactionDAO;
-import edu.ncsu.csc.itrust.enums.TransactionType;
 import edu.ncsu.csc.itrust.exception.DBException;
 import edu.ncsu.csc.itrust.exception.FormValidationException;
 import edu.ncsu.csc.itrust.exception.iTrustException;
@@ -52,8 +51,6 @@ public class UpdateICDCodeListAction {
 		validator.validate(diagn);
 		try {
 			if (icdDAO.addICDCode(diagn)) {
-				transDAO.logTransaction(TransactionType.MANAGE_DIAGNOSIS_CODE, performerID, 0L,
-						"added ICD code " + diagn.getICDCode());
 				return "Success: " + diagn.getICDCode() + " - " + diagn.getDescription() + " added";
 			} else
 				return "The database has become corrupt. Please contact the system administrator for assistance.";
@@ -80,8 +77,6 @@ public class UpdateICDCodeListAction {
 			if (0 == rows) {
 				return "Error: Code not found.";
 			} else {
-				transDAO.logTransaction(TransactionType.MANAGE_DIAGNOSIS_CODE, performerID, 0L,
-						"updated ICD code " + diagn.getICDCode());
 				return "Success: " + rows + " row(s) updated";
 			}
 		} catch (DBException e) {

@@ -12,7 +12,7 @@ pageTitle = "iTrust - Document Office Visit";
 %>
 
 <%@include file="/header.jsp" %>
-
+<itrust:patientNav thisTitle="Document Office Visit" />
 <%	
 /* Require a Patient ID first */
 String pidString = (String)session.getAttribute("pid");
@@ -25,8 +25,7 @@ AddOfficeVisitAction action = new AddOfficeVisitAction(prodDAO, pidString);
 long pid = action.getPid();
 List<OfficeVisitBean> visits = action.getAllOfficeVisits();
 if ("true".equals(request.getParameter("formIsFilled"))) {
-	long ovID = action.addEmptyOfficeVisit(loggedInMID.longValue());
-	response.sendRedirect("editOfficeVisit.jsp?ovID=" + ovID);
+	response.sendRedirect("editOfficeVisit.jsp");
 	return;
 }
 %>
@@ -36,17 +35,16 @@ if ("true".equals(request.getParameter("formIsFilled"))) {
 
 <input type="hidden" name="formIsFilled" value="true" />
 <br /><br />
-Are you sure you want to document a <em>new</em> office visit for <b><%=action.getUserName()%></b>?<br /><br />
+Are you sure you want to document a <em>new</em> office visit for <b><%= StringEscapeUtils.escapeHtml("" + (action.getUserName())) %></b>?<br /><br />
 <input style="font-size: 150%; font-weight: bold;" type=submit value="Yes, Document Office Visit">
 </form>
 <br />
 Click on an old office visit to modify:<br />
 <%for(OfficeVisitBean ov : visits){ %>
-	<a href="editOfficeVisit.jsp?ovID=<%=ov.getID()%>"><%=ov.getVisitDateStr()%></a><br />
+	<a href="editOfficeVisit.jsp?ovID=<%= StringEscapeUtils.escapeHtml("" + (ov.getID())) %>"><%= StringEscapeUtils.escapeHtml("" + (ov.getVisitDateStr())) %></a><br />
 <%} %>
 
 <br /><br /><br />
 </div>
 <itrust:patientNav thisTitle="Document Office Visit" />
-
 <%@include file="/footer.jsp" %>

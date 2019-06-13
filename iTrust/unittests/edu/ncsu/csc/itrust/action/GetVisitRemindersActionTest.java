@@ -27,7 +27,7 @@ public class GetVisitRemindersActionTest extends TestCase {
 	}
 
 	public void testNoSubAction() throws Exception {
-		assertEquals(2, action.getVisitReminders(GetVisitRemindersAction.ReminderType.FLU_SHOT_NEEDERS).size());
+		assertEquals(3, action.getVisitReminders(GetVisitRemindersAction.ReminderType.FLU_SHOT_NEEDERS).size());
 	}
 	
 	public void testGetReminderType() throws Exception {

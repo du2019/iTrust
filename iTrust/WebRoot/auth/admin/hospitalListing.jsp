@@ -28,14 +28,26 @@ pageTitle = "iTrust - Maintain Hospital Listing and Assignments";
 			headerMessage = (request.getParameter("add") != null)
 					? hospUpdater.addHospital(hosp)
 					: hospUpdater.updateInformation(hosp);
+			
+			if(!headerMessage.contains("Error")) {
+				if(request.getParameter("add") != null) {
+					loggingAction.logEvent(TransactionType.HOSPITAL_LISTING_ADD, loggedInMID, 0, "" + hosp.getHospitalID());
+					
+				}
+				if(request.getParameter("update") != null) {
+					loggingAction.logEvent(TransactionType.HOSPITAL_LISTING_EDIT, loggedInMID, 0, "" + hosp.getHospitalID());
+				}
+			}
 		} catch(FormValidationException e) {
 %>
 			<div align=center>
-				<span class="iTrustError"><%=e.getMessage() %></span>
+				<span class="iTrustError"><%=StringEscapeUtils.escapeHtml(e.getMessage()) %></span>
 			</div>
 <%
 			headerMessage = "Validation Errors";
 		}
+	} else {
+		loggingAction.logEvent(TransactionType.HOSPITAL_LISTING_VIEW, loggedInMID, 0, "");
 	}
 	String headerColor = (headerMessage.indexOf("Error") > -1)
 			? "#ffcccc"
@@ -59,7 +71,7 @@ pageTitle = "iTrust - Maintain Hospital Listing and Assignments";
 
 <h3>Hospital Listing</h3>
 
-<span class="iTrustMessage"><%=headerMessage %></span>
+<span class="iTrustMessage"><%= StringEscapeUtils.escapeHtml("" + (headerMessage )) %></span>
 
 <br />
 <br />
@@ -100,13 +112,13 @@ pageTitle = "iTrust - Maintain Hospital Listing and Assignments";
 			escapedName = URLEncoder.encode(tempName, "UTF-8").replaceAll("\\+", "%20");
 	%>
 		<tr>
-			<td ><%=tempID %></td>
+			<td ><%= StringEscapeUtils.escapeHtml("" + (tempID )) %></td>
 			<td ><a href="javascript:void(0)" 
-					onclick="fillUpdate('<%=tempID %>')"><%=tempName %></a>
+					onclick="fillUpdate('<%= StringEscapeUtils.escapeHtml("" + (tempID )) %>')"><%= StringEscapeUtils.escapeHtml("" + (tempName )) %></a>
 				<input type="hidden"
-						id="UPD<%=tempID %>"
-						name="UPD<%=tempID %>"
-						value="<%=escapedName %>">
+						id="UPD<%= StringEscapeUtils.escapeHtml("" + (tempID )) %>"
+						name="UPD<%= StringEscapeUtils.escapeHtml("" + (tempID )) %>"
+						value="<%= StringEscapeUtils.escapeHtml("" + (escapedName )) %>">
 			</td>
 		</tr>
 	<% } %>

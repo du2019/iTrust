@@ -7,7 +7,6 @@ import java.util.List;
 import edu.ncsu.csc.itrust.beans.TransactionBean;
 import edu.ncsu.csc.itrust.dao.DAOFactory;
 import edu.ncsu.csc.itrust.dao.mysql.TransactionDAO;
-import edu.ncsu.csc.itrust.enums.TransactionType;
 import edu.ncsu.csc.itrust.exception.DBException;
 import edu.ncsu.csc.itrust.exception.FormValidationException;
 
@@ -55,7 +54,6 @@ public class ViewMyAccessLogAction {
 			if (lower.after(upper))
 				throw new FormValidationException("Start date must be before end date!");
 			message = "for dates between " + lowerDate + " and " + upperDate;
-			transDAO.logTransaction(TransactionType.VIEW_ACCESS_LOG, loggedInMID, 0L, message);
 			accesses = transDAO.getRecordAccesses(loggedInMID, lower, upper, getByRole);
 		} catch (ParseException e) {
 			throw new FormValidationException("Enter dates in MM/dd/yyyy");

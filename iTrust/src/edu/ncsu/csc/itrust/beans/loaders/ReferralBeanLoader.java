@@ -31,11 +31,11 @@ public class ReferralBeanLoader implements BeanLoader<ReferralBean> {
 	public ReferralBean loadSingle(ResultSet rs) throws SQLException {
 		ReferralBean ref = new ReferralBean();
 		// ERIC: fixed to correct for the mysql database bug plaguing java 1.5
-		ref.setId((long) rs.getInt("id"));
+		ref.setId(rs.getInt("id"));
 		//ref.setId(rs.getLong("id"));
 		ref.setSenderID(rs.getLong("SenderID"));
 		ref.setReceiverID(rs.getLong("ReceiverID"));
-		ref.setPatientID((long) rs.getInt("PatientID"));
+		ref.setPatientID(rs.getInt("PatientID"));
 		ref.setReferralDetails(rs.getString("ReferralDetails"));
 		ref.setConsultationDetails(rs.getString("ConsultationDetails"));
 		

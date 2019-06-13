@@ -27,7 +27,7 @@ if(lastName == null)
 %>
 <table>
 <form method="post">
-<input type="hidden" name="forward" value="<%=request.getParameter("forward") %>">
+<input type="hidden" name="forward" value="<%= StringEscapeUtils.escapeHtml("" + (request.getParameter("forward") )) %>">
 	<tr>
 		<td><b>Personnel:</b></td>
 		<td style="width: 150px; border: 1px solid Gray;">
@@ -45,17 +45,17 @@ if(lastName == null)
 </form>
 
 	<tr> </tr>
-	<form id="userSearchForm" action="getPersonnelID.jsp?forward=<%= request.getParameter("forward") %>" method="post">
+	<form id="userSearchForm" action="getPersonnelID.jsp?forward=<%= StringEscapeUtils.escapeHtml("" + ( request.getParameter("forward") )) %>" method="post">
 		<tr>
 				<td><b>First Name:</b></td>
 				<td style="width: 150px; border: 1px solid Gray;">
-					<input name="FIRST_NAME" type="text" value="<%= firstName %>" />
+					<input name="FIRST_NAME" type="text" value="<%= StringEscapeUtils.escapeHtml("" + ( firstName )) %>" />
 				</td>
 		</tr>
 		<tr>
 				<td><b>Last Name:</b></td>
 				<td style="width: 150px; border: 1px solid Gray;">
-					<input name="LAST_NAME" type="text" value="<%= lastName %>" />
+					<input name="LAST_NAME" type="text" value="<%= StringEscapeUtils.escapeHtml("" + ( lastName )) %>" />
 				</td>
 		</tr>
 		<tr>
@@ -69,18 +69,18 @@ if(lastName == null)
 <%
 	if( (!"".equals(firstName)) || (!"".equals(lastName))){
 		SearchUsersAction searchAction = new SearchUsersAction(prodDAO,loggedInMID.longValue());
-		out.println("Searching for users named " + firstName + " " + lastName + "<br />");
+		out.println("Searching for users named " + StringEscapeUtils.escapeHtml("" + firstName) + " " + StringEscapeUtils.escapeHtml("" + lastName) + "<br />");
 		List<PersonnelBean> personnel = searchAction.searchForPersonnelWithName(firstName,lastName);
-		out.println("Found " + personnel.size() + " Records <br />");
+		out.println("Found " + StringEscapeUtils.escapeHtml("" + personnel.size()) + " Records <br />");
 		out.println("<table border='1px'><tr><td width='175px'>MID</td><td width='250px'>First Name</td><td width='250px'>Last Name</td></tr>");
 		for(PersonnelBean p : personnel){
 %>
-<form action="getPersonnelID.jsp?forward=<%= request.getParameter("forward") %>" method="post">
-<input type="hidden" name="UID_PERSONNELID" value="<%= p.getMID() %>" />
+<form action="getPersonnelID.jsp?forward=<%= StringEscapeUtils.escapeHtml("" + ( request.getParameter("forward") )) %>" method="post">
+<input type="hidden" name="UID_PERSONNELID" value="<%= StringEscapeUtils.escapeHtml("" + ( p.getMID() )) %>" />
 
 
 <%
-			out.println("<tr><td><input type='submit' width='100%' value='" + p.getMID() + "' /></form></td><td>" + p.getFirstName() + "</td><td>" + p.getLastName() + "</td></tr>");
+			out.println("<tr><td><input type='submit' width='100%' value='" + StringEscapeUtils.escapeHtml("" + p.getMID()) + "' /></form></td><td>" + StringEscapeUtils.escapeHtml("" + p.getFirstName()) + "</td><td>" + StringEscapeUtils.escapeHtml("" + p.getLastName()) + "</td></tr>");
 
 		}
 		out.println("</table>");

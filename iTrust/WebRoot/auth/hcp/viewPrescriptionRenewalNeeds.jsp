@@ -50,7 +50,7 @@ ViewPrescriptionRenewalNeedsAction expAction = new ViewPrescriptionRenewalNeedsA
 		} else { 
 %>
 		<tr>
-			<th colspan=4><%= self.getFullName() %></th>
+			<th colspan=4><%= StringEscapeUtils.escapeHtml("" + ( self.getFullName() )) %></th>
 		</tr>
 		<tr class="subHeader">
 			<td>Patient Name</td>
@@ -59,12 +59,14 @@ ViewPrescriptionRenewalNeedsAction expAction = new ViewPrescriptionRenewalNeedsA
 		</tr>
 <%	
 	for (PatientBean patient : patients) { 
+		loggingAction.logEvent(TransactionType.PRECONFIRM_PRESCRIPTION_RENEWAL, loggedInMID, patient.getMID(), "");
+
 		//PersonnelBean doctor = expAction.getPrescribingDoctor(prescription);
 %>
 		<tr>
-			<td ><a href='sendEmailNotification.jsp?mid=<%=patient.getMID()%>'><%=patient.getFullName() %></a></td>
-			<td ><%=patient.getPhone() %></td>
-			<td ><%=patient.getEmail() %></td>
+			<td ><a href='sendEmailNotification.jsp?mid=<%= StringEscapeUtils.escapeHtml("" + (patient.getMID())) %>'><%= StringEscapeUtils.escapeHtml("" + (patient.getFullName() )) %></a></td>
+			<td ><%= StringEscapeUtils.escapeHtml("" + (patient.getPhone() )) %></td>
+			<td ><%= StringEscapeUtils.escapeHtml("" + (patient.getEmail() )) %></td>
 			
 			
 			

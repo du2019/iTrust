@@ -7,7 +7,6 @@ import edu.ncsu.csc.itrust.dao.DAOFactory;
 import edu.ncsu.csc.itrust.dao.mysql.FakeEmailDAO;
 import edu.ncsu.csc.itrust.dao.mysql.PersonnelDAO;
 import edu.ncsu.csc.itrust.dao.mysql.TransactionDAO;
-import edu.ncsu.csc.itrust.enums.TransactionType;
 import edu.ncsu.csc.itrust.exception.iTrustException;
 import edu.ncsu.csc.itrust.Messages;
 
@@ -49,8 +48,6 @@ public class ViewPersonnelAction {
 			long mid = Long.valueOf(input);
 			PersonnelBean personnel = personnelDAO.getPersonnel(mid);
 			if (personnel != null) {
-				transDAO.logTransaction(TransactionType.ENTER_EDIT_DEMOGRAPHICS, loggedInMID, mid,
-						Messages.getString("ViewPersonnelAction.0") + mid); //$NON-NLS-1$
 				return personnel;
 			} else
 				throw new iTrustException(Messages.getString("ViewPersonnelAction.1")); //$NON-NLS-1$

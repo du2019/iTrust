@@ -27,7 +27,7 @@ public class PersonnelLoader implements BeanLoader<PersonnelBean> {
 		PersonnelBean p = new PersonnelBean();
 		p.setMID(rs.getLong("MID"));
 		p.setAMID(rs.getLong("amid"));
-		p.setRole(Role.parse(rs.getString("role")));
+		p.setRoleString(rs.getString("role"));
 		p.setLastName(rs.getString("lastName"));
 		p.setFirstName(rs.getString("firstName"));
 		p.setPhone1(rs.getString("phone1"));

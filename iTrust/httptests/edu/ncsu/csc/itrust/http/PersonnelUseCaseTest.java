@@ -3,6 +3,8 @@ package edu.ncsu.csc.itrust.http;
 import com.meterware.httpunit.WebConversation;
 import com.meterware.httpunit.WebForm;
 import com.meterware.httpunit.WebResponse;
+import com.meterware.httpunit.WebTable;
+import edu.ncsu.csc.itrust.enums.TransactionType;
 
 /**
  * Use Case 2
@@ -21,6 +23,8 @@ public class PersonnelUseCaseTest extends iTrustHTTPTest {
 		WebConversation wc = login("9000000001", "pw");
 		WebResponse wr = wc.getCurrentPage();
 		assertEquals("iTrust - Admin Home", wr.getTitle());
+		assertLogged(TransactionType.HOME_VIEW, 9000000001L, 0L,"");
+		
 		// click on Add ER
 		wr = wr.getLinkWith("Add ER").click();
 		assertEquals("iTrust - Add ER", wr.getTitle());
@@ -32,6 +36,8 @@ public class PersonnelUseCaseTest extends iTrustHTTPTest {
 		WebConversation wc = login("9000000001", "pw");
 		WebResponse wr = wc.getCurrentPage();
 		assertEquals("iTrust - Admin Home", wr.getTitle());
+		assertLogged(TransactionType.HOME_VIEW, 9000000001L, 0L,"");
+		
 		// click on Add ER
 		wr = wr.getLinkWith("Add ER").click();
 		// add the ER
@@ -41,8 +47,11 @@ public class PersonnelUseCaseTest extends iTrustHTTPTest {
 		form.setParameter("lastName", "Oftime");
 		form.setParameter("email", "nick@itrust.com");
 		wr = form.submit();
+		WebTable table = wr.getTables()[0];
+		String newMID = table.getCellAsText(1, 1);
 		// Verify new emergency responder data is present
 		assertTrue(wr.getText().contains("New ER Nick Oftime succesfully added!"));
+		assertLogged(TransactionType.ER_CREATE, 9000000001L, Long.parseLong(newMID),"");
 	}
 	
 	
@@ -51,6 +60,8 @@ public class PersonnelUseCaseTest extends iTrustHTTPTest {
 		WebConversation wc = login("9000000001", "pw");
 		WebResponse wr = wc.getCurrentPage();
 		assertEquals("iTrust - Admin Home", wr.getTitle());
+		assertLogged(TransactionType.HOME_VIEW, 9000000001L, 0L,"");
+		
 		// click on Add ER
 		wr = wr.getLinkWith("Add ER").click();
 		// add the ER
@@ -60,8 +71,11 @@ public class PersonnelUseCaseTest extends iTrustHTTPTest {
 		form.setParameter("lastName", "Oftime");
 		form.setParameter("email", "nick@itrust.com");
 		wr = form.submit();
+		WebTable table = wr.getTables()[0];
+		String newMID = table.getCellAsText(1, 1);
 		// Verify new emergency responder data is present
 		assertTrue(wr.getText().contains("New ER Nick Oftime succesfully added!"));
+		assertLogged(TransactionType.ER_CREATE, 9000000001L, Long.parseLong(newMID),"");
 		
 		wr = wr.getLinkWith("Continue to personnel information.").click();
 		
@@ -78,5 +92,6 @@ public class PersonnelUseCaseTest extends iTrustHTTPTest {
 		form.getSubmitButtons()[0].click();
 		wr = wc.getCurrentPage();
 		assertTrue(wr.getText().contains("Information Successfully Updated"));
+		assertLogged(TransactionType.ER_EDIT, 9000000001L, Long.parseLong(newMID),"");
 	}
 }

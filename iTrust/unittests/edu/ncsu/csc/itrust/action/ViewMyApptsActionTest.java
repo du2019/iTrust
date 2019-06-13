@@ -23,12 +23,9 @@ public class ViewMyApptsActionTest extends TestCase {
 	}
 	
 	public void testGetMyAppointments() throws SQLException {
-		assertEquals(14, action.getMyAppointments().size());
+		assertEquals(15, action.getMyAppointments().size());
 	}
 	
-	public void testGetAllAppointments() throws SQLException {
-		assertEquals(16, action.getAllAppts().size());
-	}
 	
 	public void testGetName() throws iTrustException {
 		assertEquals("Kelly Doctor", action.getName(hcpId));

@@ -18,6 +18,8 @@ pageTitle = "iTrust - View My Sent Messages";
 	<h2>My Sent Messages</h2>
 	<a href="/iTrust/auth/hcp/sendMessage.jsp">Compose a Message</a><br /><br />
 <%
+	loggingAction.logEvent(TransactionType.OUTBOX_VIEW, loggedInMID.longValue(), 0, "");
+
 	ViewMyMessagesAction action = new ViewMyMessagesAction(prodDAO, loggedInMID.longValue());
 	List<MessageBean> messages = null;
 	if(request.getParameter("sortby") != null) {
@@ -74,10 +76,10 @@ pageTitle = "iTrust - View My Sent Messages";
 <%		int index = 0; %>
 <%		for(MessageBean message : messages) { %>
 		<tr <%=(index%2 == 1)?"class=\"alt\"":"" %>>
-			<td><%= action.getName(message.getTo()) %></td>
-			<td><%= message.getSubject() %></td>
-			<td><%= message.getSentDate() %></td>
-			<td><a href="viewMessageOutbox.jsp?msg=<%= index %>">Read</a></td>
+			<td><%= StringEscapeUtils.escapeHtml("" + ( action.getName(message.getTo()) )) %></td>
+			<td><%= StringEscapeUtils.escapeHtml("" + ( message.getSubject() )) %></td>
+			<td><%= StringEscapeUtils.escapeHtml("" + ( message.getSentDate() )) %></td>
+			<td><a href="viewMessageOutbox.jsp?msg=<%= StringEscapeUtils.escapeHtml("" + ( index )) %>">Read</a></td>
 		</tr>
 <%			index ++; %>
 <%		} %>

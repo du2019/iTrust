@@ -10,7 +10,6 @@ import edu.ncsu.csc.itrust.dao.mysql.TransactionDAO;
 import edu.ncsu.csc.itrust.dao.mysql.VisitRemindersDAO;
 import edu.ncsu.csc.itrust.dao.mysql.PatientDAO;
 import edu.ncsu.csc.itrust.beans.ProcedureBean;
-import edu.ncsu.csc.itrust.enums.TransactionType;
 import edu.ncsu.csc.itrust.exception.FormValidationException;
 import edu.ncsu.csc.itrust.exception.iTrustException;
 import edu.ncsu.csc.itrust.beans.VisitFlag;
@@ -104,7 +103,6 @@ public class GetVisitRemindersAction {
 		if (null == type)
 			throw new iTrustException("Reminder Type DNE");
 		
-		transDAO.logTransaction(TransactionType.PATIENT_REMINDERS, loggedInMID, 0l, type.getTypeName());
 		switch (type) {
 			case DIAGNOSED_CARE_NEEDERS:
 				return stripDupes(visitReminderDAO.getDiagnosedVisitNeeders(loggedInMID));

@@ -4,6 +4,7 @@ package edu.ncsu.csc.itrust.http;
 import com.meterware.httpunit.WebConversation;
 import com.meterware.httpunit.WebResponse;
 import com.meterware.httpunit.WebTable;
+import edu.ncsu.csc.itrust.enums.TransactionType;
 
 
 public class SearchUserTest extends iTrustHTTPTest{
@@ -18,12 +19,14 @@ public class SearchUserTest extends iTrustHTTPTest{
 		WebConversation wc = login("9000000000", "pw");
 		WebResponse wr = wc.getCurrentPage();
 		assertEquals("iTrust - HCP Home", wr.getTitle());
+		assertLogged(TransactionType.HOME_VIEW, 9000000000L, 0L, "");
+		
 		wr = wr.getLinkWith("Basic Health Information").click();
 		assertEquals("iTrust - Please Select a Patient", wr.getTitle());
 		wr.getForms()[1].setParameter("FIRST_NAME","Random");
 		wr.getForms()[1].setParameter("LAST_NAME", "Person");
 		wr.getForms()[1].getButtons()[0].click();
-		wr = wc.getCurrentPage();
+		wr = wc.getCurrentPage();		
 		WebTable wt = wr.getTableStartingWith("MID");
 		assertEquals("MID", wt.getCellAsText(0, 0));
 		assertEquals("", wt.getCellAsText(1, 0));
@@ -34,6 +37,8 @@ public class SearchUserTest extends iTrustHTTPTest{
 		WebConversation wc = login("9000000000", "pw");
 		WebResponse wr = wc.getCurrentPage();
 		assertEquals("iTrust - HCP Home", wr.getTitle());
+		assertLogged(TransactionType.HOME_VIEW, 9000000000L, 0L, "");
+		
 		wr = wr.getLinkWith("Basic Health Information").click();
 		assertEquals("iTrust - Please Select a Patient", wr.getTitle());
 		wr.getForms()[1].setParameter("FIRST_NAME","Andy");
@@ -49,6 +54,8 @@ public class SearchUserTest extends iTrustHTTPTest{
 		WebConversation wc = login("9000000000", "pw");
 		WebResponse wr = wc.getCurrentPage();
 		assertEquals("iTrust - HCP Home", wr.getTitle());
+		assertLogged(TransactionType.HOME_VIEW, 9000000000L, 0L, "");
+		
 		wr = wr.getLinkWith("UAPs").click();
 		assertEquals("iTrust - Please Select a Personnel", wr.getTitle());
 		wr.getForms()[1].setParameter("FIRST_NAME","Kelly");

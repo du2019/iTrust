@@ -31,7 +31,7 @@ public enum Role {
 
 	public static Role parse(String str) {
 		for (Role role : values()) {
-			if (role.userRolesString.equals(str))
+			if (role.userRolesString.toLowerCase().equals(str.toLowerCase()))
 				return role;
 		}
 		throw new IllegalArgumentException("Role " + str + " does not exist");

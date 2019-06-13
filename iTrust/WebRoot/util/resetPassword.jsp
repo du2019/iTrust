@@ -70,14 +70,14 @@
 %>
 	<tr>
 		<td colspan=2>
-			<b><%=action.getSecurityQuestion(mid)%></b>
+			<b><%= StringEscapeUtils.escapeHtml("" + (action.getSecurityQuestion(mid))) %></b>
 		</td>
 	</tr>
 	<tr>
 		<td>Answer:</td>
 		<td><input type=password maxlength=50 name="answer"> <input
-			type=hidden name="mid" value="<%=mid%>"> <input type=hidden
-			name="role" value="<%=role%>"></td>
+			type=hidden name="mid" value="<%= StringEscapeUtils.escapeHtml("" + (mid)) %>"> <input type=hidden
+			name="role" value="<%= StringEscapeUtils.escapeHtml("" + (role)) %>"></td>
 	</tr>
 	<tr>
 		<td>New Password:</td>
@@ -110,6 +110,10 @@
 				confirm = action.resetPassword(mid, role, answer, 
 				                               password, confirmPassword, 
 				                               request.getRemoteAddr());
+				
+				if(confirm.contains("Password changed")) {
+					loggingAction.logEvent(TransactionType.PASSWORD_RESET, mid, mid, "");
+				}
 			} catch (FormValidationException e) {
 				e.printHTML(pageContext.getOut());
 %>
@@ -125,7 +129,7 @@
 %>
 	<tr>
 		<td>
-			<%=confirm%>
+			<%= StringEscapeUtils.escapeHtml("" + (confirm)) %>
 		</td>
 	</tr>
 

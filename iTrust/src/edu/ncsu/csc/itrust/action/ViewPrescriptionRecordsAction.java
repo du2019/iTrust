@@ -11,7 +11,6 @@ import edu.ncsu.csc.itrust.dao.DAOFactory;
 import edu.ncsu.csc.itrust.dao.mysql.PatientDAO;
 import edu.ncsu.csc.itrust.dao.mysql.PersonnelDAO;
 import edu.ncsu.csc.itrust.dao.mysql.TransactionDAO;
-import edu.ncsu.csc.itrust.enums.TransactionType;
 import edu.ncsu.csc.itrust.exception.iTrustException;
 import edu.ncsu.csc.itrust.Messages;
 
@@ -85,7 +84,6 @@ public class ViewPrescriptionRecordsAction {
 	public List<PrescriptionBean> getPrescriptionsForPatient(long patientID) throws iTrustException {
 		PatientBean patient = patientDAO.getPatient(patientID);
 		if (loggedInMID == patientID) {
-			transDAO.logTransaction(TransactionType.VIEW_PRESCRIPTION_REPORT, loggedInMID);
 			return patientDAO.getPrescriptions(patientID);
 		}
 		
@@ -95,7 +93,6 @@ public class ViewPrescriptionRecordsAction {
 		List<PatientBean> representatives = patientDAO.getRepresenting(patientID);
 		for(PatientBean representative : representatives) {
 			if (loggedInMID == representative.getMID()) {
-				transDAO.logTransaction(TransactionType.VIEW_PRESCRIPTION_REPORT, loggedInMID);
 				return patientDAO.getPrescriptions(patientID);
 			}
 			toList.add(representative.getEmail());
@@ -104,13 +101,11 @@ public class ViewPrescriptionRecordsAction {
 		List<PersonnelBean> dlhcps = patientDAO.getDeclaredHCPs(patientID);
 		for(PersonnelBean dlhcp : dlhcps) {
 			if (loggedInMID == dlhcp.getMID()) {
-				transDAO.logTransaction(TransactionType.VIEW_PRESCRIPTION_REPORT, loggedInMID);
 				return patientDAO.getPrescriptions(patientID);
 			}
 			List<PersonnelBean> uaps = personnelDAO.getUAPsForHCP(dlhcp.getMID());
 			for(PersonnelBean uap : uaps) {
 				if (loggedInMID == uap.getMID()) {
-					transDAO.logTransaction(TransactionType.VIEW_PRESCRIPTION_REPORT, loggedInMID);
 					return patientDAO.getPrescriptions(patientID);
 				}
 			}
@@ -122,7 +117,6 @@ public class ViewPrescriptionRecordsAction {
 		email.setSubject(Messages.getString("ViewPrescriptionRecordsAction.1")); //$NON-NLS-1$
 		email.setBody(Messages.getString("ViewPrescriptionRecordsAction.2")); //$NON-NLS-1$
 		emailer.sendEmail(email);
-		transDAO.logTransaction(TransactionType.VIEW_PRESCRIPTION_REPORT, loggedInMID);
 		return patientDAO.getPrescriptions(patientID);
 	}
 }

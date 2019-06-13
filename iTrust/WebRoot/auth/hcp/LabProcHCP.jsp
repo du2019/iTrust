@@ -17,19 +17,17 @@ pageTitle = "iTrust - View Laboratory Procedures";
 <%@include file="/header.jsp" %>
 
 <%
-LabProcHCPAction action2 = new LabProcHCPAction(prodDAO, loggedInMID.longValue());
-if(request.getParameter("priv")!=null && request.getParameter("priv").equals("yes")){
-	action2.changePrivacy(Long.parseLong(request.getParameter("ID")));
-}
-
 /* Require a Patient ID first */
 String pidString = (String)session.getAttribute("pid");
 if (pidString == null || 1 > pidString.length()) {
 	response.sendRedirect("/iTrust/auth/getPatientID.jsp?forward=hcp/LabProcHCP.jsp");
    	return;
 }
-else {
-	session.removeAttribute("pid");
+loggingAction.logEvent(TransactionType.LAB_RESULTS_VIEW, loggedInMID.longValue(), Long.parseLong(pidString), "Viewed laboratory procedures");
+LabProcHCPAction action2 = new LabProcHCPAction(prodDAO, loggedInMID.longValue());
+if(request.getParameter("priv")!=null && request.getParameter("priv").equals("yes")){
+	action2.changePrivacy(Long.parseLong(request.getParameter("ID")));
+	loggingAction.logEvent(TransactionType.LAB_RESULTS_VIEW, loggedInMID.longValue(), Long.parseLong(pidString), "Viewed laboratory procedures");
 }
 
 /* If the patient id doesn't check out, then kick 'em out to the exception handler */
@@ -64,22 +62,22 @@ List<LabProcedureBean> proc = action2.viewProcedures(pid);
 			PatientBean patient = new PatientDAO(prodDAO).getPatient(bean.getPid());
 %>
 			<tr>
-				<td ><%=patient.getFullName()%></td>
-				<td ><%=bean.getLoinc()%></td>
-				<td ><%=bean.getRights()%></td>
-				<td ><%=bean.getStatus()%></td>
-				<td ><%=bean.getCommentary()%></td>
-				<td ><%=bean.getResults()%></td>
-				<td ><%=bean.getOvID()%></td>
-				<td ><%=bean.getTimestamp()%></td>
+				<td ><%= StringEscapeUtils.escapeHtml("" + (patient.getFullName())) %></td>
+				<td ><%= StringEscapeUtils.escapeHtml("" + (bean.getLoinc())) %></td>
+				<td ><%= StringEscapeUtils.escapeHtml("" + (bean.getRights())) %></td>
+				<td ><%= StringEscapeUtils.escapeHtml("" + (bean.getStatus())) %></td>
+				<td ><%= StringEscapeUtils.escapeHtml("" + (bean.getCommentary())) %></td>
+				<td ><%= StringEscapeUtils.escapeHtml("" + (bean.getResults())) %></td>
+				<td ><%= StringEscapeUtils.escapeHtml("" + (bean.getOvID())) %></td>
+				<td ><%= StringEscapeUtils.escapeHtml("" + (bean.getTimestamp())) %></td>
 				<td >  <%if(action2.checkAccess(bean.getProcedureID())){%>
-					<a href="/iTrust/auth/hcp-uap/editOfficeVisit.jsp?ovID=<%=bean.getOvID()%>">Edit Office Visit</a><br />
+					<a href="/iTrust/auth/hcp-uap/editOfficeVisit.jsp?ovID=<%= StringEscapeUtils.escapeHtml("" + (bean.getOvID())) %>">Edit Office Visit</a><br />
 				<%} %></td>
 				<td >  <%if(action2.checkAccess(bean.getProcedureID())){%>
-					<a href="/iTrust/auth/hcp/LabProcHCP.jsp?ID=<%=bean.getProcedureID()%>&priv=yes">Allow/Disallow Viewing</a><br />
+					<a href="/iTrust/auth/hcp/LabProcHCP.jsp?ID=<%= StringEscapeUtils.escapeHtml("" + (bean.getProcedureID())) %>&priv=yes">Allow/Disallow Viewing</a><br />
 				<%} %></td>
 				<td > 
-					<a href="/iTrust/auth/hcp/UpdateLabProc.jsp?ID=<%=bean.getProcedureID()%>">Update</a><br />
+					<a href="/iTrust/auth/hcp/UpdateLabProc.jsp?ID=<%= StringEscapeUtils.escapeHtml("" + (bean.getProcedureID())) %>">Update</a><br />
 				</td>
 				
 			</tr>

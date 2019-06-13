@@ -3,6 +3,7 @@ package edu.ncsu.csc.itrust.http;
 import com.meterware.httpunit.WebConversation;
 import com.meterware.httpunit.WebForm;
 import com.meterware.httpunit.WebResponse;
+import edu.ncsu.csc.itrust.enums.TransactionType;
 
 public class ViewEmergencyReportTest extends iTrustHTTPTest {
 
@@ -26,6 +27,7 @@ public class ViewEmergencyReportTest extends iTrustHTTPTest {
 		WebConversation wc = login("9000000006", "pw");
 		WebResponse wr = wc.getCurrentPage();
 		assertEquals("iTrust - ER Home", wr.getTitle());
+		assertLogged(TransactionType.HOME_VIEW, 9000000006L, 0L, "");
 		
 		wr = wr.getLinkWith("Emergency Patient Report").click();
 
@@ -46,5 +48,7 @@ public class ViewEmergencyReportTest extends iTrustHTTPTest {
         assertEquals("iTrust - HCP Home", wr.getTitle());
         wr = wr.getLinkWith("Email History").click();
         assertTrue(wr.getText().contains("tarehart@iTrust.org"));
+        assertLogged(TransactionType.EMERGENCY_REPORT_VIEW, 9000000006L, 99L, "");
+        
 	}
 }

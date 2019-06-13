@@ -7,7 +7,6 @@ import edu.ncsu.csc.itrust.dao.mysql.PatientDAO;
 import edu.ncsu.csc.itrust.dao.mysql.AuthDAO;
 import edu.ncsu.csc.itrust.dao.mysql.TransactionDAO;
 import edu.ncsu.csc.itrust.enums.Role;
-import edu.ncsu.csc.itrust.enums.TransactionType;
 import edu.ncsu.csc.itrust.exception.DBException;
 import edu.ncsu.csc.itrust.exception.FormValidationException;
 import edu.ncsu.csc.itrust.validate.AddPatientValidator;
@@ -54,8 +53,6 @@ public class AddPatientAction {
 		String pwd = authDAO.addUser(newMID, Role.PATIENT, RandomPassword.getRandomPassword());
 		p.setPassword(pwd);
 		patientDAO.editPatient(p);
-		transDAO.logTransaction(TransactionType.CREATE_DISABLE_PATIENT_HCP, loggedInMID, newMID, "New Patient Added");
 		return newMID;
 	}
-
 }

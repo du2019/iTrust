@@ -3,6 +3,7 @@ package edu.ncsu.csc.itrust.http;
 import com.meterware.httpunit.WebConversation;
 import com.meterware.httpunit.WebResponse;
 import com.meterware.httpunit.WebTable;
+import edu.ncsu.csc.itrust.enums.TransactionType;
 
 /**
  * Use Case 9
@@ -19,8 +20,11 @@ public class ViewRecordsUseCaseTest extends iTrustHTTPTest {
 		// Login
 		WebConversation wc = login("2", "pw");
 		WebResponse wr = wc.getCurrentPage();
+		assertLogged(TransactionType.HOME_VIEW, 2L, 0L, "");
+		
 		wr = wr.getLinkWith("View My Records").click();
-
+		assertLogged(TransactionType.MEDICAL_RECORD_VIEW, 2L, 2L, "");
+		
 		// Records page contains patient information
 		assertTrue(wr.getText().contains("Patient Information"));
 	}
@@ -29,19 +33,26 @@ public class ViewRecordsUseCaseTest extends iTrustHTTPTest {
 		// Login
 		WebConversation wc = login("2", "pw");
 		WebResponse wr = wc.getCurrentPage();
+		assertLogged(TransactionType.HOME_VIEW, 2L, 0L, "");
+		
 		wr = wr.getLinkWith("View My Records").click();
+		assertLogged(TransactionType.MEDICAL_RECORD_VIEW, 2L, 2L, "");
 		
 		wr = wr.getLinkWith("Baby Programmer").click();
 		
 		// Clicking on a representee's name takes you to their records
 		assertTrue(wr.getText().contains("You are currently viewing your representee's records"));
+		assertLogged(TransactionType.MEDICAL_RECORD_VIEW, 2L, 5L, "");
 	}
 	
 	public void testDoctor() throws Exception {
 		// Login
 		WebConversation wc = login("2", "pw");
 		WebResponse wr = wc.getCurrentPage();
+		assertLogged(TransactionType.HOME_VIEW, 2L, 0L, "");
+		
 		wr = wr.getLinkWith("View My Records").click();
+		assertLogged(TransactionType.MEDICAL_RECORD_VIEW, 2L, 2L, "");
 		
 		wr = wr.getLinkWith("Kelly Doctor").click();
 		assertTrue(wr.getText().contains("kdoctor@iTrust.org"));
@@ -69,7 +80,10 @@ public class ViewRecordsUseCaseTest extends iTrustHTTPTest {
 		WebConversation wc = login("2", "pw");
 		WebResponse wr = wc.getCurrentPage();
 		assertEquals("iTrust - Patient Home", wr.getTitle());
+		assertLogged(TransactionType.HOME_VIEW, 2L, 0L, "");
+		
 		wr = wr.getLinkWith("View My Records").click();
+		assertLogged(TransactionType.MEDICAL_RECORD_VIEW, 2L, 2L, "");
 		
 		assertTrue(wr.getText().contains("Patient Information"));
 		WebTable wt = wr.getTableStartingWith("Office Visits");

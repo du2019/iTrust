@@ -13,6 +13,7 @@ pageTitle = "iTrust - Adverse Event Chart";
 <%@include file="/header.jsp" %>
 
 <%
+loggingAction.logEvent(TransactionType.ADVERSE_EVENT_CHART_VIEW, loggedInMID, 0, "");
 // New instance of ViewAdverseEventAction class
 ViewAdverseEventAction action = new ViewAdverseEventAction(prodDAO);
 

@@ -4,6 +4,7 @@ import com.meterware.httpunit.WebConversation;
 import com.meterware.httpunit.WebForm;
 import com.meterware.httpunit.WebResponse;
 import com.meterware.httpunit.WebTable;
+import edu.ncsu.csc.itrust.enums.TransactionType;
 
 /**
  * Use Case 24
@@ -37,8 +38,12 @@ public class SurveyUseCaseTest extends iTrustHTTPTest {
 		WebConversation wc = login("2", "pw");
 		WebResponse wr = wc.getCurrentPage();
 		assertEquals("iTrust - Patient Home", wr.getTitle());
+		assertLogged(TransactionType.HOME_VIEW, 2L, 0L, "");
+		
 		wr = wr.getLinkWith("My Records").click();
 		assertTrue(wr.getText().contains("Patient Information"));
+		assertLogged(TransactionType.MEDICAL_RECORD_VIEW, 2L, 2L, "");
+		
 		WebTable wt = wr.getTableStartingWith("Office Visits");
 		wr = wt.getTableCell(1, 1).getLinkWith("Complete Visit Survey").click();
 		assertTrue(wr.getText().contains("iTrust Patient Survey for Office Visit on Jun 10, 2007"));
@@ -49,6 +54,7 @@ public class SurveyUseCaseTest extends iTrustHTTPTest {
 		form.setParameter("Treradios", "treRadio5");
 		wr = form.submit();
 		assertTrue(wr.getText().contains("Survey Successfully Submitted"));
+		assertLogged(TransactionType.SATISFACTION_SURVEY_TAKE, 2L, 2L, "");
 		
 		// make sure survey cannot be taken again
 		wt = wr.getTableStartingWith("Office Visits");
@@ -58,10 +64,6 @@ public class SurveyUseCaseTest extends iTrustHTTPTest {
 		} catch (NullPointerException ex) {
 			assertEquals(null, ex.getMessage());
 		}
-
-		// make sure event is logged
-		wr = wr.getLinkWith("Transaction Log").click();
-		assertTrue(wr.getText().contains("office visit ID for completed survey is: 955"));
 	}
 	
 	/*
@@ -84,8 +86,12 @@ public class SurveyUseCaseTest extends iTrustHTTPTest {
 		WebConversation wc = login("2", "pw");
 		WebResponse wr = wc.getCurrentPage();
 		assertEquals("iTrust - Patient Home", wr.getTitle());
+		assertLogged(TransactionType.HOME_VIEW, 2L, 0L, "");
+		
 		wr = wr.getLinkWith("My Records").click();
 		assertTrue(wr.getText().contains("Patient Information"));
+		assertLogged(TransactionType.MEDICAL_RECORD_VIEW, 2L, 2L, "");
+		
 		WebTable wt = wr.getTableStartingWith("Office Visits");
 		wr = wt.getTableCell(1, 1).getLinkWith("Complete Visit Survey").click();
 		assertTrue(wr.getText().contains("iTrust Patient Survey for Office Visit on Jun 10, 2007"));
@@ -94,6 +100,7 @@ public class SurveyUseCaseTest extends iTrustHTTPTest {
 		form.setParameter("Satradios", "satRadio3");
 		wr = form.submit();
 		assertTrue(wr.getText().contains("Survey Successfully Submitted"));
+		assertLogged(TransactionType.SATISFACTION_SURVEY_TAKE, 2L, 2L, "");
 		
 		// make sure survey cannot be taken again
 		wt = wr.getTableStartingWith("Office Visits");
@@ -103,10 +110,6 @@ public class SurveyUseCaseTest extends iTrustHTTPTest {
 		} catch (NullPointerException ex) {
 			assertEquals(null, ex.getMessage());
 		}
-
-		// make sure event is logged
-		wr = wr.getLinkWith("Transaction Log").click();
-		assertTrue(wr.getText().contains("office visit ID for completed survey is: 955"));
 	}
 	
 	/*
@@ -123,8 +126,12 @@ public class SurveyUseCaseTest extends iTrustHTTPTest {
 		WebConversation wc = login("2", "pw");
 		WebResponse wr = wc.getCurrentPage();
 		assertEquals("iTrust - Patient Home", wr.getTitle());
+		assertLogged(TransactionType.HOME_VIEW, 2L, 0L, "");
+		
 		wr = wr.getLinkWith("My Records").click();
 		assertTrue(wr.getText().contains("Patient Information"));
+		assertLogged(TransactionType.MEDICAL_RECORD_VIEW, 2L, 2L, "");
+		
 		WebTable wt = wr.getTableStartingWith("Office Visits");
 		wr = wt.getTableCell(1, 1).getLinkWith("Complete Visit Survey").click();
 		assertTrue(wr.getText().contains("iTrust Patient Survey for Office Visit on Jun 10, 2007"));
@@ -140,6 +147,7 @@ public class SurveyUseCaseTest extends iTrustHTTPTest {
 		wt = wr.getTableStartingWith("Office Visits");
 		
 		// make sure survey CAN still be taken.  This will throw an exception if the survey is not available
-		wr = wt.getTableCell(1, 1).getLinkWith("Complete Visit Survey").click();		
+		wr = wt.getTableCell(1, 1).getLinkWith("Complete Visit Survey").click();	
+		assertNotLogged(TransactionType.SATISFACTION_SURVEY_TAKE, 2L, 2L, "");
 	}
 }

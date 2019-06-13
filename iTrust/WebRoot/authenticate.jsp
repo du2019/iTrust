@@ -9,6 +9,12 @@ if(!DBUtil.canObtainProductionInstance()){
 if(request.getUserPrincipal() != null) {
 	long mid = Long.valueOf(request.getUserPrincipal().getName());
 	userName = authDAO.getUserName(mid);
+	
+	if(session.getAttribute("pid") != null)
+	{
+		String pid = (String)session.getAttribute("pid");
+		selectedPatientName = authDAO.getUserName(Long.parseLong(pid));
+	}
 }
 else
 {
@@ -22,18 +28,19 @@ else
 
 if (request.getAuthType() != null) {
 			
-		if (request.getSession(false) != null) {
-			boolean isValidLogin = loginFailureAction.isValidForLogin();
-			if(!isValidLogin) {
-				session.invalidate();
-				return;
-			}
-			else {
-			
-				loggedInMID = new Long(Long.valueOf(request.getUserPrincipal().getName()));
-				session.setAttribute("loggedInMID", loggedInMID);
-			}
+	if (request.getSession(false) != null) {
+		boolean isValidLogin = loginFailureAction.isValidForLogin();
+		if(!isValidLogin) {
+			session.invalidate();
+			response.sendRedirect("/iTrust/login.jsp");
+			return;
 		}
+		else {
+			loggedInMID = new Long(Long.valueOf(request.getUserPrincipal().getName()));
+			session.setAttribute("loggedInMID", loggedInMID);
+			loginFailureAction.resetFailures();
+		}
+	}
 }
 
 %>

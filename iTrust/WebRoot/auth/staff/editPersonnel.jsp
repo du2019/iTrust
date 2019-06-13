@@ -5,6 +5,8 @@
 <%@page import="edu.ncsu.csc.itrust.action.EditPersonnelAction"%>
 <%@page import="edu.ncsu.csc.itrust.BeanBuilder"%>
 <%@page import="edu.ncsu.csc.itrust.exception.FormValidationException"%>
+<%@page import="edu.ncsu.csc.itrust.enums.TransactionType"%>
+<%@page import="edu.ncsu.csc.itrust.enums.Role"%>
 
 <%@include file="/global.jsp" %>
 
@@ -40,6 +42,14 @@ if (formIsFilled) {
 	personnelForm = new BeanBuilder<PersonnelBean>().build(request.getParameterMap(), new PersonnelBean());
 	try {
 		personnelEditor.updateInformation(personnelForm);
+		if(personnelForm.getRole() == Role.HCP) // If pid belongs to an HCP
+			loggingAction.logEvent(TransactionType.LHCP_EDIT, loggedInMID.longValue(), personnelForm.getMID(), "");
+		else if(personnelForm.getRole() == Role.UAP) // If pid belongs to a UAP
+			loggingAction.logEvent(TransactionType.UAP_EDIT, loggedInMID.longValue(), personnelForm.getMID(), "");
+		else if(personnelForm.getRole() == Role.ER) // If pid belongs to a ER
+			loggingAction.logEvent(TransactionType.ER_EDIT, loggedInMID.longValue(), personnelForm.getMID(), "");
+		else if(personnelForm.getRole() == Role.PHA) // If pid belongs to a PHA
+			loggingAction.logEvent(TransactionType.PHA_EDIT, loggedInMID.longValue(), personnelForm.getMID(), "");
 %>
 		<div align=center>
 			<span class="iTrustMessage">Information Successfully Updated</span>
@@ -57,11 +67,13 @@ if (formIsFilled) {
 else {
 	personnelForm = prodDAO.getPersonnelDAO().getPersonnel(pid);
 }
+loggingAction.logEvent(TransactionType.PERSONNEL_VIEW, loggedInMID.longValue(), personnelForm.getMID(), "");
 %>
 <br>
 
 <form action="editPersonnel.jsp" method="post">
 <input type="hidden" name="formIsFilled" value="true">
+<input type="hidden" name="roleString" value="<%=personnelForm.getRole() %>" />
 <div align=center>
 	<table class="fTable" align=center>
 	<tr>
@@ -71,49 +83,49 @@ else {
 		<td class="subHeaderVertical">
 		  First Name:
 		</td><td>
-		  <input name="firstName"  value="<%=personnelForm.getFirstName()%>"  type="text">
+		  <input name="firstName"  value="<%= StringEscapeUtils.escapeHtml("" + (personnelForm.getFirstName())) %>"  type="text">
 	      </td></tr>
 	      <tr><td class="subHeaderVertical">
 		 Last Name:
 		</td><td>
 
-		  <input name="lastName"  value="<%=personnelForm.getLastName()%>"  type="text">
+		  <input name="lastName"  value="<%= StringEscapeUtils.escapeHtml("" + (personnelForm.getLastName())) %>"  type="text">
 	      </td></tr>
 	      <tr><td class="subHeaderVertical">
 		  Address:
 		</td><td>
 
-		  <input name="streetAddress1"  value="<%=personnelForm.getStreetAddress1()%>"  type="text"><br />
-		  <input name="streetAddress2"  value="<%=personnelForm.getStreetAddress2()%>"  type="text">
+		  <input name="streetAddress1"  value="<%= StringEscapeUtils.escapeHtml("" + (personnelForm.getStreetAddress1())) %>"  type="text"><br />
+		  <input name="streetAddress2"  value="<%= StringEscapeUtils.escapeHtml("" + (personnelForm.getStreetAddress2())) %>"  type="text">
 	      </td></tr>
 	      <tr ><td class="subHeaderVertical">
 		  City:
 		</td><td>
-		  <input name="city"  value="<%=personnelForm.getCity()%>"  type="text">
+		  <input name="city"  value="<%= StringEscapeUtils.escapeHtml("" + (personnelForm.getCity())) %>"  type="text">
 	      </td></tr>
 	      <tr><td class="subHeaderVertical">
 
 		  State:
 		</td><td>
-			<itrust:state name="state" value="<%=personnelForm.getState()%>"/>
+			<itrust:state name="state" value="<%= StringEscapeUtils.escapeHtml(personnelForm.getState()) %>"/>
 	      </td></tr>
 	      <tr ><td class="subHeaderVertical">
 		  Zip:
 		</td><td>
-		  <input name="zip1" value="<%=personnelForm.getZip1()%>"  maxlength="5" type="text" size="5"> - 
-		  <input name="zip2" value="<%=personnelForm.getZip2()%>"  maxlength="4" type="text" size="4">
+		  <input name="zip1" value="<%= StringEscapeUtils.escapeHtml("" + (personnelForm.getZip1())) %>"  maxlength="5" type="text" size="5"> - 
+		  <input name="zip2" value="<%= StringEscapeUtils.escapeHtml("" + (personnelForm.getZip2())) %>"  maxlength="4" type="text" size="4">
 	      </td></tr>
 	      <tr ><td class="subHeaderVertical">
 
 		  Phone:
 		</td><td>
-		  <input name="phone1"  value="<%=personnelForm.getPhone1()%>"  type="text" size="3" maxlength="3"> -
-		  <input name="phone2"  value="<%=personnelForm.getPhone2()%>"  type="text" size="3" maxlength="3"> -
-		  <input name="phone3"  value="<%=personnelForm.getPhone3()%>"  type="text" size="4" maxlength="4">
+		  <input name="phone1"  value="<%= StringEscapeUtils.escapeHtml("" + (personnelForm.getPhone1())) %>"  type="text" size="3" maxlength="3"> -
+		  <input name="phone2"  value="<%= StringEscapeUtils.escapeHtml("" + (personnelForm.getPhone2())) %>"  type="text" size="3" maxlength="3"> -
+		  <input name="phone3"  value="<%= StringEscapeUtils.escapeHtml("" + (personnelForm.getPhone3())) %>"  type="text" size="4" maxlength="4">
 	      </td></tr>
 		  <tr>
 		  	<td class="subHeaderVertical">Email:</td>
-		  	<td><input name="email" value="<%=personnelForm.getEmail()%>" type="text"></td>
+		  	<td><input name="email" value="<%= StringEscapeUtils.escapeHtml("" + (personnelForm.getEmail())) %>" type="text"></td>
 		  </tr>
 		      
 		    </table>

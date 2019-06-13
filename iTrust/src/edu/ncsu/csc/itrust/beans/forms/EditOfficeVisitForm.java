@@ -1,5 +1,7 @@
 package edu.ncsu.csc.itrust.beans.forms;
 
+import edu.ncsu.csc.itrust.exception.FormValidationException;
+
 /**
  * A form to contain data coming from editing an office visit.
  * 
@@ -29,6 +31,8 @@ public class EditOfficeVisitForm {
 	private String dosage;
 	private String instructions;
 	private String causeOfDeath;
+	private String[] orc;
+	private String comment;
 
 	public String getAddDiagID() {
 		return addDiagID;
@@ -37,6 +41,8 @@ public class EditOfficeVisitForm {
 	public void setAddDiagID(String addDiagID) {
 		this.addDiagID = addDiagID;
 	}
+	
+
 
 	public String getAddLabProcID() {
 		return addLabProcID;
@@ -196,5 +202,26 @@ public class EditOfficeVisitForm {
 
 	public void setCauseOfDeath(String causeOfDeath) {
 		this.causeOfDeath = causeOfDeath;
+	}
+
+	public Object setOverrideCode(String[] reasonCode) throws FormValidationException {
+		if(reasonCode == null || reasonCode.equals(""))
+			throw new FormValidationException("Invalid override reason");
+		
+		this.orc = reasonCode;
+		return null;
+	}
+	
+	public String[] getOverrideCodes() {
+		return orc;
+	}
+	
+	
+	public void setOverrideComment(String comment) {
+		this.comment = comment;
+	}
+
+	public String getOverrideComment() {
+		return this.comment;
 	}
 }

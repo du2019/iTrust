@@ -44,7 +44,7 @@ if (prescription == null) {%>
 <%}else{%>
 	<%if (!makeChange) { %>
 		<%// This portion prints a form to edit the prescription information. %>
-		<form action="editPrescription.jsp?ovID=<%=ovIDString%>&presID=<%=presID%>&change=True" method=post>
+		<form action="editPrescription.jsp?ovID=<%= StringEscapeUtils.escapeHtml("" + (ovIDString)) %>&presID=<%= StringEscapeUtils.escapeHtml("" + (presID)) %>&change=True" method=post>
 		<table align=center border=1 class="fTable">
 			<tr>
 				<th colspan=5>Edit Prescription Instructions</th>
@@ -56,10 +56,10 @@ if (prescription == null) {%>
 				<td align=center colspan=2>Instructions</td>
 			</tr>
 			<tr>
-				<td align=center><%=prescription.getMedication().getDescription() %> (<%=prescription.getMedication().getNDCode() %>)</td>
-				<td align=center><input type="text" name="dosage" value="<%=prescription.getDosage() %>" size="5">(In mg)</td>
-				<td align=center><%=prescription.getStartDateStr() %> to <%=prescription.getEndDateStr() %></td>
-				<td align=center><textarea name="instructions" rows="2" cols="20"><%=prescription.getInstructions() %></textarea></td>
+				<td align=center><%= StringEscapeUtils.escapeHtml("" + (prescription.getMedication().getDescription() )) %> (<%= StringEscapeUtils.escapeHtml("" + (prescription.getMedication().getNDCode() )) %>)</td>
+				<td align=center><input type="text" name="dosage" value="<%= StringEscapeUtils.escapeHtml("" + (prescription.getDosage() )) %>" size="5">(In mg)</td>
+				<td align=center><%= StringEscapeUtils.escapeHtml("" + (prescription.getStartDateStr() )) %> to <%= StringEscapeUtils.escapeHtml("" + (prescription.getEndDateStr() )) %></td>
+				<td align=center><textarea name="instructions" rows="2" cols="20"><%= StringEscapeUtils.escapeHtml("" + (prescription.getInstructions() )) %></textarea></td>
 			</tr>
 		</table>
 		<br />
@@ -75,6 +75,7 @@ if (prescription == null) {%>
 			prescription.setDosage(Integer.parseInt(request.getParameter("dosage")));
 			prescription.setInstructions(request.getParameter("instructions"));
 			prescriptionAction.editPrescription(prescription);
+			loggingAction.logEvent(TransactionType.PRESCRIPTION_EDIT, loggedInMID, ov.getPatientID(), "Prescription ID: " + prescription.getId());
 			%> 
 			<table align=center border=1 class="fTable">
 			<tr>
@@ -87,15 +88,15 @@ if (prescription == null) {%>
 				<td align=center colspan=2>Instructions</td>
 			</tr>
 			<tr>
-				<td align=center><%=prescription.getMedication().getDescription() %> (<%=prescription.getMedication().getNDCode() %>)</td>
-				<td align=center><%=prescription.getDosage() %>mg</td>
-				<td align=center><%=prescription.getStartDateStr() %> to <%=prescription.getEndDateStr() %></td>
-				<td align=center><%=prescription.getInstructions() %></td>
+				<td align=center><%= StringEscapeUtils.escapeHtml("" + (prescription.getMedication().getDescription() )) %> (<%= StringEscapeUtils.escapeHtml("" + (prescription.getMedication().getNDCode() )) %>)</td>
+				<td align=center><%= StringEscapeUtils.escapeHtml("" + (prescription.getDosage() )) %>mg</td>
+				<td align=center><%= StringEscapeUtils.escapeHtml("" + (prescription.getStartDateStr() )) %> to <%= StringEscapeUtils.escapeHtml("" + (prescription.getEndDateStr() )) %></td>
+				<td align=center><%= StringEscapeUtils.escapeHtml("" + (prescription.getInstructions() )) %></td>
 			</tr>
 			</table>
 			<%
 		} catch(Exception e) {
-			%><center><b>The Prescription could not be edited due to an internal error.<br />Please Try again later.<br /><%=e.toString() %></b></center> <%
+			%><center><b>The Prescription could not be edited due to an internal error.<br />Please Try again later.<br /><%= StringEscapeUtils.escapeHtml("" + (e.toString() )) %></b></center> <%
 		}
 		
 		%>

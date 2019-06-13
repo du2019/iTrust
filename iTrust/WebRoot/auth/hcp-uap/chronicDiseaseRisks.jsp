@@ -13,7 +13,7 @@ pageTitle = "iTrust - Risk Factors for Chronic Diseases";
 %>
 
 <%@include file="/header.jsp" %>
-
+<itrust:patientNav thisTitle="Risk Factors" />
 <%try{
 /* Require a Patient ID first */
 String pidString = (String)session.getAttribute("pid");
@@ -28,18 +28,19 @@ if (pidString == null || 1 > pidString.length()) {
 ChronicDiseaseRiskAction action = new ChronicDiseaseRiskAction(prodDAO, loggedInMID.longValue(), pidString);
 long pid = action.getPatientID();
 %>
-
+<br />
 <table class="fTable" align="center">
 	<tr>
 		<th colspan="2" >Disease Risk Factors</th>
 	</tr>
 <%
 	List<RiskChecker> diseases = action.getDiseasesAtRisk();
+	loggingAction.logEvent(TransactionType.RISK_FACTOR_VIEW, loggedInMID, pid, "");
 	if(diseases.size() > 0) {
 		for(RiskChecker disease: diseases) {
 %>
     <tr>
-    	<td colspan="2" class="subHeaderVertical"><%=disease.getName()%></td>
+    	<td colspan="2" class="subHeaderVertical"><%= StringEscapeUtils.escapeHtml("" + (disease.getName())) %></td>
     </tr>
       <tr>
 	      <td style="padding-left: 10px">
@@ -47,7 +48,7 @@ long pid = action.getPatientID();
 			List<PatientRiskFactor> factors = disease.getPatientRiskFactors();
 			for(PatientRiskFactor factor : factors) {
 %>
-		        <%=factor.getDescription()%><br />
+		        <%= StringEscapeUtils.escapeHtml("" + (factor.getDescription())) %><br />
 <%
 			}
 %>
@@ -69,6 +70,4 @@ long pid = action.getPatientID();
 
 <br /><br /><br />
 <itrust:patientNav thisTitle="Risk Factors" />
-
-
 <%@include file="/footer.jsp" %>

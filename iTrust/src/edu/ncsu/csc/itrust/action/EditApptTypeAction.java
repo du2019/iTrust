@@ -6,7 +6,6 @@ import edu.ncsu.csc.itrust.beans.ApptTypeBean;
 import edu.ncsu.csc.itrust.dao.DAOFactory;
 import edu.ncsu.csc.itrust.dao.mysql.ApptTypeDAO;
 import edu.ncsu.csc.itrust.dao.mysql.TransactionDAO;
-import edu.ncsu.csc.itrust.enums.TransactionType;
 import edu.ncsu.csc.itrust.exception.DBException;
 import edu.ncsu.csc.itrust.exception.FormValidationException;
 import edu.ncsu.csc.itrust.validate.ApptTypeBeanValidator;
@@ -38,12 +37,10 @@ public class EditApptTypeAction {
 		
 		try {
 			if (apptTypeDAO.addApptType(apptType)) {
-				transDAO.logTransaction(TransactionType.ADD_APPT_TYPE, loggedInMID, 0L,
-						"Added Appointment Type " + apptType.getName());
 				return "Success: " + apptType.getName() + " - Duration: " + apptType.getDuration() + " added";
 			} else
 				return "The database has become corrupt. Please contact the system administrator for assistance.";
-		} catch (DBException e) {
+		} catch (SQLException e) {
 			e.printStackTrace();
 			return e.getMessage();
 		} 
@@ -68,8 +65,6 @@ public class EditApptTypeAction {
 		
 		try {
 			if (apptTypeDAO.editApptType(apptType)) {
-				transDAO.logTransaction(TransactionType.UPDATE_APPT_TYPE, loggedInMID, 0L,
-						"Updated Appointment Type " + apptType.getName());
 				return "Success: " + apptType.getName() + " - Duration: " + apptType.getDuration() + " updated";
 			} else
 				return "The database has become corrupt. Please contact the system administrator for assistance.";

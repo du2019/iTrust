@@ -6,7 +6,6 @@ import edu.ncsu.csc.itrust.dao.DAOFactory;
 import edu.ncsu.csc.itrust.dao.mysql.HospitalsDAO;
 import edu.ncsu.csc.itrust.dao.mysql.PersonnelDAO;
 import edu.ncsu.csc.itrust.dao.mysql.TransactionDAO;
-import edu.ncsu.csc.itrust.enums.TransactionType;
 import edu.ncsu.csc.itrust.exception.iTrustException;
 
 /**
@@ -88,8 +87,6 @@ public class ManageHospitalAssignmentsAction {
 							 * only patient is mentioned for transaction type 0, but spec looks like personnel
 							 * should be included too...
 							 */
-				transDAO.logTransaction(TransactionType.ENTER_EDIT_DEMOGRAPHICS, loggedInMID, hcpID,
-						"HCP Assigned to Hospital");
 				return "HCP successfully assigned.";
 			} else
 				return "Assignment did not occur";
@@ -113,8 +110,6 @@ public class ManageHospitalAssignmentsAction {
 			long hcpID = Long.valueOf(midString);
 			boolean confirm = hospitalsDAO.removeHospitalAssignment(hcpID, hospitalID);
 			if (confirm) {
-				transDAO.logTransaction(TransactionType.ENTER_EDIT_DEMOGRAPHICS, loggedInMID, hcpID,
-						"HCP unassigned from hospital");
 				return "HCP successfully unassigned";
 			} else
 				return "HCP not unassigned";
@@ -135,10 +130,7 @@ public class ManageHospitalAssignmentsAction {
 		try {
 			long hcpID = Long.valueOf(midString);
 			int numAssignments = hospitalsDAO.removeAllHospitalAssignmentsFrom(hcpID);
-			if (0 < numAssignments) {
-				transDAO.logTransaction(TransactionType.ENTER_EDIT_DEMOGRAPHICS, loggedInMID, hcpID,
-						"HCP unassigned from all hospital");
-			}
+
 			return numAssignments;
 		} catch (NumberFormatException e) {
 			throw new iTrustException("HCP's MID not a number");

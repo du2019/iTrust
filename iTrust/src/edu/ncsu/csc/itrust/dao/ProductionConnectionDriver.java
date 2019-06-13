@@ -15,10 +15,23 @@ import javax.sql.DataSource;
  * 
  */
 public class ProductionConnectionDriver implements IConnectionDriver {
+	private InitialContext initialContext;
+
+	// In production situations
+	public ProductionConnectionDriver() {
+	}
+
+	// For our special unit test - do not use unless you know what you are doing
+	public ProductionConnectionDriver(InitialContext context) {
+		initialContext = context;
+	}
+
 	public Connection getConnection() throws SQLException {
 		try {
-			return ((DataSource) (((Context) new InitialContext().lookup("java:comp/env")))
-					.lookup("jdbc/itrust")).getConnection();
+			if (initialContext == null)
+				initialContext = new InitialContext();
+			return ((DataSource) (((Context) initialContext.lookup("java:comp/env"))).lookup("jdbc/itrust"))
+					.getConnection();
 		} catch (NamingException e) {
 			throw new SQLException(("Context Lookup Naming Exception: " + e.getMessage()));
 		}

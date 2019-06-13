@@ -22,7 +22,8 @@ String task = request.getParameter("task");
 %>
 
 
-<%if (task == null || task.equalsIgnoreCase("")) {%>
+<%if (task == null || task.equalsIgnoreCase("")) {
+%>
 	<center>
 		<h1>HCP Consultations</h1>
 		<form action='hcpConsultation.jsp' method=post>
@@ -65,7 +66,7 @@ String task = request.getParameter("task");
 				<td>
 					<select size=1 name='patient'>
 					<%for (PatientBean pat : myPatients) {%>
-						<option value='<%=pat.getMID()%>'><%=pat.getFullName() %></option>
+						<option value='<%= StringEscapeUtils.escapeHtml("" + (pat.getMID())) %>'><%= StringEscapeUtils.escapeHtml("" + (pat.getFullName() )) %></option>
 					<%}%>
 					</select>
 				</td>
@@ -75,7 +76,7 @@ String task = request.getParameter("task");
 				<td>
 					<select size=1 name='hcp'>
 					<%for (PersonnelBean per : allHCPs) { %>
-						<option value='<%=per.getMID()%>'><%=per.getFullName() %></option>
+						<option value='<%= StringEscapeUtils.escapeHtml("" + (per.getMID())) %>'><%= StringEscapeUtils.escapeHtml("" + (per.getFullName() )) %></option>
 					<%} %>
 					</select>
 				</td>
@@ -96,6 +97,7 @@ String task = request.getParameter("task");
 	List<ReferralBean> refsToMe = refAction.getReferralsSentToMe();
 	PatientDAO patientDAO = new PatientDAO(prodDAO);
 	PersonnelDAO personnelDAO = new PersonnelDAO(prodDAO);
+	loggingAction.logEvent(TransactionType.CONSULTATION_REFERRAL_VIEW, loggedInMID.longValue(), 0, "");
 	%>
 	<center>
 		<h1>View Pending Consultations</h1>
@@ -127,10 +129,10 @@ String task = request.getParameter("task");
 									("Declined"))
 				%>
 				</td>
-				<td><%=patientDAO.getPatient(ref.getPatientID()).getFullName()%> (<%=ref.getPatientID()%>)</td>
-				<td><%=personnelDAO.getPersonnel(ref.getSenderID()).getFullName()%> (<%=ref.getSenderID()%>)</td>
-				<td><%=personnelDAO.getPersonnel(ref.getReceiverID()).getFullName()%> (<%=ref.getReceiverID()%>)</td>
-				<td><a href='hcpConsultation.jsp?task=update&toFrom=from&id=<%=ref.getId()%>'>edit</a></td>
+				<td><%= StringEscapeUtils.escapeHtml("" + (patientDAO.getPatient(ref.getPatientID()).getFullName())) %> (<%= StringEscapeUtils.escapeHtml("" + (ref.getPatientID())) %>)</td>
+				<td><%= StringEscapeUtils.escapeHtml("" + (personnelDAO.getPersonnel(ref.getSenderID()).getFullName())) %> (<%= StringEscapeUtils.escapeHtml("" + (ref.getSenderID())) %>)</td>
+				<td><%= StringEscapeUtils.escapeHtml("" + (personnelDAO.getPersonnel(ref.getReceiverID()).getFullName())) %> (<%= StringEscapeUtils.escapeHtml("" + (ref.getReceiverID())) %>)</td>
+				<td><a href='hcpConsultation.jsp?task=update&toFrom=from&id=<%= StringEscapeUtils.escapeHtml("" + (ref.getId())) %>'>edit</a></td>
 			</tr>
 		<%}%>
 	</table>
@@ -163,10 +165,10 @@ String task = request.getParameter("task");
 									("Declined"))
 				%>
 				</td>
-				<td><%=patientDAO.getPatient(ref.getPatientID()).getFullName()%> (<%=ref.getPatientID()%>)</td>
-				<td><%=personnelDAO.getPersonnel(ref.getSenderID()).getFullName()%> (<%=ref.getSenderID()%>)</td>
-				<td><%=personnelDAO.getPersonnel(ref.getReceiverID()).getFullName()%> (<%=ref.getReceiverID()%>)</td>
-				<td><a href='hcpConsultation.jsp?task=update&toFrom=to&id=<%=ref.getId()%>'>edit</a></td>
+				<td><%= StringEscapeUtils.escapeHtml("" + (patientDAO.getPatient(ref.getPatientID()).getFullName())) %> (<%= StringEscapeUtils.escapeHtml("" + (ref.getPatientID())) %>)</td>
+				<td><%= StringEscapeUtils.escapeHtml("" + (personnelDAO.getPersonnel(ref.getSenderID()).getFullName())) %> (<%= StringEscapeUtils.escapeHtml("" + (ref.getSenderID())) %>)</td>
+				<td><%= StringEscapeUtils.escapeHtml("" + (personnelDAO.getPersonnel(ref.getReceiverID()).getFullName())) %> (<%= StringEscapeUtils.escapeHtml("" + (ref.getReceiverID())) %>)</td>
+				<td><a href='hcpConsultation.jsp?task=update&toFrom=to&id=<%= StringEscapeUtils.escapeHtml("" + (ref.getId())) %>'>edit</a></td>
 			</tr>
 		<%}%>
 	</table>
@@ -207,7 +209,9 @@ String task = request.getParameter("task");
 		<center>
 		<h1>ERROR: Referral does not exist. <a href='hcpConsultation.jsp'>Choose another</a></h1>
 		</center>
-	<%}%>
+	<%}
+	loggingAction.logEvent(TransactionType.CONSULTATION_REFERRAL_VIEW, loggedInMID, myRef.getPatientID(), "");
+	%>
 	<center>
 	<h1>Update Consultation Form:</h1><br />
 	</center>
@@ -215,38 +219,38 @@ String task = request.getParameter("task");
 	<table border='0' width='400'>
 		<tr>
 			<td>Patient:</td>
-			<td><%=(new PatientDAO(prodDAO)).getPatient(myRef.getPatientID()).getFullName()%></td>
+			<td><%= StringEscapeUtils.escapeHtml("" + ((new PatientDAO(prodDAO)).getPatient(myRef.getPatientID()).getFullName())) %></td>
 		</tr>
 		<tr>
 			<td>Sending HCP:</td>
-			<td><%=(new PersonnelDAO(prodDAO)).getPersonnel(myRef.getSenderID()).getFullName()%></td>
+			<td><%= StringEscapeUtils.escapeHtml("" + ((new PersonnelDAO(prodDAO)).getPersonnel(myRef.getSenderID()).getFullName())) %></td>
 		</tr>
 		<tr>
 			<td>Receiving HCP:</td>
-			<td><%=(new PersonnelDAO(prodDAO)).getPersonnel(myRef.getReceiverID()).getFullName()%></td>
+			<td><%= StringEscapeUtils.escapeHtml("" + ((new PersonnelDAO(prodDAO)).getPersonnel(myRef.getReceiverID()).getFullName())) %></td>
 		</tr>
 	</table>
 	<form action='hcpConsultation.jsp' method=post>
 	<input type='hidden' name='task' value='change'>
-	<input type='hidden' name='patID' value='<%=myRef.getPatientID()%>'>
-	<input type='hidden' name='toID' value='<%=myRef.getReceiverID()%>'>
-	<input type='hidden' name='fromID' value='<%=myRef.getSenderID()%>'>
-	<input type='hidden' name='refID' value='<%=myRef.getId()%>'>
+	<input type='hidden' name='patID' value='<%= StringEscapeUtils.escapeHtml("" + (myRef.getPatientID())) %>'>
+	<input type='hidden' name='toID' value='<%= StringEscapeUtils.escapeHtml("" + (myRef.getReceiverID())) %>'>
+	<input type='hidden' name='fromID' value='<%= StringEscapeUtils.escapeHtml("" + (myRef.getSenderID())) %>'>
+	<input type='hidden' name='refID' value='<%= StringEscapeUtils.escapeHtml("" + (myRef.getId())) %>'>
 	<%if (toFrom.equalsIgnoreCase("to")) {%>
 	Referral Details:<br />
-	<textarea name="refDetails" readonly rows="5" cols="48" style="background-color: lightgrey"><%=myRef.getReferralDetails()%></textarea><br />
+	<textarea name="refDetails" readonly rows="5" cols="48" style="background-color: lightgrey"><%= StringEscapeUtils.escapeHtml("" + (myRef.getReferralDetails())) %></textarea><br />
 	Consultation Details:<br />
-	<textarea name="consDetails" rows="5" cols="48"><%=myRef.getConsultationDetails()%></textarea><br />
+	<textarea name="consDetails" rows="5" cols="48"><%= StringEscapeUtils.escapeHtml("" + (myRef.getConsultationDetails())) %></textarea><br />
 	<%} else { %>
 	Referral Details:<br />
-	<textarea name="refDetails" rows="5" cols="48"><%=myRef.getReferralDetails()%></textarea><br />
+	<textarea name="refDetails" rows="5" cols="48"><%= StringEscapeUtils.escapeHtml("" + (myRef.getReferralDetails())) %></textarea><br />
 	Consultation Details:<br />
-	<textarea name="consDetails" rows="5" cols="48" readonly style="background-color: lightgrey"><%=myRef.getConsultationDetails()%></textarea><br />
+	<textarea name="consDetails" rows="5" cols="48" readonly style="background-color: lightgrey"><%= StringEscapeUtils.escapeHtml("" + (myRef.getConsultationDetails())) %></textarea><br />
 	<%} %>
 	<select size=1 name='status'>
-		<option <%=(myRef.getStatus() == ReferralBean.ReferralStatus.Pending) ? "selected='selected'" : "" %>>Pending</option>
-		<option <%=(myRef.getStatus() == ReferralBean.ReferralStatus.Finished) ? "selected='selected'" : "" %>>Finished</option>
-		<option <%=(myRef.getStatus() == ReferralBean.ReferralStatus.Declined) ? "selected='selected'" : "" %>>Declined</option>
+		<option <%= StringEscapeUtils.escapeHtml("" + ((myRef.getStatus() == ReferralBean.ReferralStatus.Pending) ? "selected='selected'" : "" )) %>>Pending</option>
+		<option <%= StringEscapeUtils.escapeHtml("" + ((myRef.getStatus() == ReferralBean.ReferralStatus.Finished) ? "selected='selected'" : "" )) %>>Finished</option>
+		<option <%= StringEscapeUtils.escapeHtml("" + ((myRef.getStatus() == ReferralBean.ReferralStatus.Declined) ? "selected='selected'" : "" )) %>>Declined</option>
 	</select>
 	</td></tr></table>
 	<center>
@@ -283,6 +287,7 @@ String task = request.getParameter("task");
 		
 		ReferralManagementAction refAction = new ReferralManagementAction(prodDAO, loggedInMID);
 		refAction.updateReferral(myRef);
+		loggingAction.logEvent(TransactionType.CONSULTATION_REFERRAL_EDIT, loggedInMID, myRef.getPatientID(), "");
 		%>
 		<center>
 		<h1>Consultation updated</h1><br />
@@ -291,21 +296,21 @@ String task = request.getParameter("task");
 		<table border='0' width='400'>
 			<tr>
 				<td>Patient:</td>
-				<td><%=(new PatientDAO(prodDAO)).getPatient(myRef.getPatientID()).getFullName()%></td>
+				<td><%= StringEscapeUtils.escapeHtml("" + ((new PatientDAO(prodDAO)).getPatient(myRef.getPatientID()).getFullName())) %></td>
 			</tr>
 			<tr>
 				<td>Sending HCP:</td>
-				<td><%=(new PersonnelDAO(prodDAO)).getPersonnel(myRef.getSenderID()).getFullName()%></td>
+				<td><%= StringEscapeUtils.escapeHtml("" + ((new PersonnelDAO(prodDAO)).getPersonnel(myRef.getSenderID()).getFullName())) %></td>
 			</tr>
 			<tr>
 				<td>Receiving HCP:</td>
-				<td><%=(new PersonnelDAO(prodDAO)).getPersonnel(myRef.getReceiverID()).getFullName()%></td>
+				<td><%= StringEscapeUtils.escapeHtml("" + ((new PersonnelDAO(prodDAO)).getPersonnel(myRef.getReceiverID()).getFullName())) %></td>
 			</tr>
 		</table>
 		Referral Details:<br />
-		<textarea name="refDetails" readonly rows="5" cols="48" style="background-color: lightgrey"><%=myRef.getReferralDetails()%></textarea><br />
+		<textarea name="refDetails" readonly rows="5" cols="48" style="background-color: lightgrey"><%= StringEscapeUtils.escapeHtml("" + (myRef.getReferralDetails())) %></textarea><br />
 		Consultation Details:<br />
-		<textarea name="consDetails" readonly rows="5" cols="48" style="background-color: lightgrey"><%=myRef.getConsultationDetails()%></textarea><br />
+		<textarea name="consDetails" readonly rows="5" cols="48" style="background-color: lightgrey"><%= StringEscapeUtils.escapeHtml("" + (myRef.getConsultationDetails())) %></textarea><br />
 		</td></tr></table>
 		<br />
 		
@@ -329,17 +334,17 @@ String task = request.getParameter("task");
 	<h1>Consultation Form:</h1>
 	<form action='hcpConsultation.jsp' method=post>
 	<input type='hidden' name='task' value='send'>
-	<input type='hidden' name='patient' value='<%=patient%>'>
-	<input type='hidden' name='hcp' value='<%=hcp%>'>
+	<input type='hidden' name='patient' value='<%= StringEscapeUtils.escapeHtml("" + (patient)) %>'>
+	<input type='hidden' name='hcp' value='<%= StringEscapeUtils.escapeHtml("" + (hcp)) %>'>
 	<table border=10 bordercolor=darkred><tr><td>
 	<table border='0' width='400'>
 		<tr>
 			<td>Refer Patient:</td>
-			<td><%=pat.getFullName()%> (<%=patient%>)</td>
+			<td><%= StringEscapeUtils.escapeHtml("" + (pat.getFullName())) %> (<%= StringEscapeUtils.escapeHtml("" + (patient)) %>)</td>
 		</tr>
 		<tr>
 			<td>To HCP:</td>
-			<td><%=per.getFullName()%> (<%=hcp%>)</td>
+			<td><%= StringEscapeUtils.escapeHtml("" + (per.getFullName())) %> (<%= StringEscapeUtils.escapeHtml("" + (hcp)) %>)</td>
 		</tr>
 	</table>
 	<textarea name="msg" rows="5" cols="48">Details</textarea><br />
@@ -369,26 +374,29 @@ String task = request.getParameter("task");
 	newRef.setStatus(ReferralBean.ReferralStatus.Pending);
 	
 	try {
-		refAction.sendReferral(newRef);%>
+		refAction.sendReferral(newRef);
+		loggingAction.logEvent(TransactionType.CONSULTATION_REFERRAL_CREATE, loggedInMID, pat.getMID(), "");
+
+		%>
 		<center>
 		<h1>Thank you, your Consultation Request was sent.</h1>
 		<table border=10 bordercolor=darkgreen><tr><td>
 		<table border='0' width='400'>
 			<tr>
 				<td>Refer Patient:</td>
-				<td><%=pat.getFullName()%> (<%=patient%>)</td>
+				<td><%= StringEscapeUtils.escapeHtml("" + (pat.getFullName())) %> (<%= StringEscapeUtils.escapeHtml("" + (patient)) %>)</td>
 			</tr>
 			<tr>
 				<td>To HCP:</td>
-				<td><%=per.getFullName()%> (<%=hcp%>)</td>
+				<td><%= StringEscapeUtils.escapeHtml("" + (per.getFullName())) %> (<%= StringEscapeUtils.escapeHtml("" + (hcp)) %>)</td>
 			</tr>
 		</table>
-		<textarea readonly name="msg" rows="5" cols="48" style="background-color: lightgrey"><%=msg %></textarea><br />
+		<textarea readonly name="msg" rows="5" cols="48" style="background-color: lightgrey"><%= StringEscapeUtils.escapeHtml("" + (msg )) %></textarea><br />
 		</td></tr></table>
 		</center>
 		<br />
 	<%} catch (DBException e) {%>
-		<center><h1>ERROR: The referral couldn't be sent. <%=e.toString() %></h1></center>
+		<center><h1>ERROR: The referral couldn't be sent. <%= StringEscapeUtils.escapeHtml("" + (e.toString() )) %></h1></center>
 	<%}%>
 	
 	

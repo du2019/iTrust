@@ -3,6 +3,7 @@ package edu.ncsu.csc.itrust.http;
 import com.meterware.httpunit.WebConversation;
 import com.meterware.httpunit.WebForm;
 import com.meterware.httpunit.WebResponse;
+import edu.ncsu.csc.itrust.enums.TransactionType;
 
 
 public class AddNDTylenolTest extends iTrustHTTPTest {
@@ -25,6 +26,7 @@ public class AddNDTylenolTest extends iTrustHTTPTest {
 		WebConversation wc = login("9000000001", "pw");
 		WebResponse wr = wc.getCurrentPage();
 		assertEquals("iTrust - Admin Home", wr.getTitle());
+		assertLogged(TransactionType.HOME_VIEW, 9000000001L, 0L, "");
 		// click on Edit ND Codes
 		wr = wr.getLinkWith("Edit ND Codes").click();
 		// add the codes and description
@@ -34,10 +36,13 @@ public class AddNDTylenolTest extends iTrustHTTPTest {
 		form.setParameter("code2", "1922");
 		form.setParameter("description", "Tylenol Tablets");
 		form.getSubmitButtons()[1].click();
+		assertLogged(TransactionType.DRUG_CODE_ADD, 9000000001L, 0L, "551541922");		
 		wr = wc.getCurrentPage();
 		// verify change
 		assertTrue(wr.getURL().toString().contains("auth/admin/editNDCodes.jsp"));
 		assertTrue(wr.getText().contains("Success: 551541922 - Tylenol Tablets added"));
+		assertLogged(TransactionType.DRUG_CODE_VIEW, 9000000001L, 0L, "");
+
 	}
 	
 

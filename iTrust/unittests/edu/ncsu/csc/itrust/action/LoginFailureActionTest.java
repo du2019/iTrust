@@ -39,5 +39,23 @@ public class LoginFailureActionTest extends TestCase {
 		action = new LoginFailureAction(evil, "192.168.1.1");
 		assertEquals(false, action.isValidForLogin());
 	}
+	
+	public void testNeedsCaptcha() throws Exception {
+		assertEquals(0, action.getFailureCount());
+		assertFalse(action.needsCaptcha());
+		action.recordLoginFailure();
+		assertFalse(action.needsCaptcha());
+		action.recordLoginFailure();
+		assertFalse(action.needsCaptcha());
+		assertEquals(2, action.getFailureCount());
+		
+		action.recordLoginFailure();
+		assertTrue(action.needsCaptcha());
+		assertEquals(3, action.getFailureCount());
+		
+		action.resetFailures();
+		assertFalse(action.needsCaptcha());
+		assertEquals(0, action.getFailureCount());
+	}
 
 }

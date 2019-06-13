@@ -16,7 +16,6 @@ import edu.ncsu.csc.itrust.dao.mysql.PatientDAO;
 import edu.ncsu.csc.itrust.dao.mysql.TransactionDAO;
 import edu.ncsu.csc.itrust.dao.mysql.OfficeVisitDAO;
 import edu.ncsu.csc.itrust.enums.PrescriptionAlerts;
-import edu.ncsu.csc.itrust.enums.TransactionType;
 import edu.ncsu.csc.itrust.exception.DBException;
 import edu.ncsu.csc.itrust.exception.iTrustException;
 import edu.ncsu.csc.itrust.EmailUtil;
@@ -55,7 +54,6 @@ public class EmergencyReportAction extends PatientBaseAction {
 		emailutil = new EmailUtil(factory);
 		
 		pb = patientDAO.getPatient(this.pid);
-		transDAO.logTransaction(TransactionType.VIEW_EMERGENCY_REPORT, this.loggedInMID, Long.valueOf(pidString), "viewed emergency report");
 		emailutil.sendEmail(makeEmail());
 	}
 

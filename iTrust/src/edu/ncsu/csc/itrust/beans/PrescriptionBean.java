@@ -20,6 +20,7 @@ public class PrescriptionBean {
 	private String endDateStr = new SimpleDateFormat("MM/dd/yyyy").format(new Date());
 	private int dosage = 0;
 	private String instructions = "";
+	private String orc = null;
 
 	public PrescriptionBean() {
 	}
@@ -50,6 +51,14 @@ public class PrescriptionBean {
 
 	public void setDosage(int dosage) {
 		this.dosage = dosage;
+	}
+	
+	public String getReason() {
+		return orc;
+	}
+
+	public void setReason(String reason) {
+		this.orc = orc;
 	}
 
 	public Date getEndDate() {

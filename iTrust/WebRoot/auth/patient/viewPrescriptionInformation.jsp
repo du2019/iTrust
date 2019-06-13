@@ -30,24 +30,26 @@ for (PrescriptionBean pres : myDAO.getPrescriptions(Long.parseLong(request.getPa
 if (prescription == null) {
 	%><center><h1>Error: Prescription not found, please try again later.</h1></center><%
 } else {
+	OfficeVisitBean visit = myDAO.getOfficeVisit(Long.parseLong(request.getParameter("visitID")));
+	loggingAction.logEvent(TransactionType.PRESCRIPTION_REPORT_VIEW, loggedInMID.longValue(), visit.getPatientID(), "");
 %>
 	<table align=center border=1 class="fTable">
 		<tr>
 			<th colspan=5>Prescription Information</th>
 		</tr>
 		<tr class="subHeader">
-			<td align=center>Perscribing Doctor</td>
+			<td align=center>Prescribing Doctor</td>
 			<td align=center>Medication</td>
 			<td align=center>Dosage</td>
 			<td align=center>Dates</td>
 			<td align=center colspan=2>Instructions</td>
 		</tr>
 		<tr>
-			<td align=center"><%=docs.getName(myDAO.getOfficeVisit(Long.parseLong(request.getParameter("visitID"))).getHcpID()) %></td>
-			<td align=center><%=prescription.getMedication().getDescription() %> (<%=prescription.getMedication().getNDCode() %>)</td>
-			<td align=center><%=prescription.getDosage() %>mg</td>
-			<td align=center><%=prescription.getStartDateStr() %> to <%=prescription.getEndDateStr() %></td>
-			<td align=center><%=prescription.getInstructions() %></td>
+			<td align=center"><%= StringEscapeUtils.escapeHtml("" + (docs.getName(visit.getHcpID()) )) %></td>
+			<td align=center><%= StringEscapeUtils.escapeHtml("" + (prescription.getMedication().getDescription() )) %> (<%= StringEscapeUtils.escapeHtml("" + (prescription.getMedication().getNDCode() )) %>)</td>
+			<td align=center><%= StringEscapeUtils.escapeHtml("" + (prescription.getDosage() )) %>mg</td>
+			<td align=center><%= StringEscapeUtils.escapeHtml("" + (prescription.getStartDateStr() )) %> to <%= StringEscapeUtils.escapeHtml("" + (prescription.getEndDateStr() )) %></td>
+			<td align=center><%= StringEscapeUtils.escapeHtml("" + (prescription.getInstructions() )) %></td>
 		</tr>
 	</table>
 	<center>

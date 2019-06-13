@@ -38,15 +38,26 @@ UpdateLOINCListAction icdUpdater =
 			headerMessage = (request.getParameter("add") != null)
 					? icdUpdater.add(diag)
 					: icdUpdater.updateInformation(diag);
+					
+			if(!headerMessage.contains("Error")) {
+				if(request.getParameter("add") != null) {
+					loggingAction.logEvent(TransactionType.LOINC_CODE_ADD, loggedInMID, 0, request.getParameter("code"));
+				}
+				else if(request.getParameter("update") != null) {
+					loggingAction.logEvent(TransactionType.LOINC_CODE_EDIT, loggedInMID, 0, request.getParameter("code"));
+				}
+			}
 		} catch(FormValidationException e) {
 %>
 			<div align=center>
-				<span class="iTrustError"><%=e.getMessage() %></span>
+				<span class="iTrustError"><%=StringEscapeUtils.escapeHtml(e.getMessage()) %></span>
 			</div>
 <%
 			headerMessage = "Validation Errors";
 		}
 		
+	} else {
+		loggingAction.logEvent(TransactionType.LOINC_CODE_VIEW, loggedInMID, 0, "");
 	}
 	String headerColor = (headerMessage.indexOf("Error") > -1)
 			? "#ffcccc"
@@ -88,7 +99,7 @@ UpdateLOINCListAction icdUpdater =
 
 <br />
 
-<span class="iTrustMessage"><%=headerMessage %></span>
+<span class="iTrustMessage"><%= StringEscapeUtils.escapeHtml("" + (headerMessage )) %></span>
 <br />
 
 <br />
@@ -177,19 +188,19 @@ UpdateLOINCListAction icdUpdater =
 	%>
 		<tr>
 			<td ><a href="javascript:void(0)" 
-					onclick="fillUpdate('<%=tempCode%>')"><%=tempCode%></a>
+					onclick="fillUpdate('<%= StringEscapeUtils.escapeHtml("" + (tempCode)) %>')"><%= StringEscapeUtils.escapeHtml("" + (tempCode)) %></a>
 			<td ><a href="javascript:void(0)" 
-					onclick="fillUpdate2('<%=tempcomp%>')"><%=tempcomp%></a>
+					onclick="fillUpdate2('<%= StringEscapeUtils.escapeHtml("" + (tempcomp)) %>')"><%= StringEscapeUtils.escapeHtml("" + (tempcomp)) %></a>
 			<td ><a href="javascript:void(0)" 
-					onclick="fillUpdate3('<%=tempkop%>')"><%=tempkop%></a>
+					onclick="fillUpdate3('<%= StringEscapeUtils.escapeHtml("" + (tempkop)) %>')"><%= StringEscapeUtils.escapeHtml("" + (tempkop)) %></a>
 			<td ><a href="javascript:void(0)" 
-					onclick="fillUpdate4('<%=temptime%>')"><%=temptime%></a>
+					onclick="fillUpdate4('<%= StringEscapeUtils.escapeHtml("" + (temptime)) %>')"><%= StringEscapeUtils.escapeHtml("" + (temptime)) %></a>
 			<td ><a href="javascript:void(0)" 
-					onclick="fillUpdate5('<%=tempsystem%>')"><%=tempsystem%></a>
+					onclick="fillUpdate5('<%= StringEscapeUtils.escapeHtml("" + (tempsystem)) %>')"><%= StringEscapeUtils.escapeHtml("" + (tempsystem)) %></a>
 			<td nowrap><a href="javascript:void(0)" 
-					onclick="fillUpdate6('<%=tempscale%>')"><%=tempscale%></a>
+					onclick="fillUpdate6('<%= StringEscapeUtils.escapeHtml("" + (tempscale)) %>')"><%= StringEscapeUtils.escapeHtml("" + (tempscale)) %></a>
 			<td nowrap><a href="javascript:void(0)" 
-					onclick="fillUpdate7('<%=tempmethod%>')"><%=tempmethod%></a>
+					onclick="fillUpdate7('<%= StringEscapeUtils.escapeHtml("" + (tempmethod)) %>')"><%= StringEscapeUtils.escapeHtml("" + (tempmethod)) %></a>
 		</tr>
 	<% } %>
 </table>

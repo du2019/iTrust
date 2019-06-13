@@ -4,6 +4,7 @@ import com.meterware.httpunit.WebConversation;
 import com.meterware.httpunit.WebForm;
 import com.meterware.httpunit.WebResponse;
 import com.meterware.httpunit.WebTable;
+import edu.ncsu.csc.itrust.enums.TransactionType;
 
 public class MonitorAdverseEventTest extends iTrustHTTPTest {
 
@@ -49,9 +50,12 @@ public class MonitorAdverseEventTest extends iTrustHTTPTest {
 		WebConversation wc = login("7000000001", "pw");
 		WebResponse wr = wc.getCurrentPage();
 		assertEquals("iTrust - PHA Home", wr.getTitle());
+		assertLogged(TransactionType.HOME_VIEW, 7000000001L, 0L, "");
+		
 		// click Monitor Adverse Events
 		wr = wr.getLinkWith("Monitor Adverse Events").click();
 		assertEquals("iTrust - Monitor Adverse Events", wr.getTitle());
+		
 		// choose date range
 		WebForm form = wr.getForms()[0];
 		form.getScriptableObject().setParameterValue("startDate", "02/05/1990");
@@ -61,6 +65,8 @@ public class MonitorAdverseEventTest extends iTrustHTTPTest {
 		assertTrue(wr.getText().contains("Citalopram Hydrobromide(548684985)"));
 		// get details of report
 		wr = wr.getLinkWith("Get Details").click();
+		assertLogged(TransactionType.ADVERSE_EVENT_VIEW, 7000000001L, 0L, "");
+		
 		assertTrue(wr.getText().contains("Andy Programmer"));
 		assertTrue(wr.getText().contains("Citalopram Hydrobromide (548684985)"));
 		assertTrue(wr.getText().contains("2007-08-12 15:10:00.0"));
@@ -70,7 +76,7 @@ public class MonitorAdverseEventTest extends iTrustHTTPTest {
 		form.getButtons()[1].click();
 		wr = wc.getCurrentPage();
 		assertTrue(wr.getText().contains("Request sent"));
-		
+		assertLogged(TransactionType.ADVERSE_EVENT_REQUEST_MORE, 7000000001L, 0L, "Requested more info");
 	}
 
 	/*
@@ -97,10 +103,13 @@ public class MonitorAdverseEventTest extends iTrustHTTPTest {
 		WebConversation wc = login("7000000001", "pw");
 		WebResponse wr = wc.getCurrentPage();
 		assertEquals("iTrust - PHA Home", wr.getTitle());
+		assertLogged(TransactionType.HOME_VIEW, 7000000001L, 0L, "");
+		
 		// click Monitor Adverse Events		
 		wr = wr.getLinkWith("Monitor Adverse Events").click();
 		assertEquals("iTrust - Monitor Adverse Events", wr.getTitle());
-		// choose date range
+		
+		//choose date range
 		WebForm form = wr.getForms()[0];
 		form.getScriptableObject().setParameterValue("startDate", "08/05/2000");
 		form.getScriptableObject().setParameterValue("endDate", "10/17/2009");
@@ -109,6 +118,8 @@ public class MonitorAdverseEventTest extends iTrustHTTPTest {
 		assertTrue(wr.getText().contains("Hepatitis B(90371)"));
 		// get details of report
 		wr = wr.getLinkWith("Get Details").click();
+		assertLogged(TransactionType.ADVERSE_EVENT_VIEW, 7000000001L, 0L, "");
+		
 		assertTrue(wr.getText().contains("Random Person"));
 		assertTrue(wr.getText().contains("Hepatitis B (90371)"));
 		assertTrue(wr.getText().contains("2009-05-19 08:34:00.0"));
@@ -118,6 +129,7 @@ public class MonitorAdverseEventTest extends iTrustHTTPTest {
 		form.getButtons()[0].click();
 		wr = wc.getCurrentPage();
 		assertTrue(wr.getText().contains("Report successfully removed"));
+		assertLogged(TransactionType.ADVERSE_EVENT_REMOVE, 7000000001L, 0L, "");
 	}
 	
 	/*
@@ -140,9 +152,12 @@ public class MonitorAdverseEventTest extends iTrustHTTPTest {
 		WebConversation wc = login("7000000001", "pw");
 		WebResponse wr = wc.getCurrentPage();
 		assertEquals("iTrust - PHA Home", wr.getTitle());
+		assertLogged(TransactionType.HOME_VIEW, 7000000001L, 0L, "");
+		
 		// click Monitor Adverse Events		
 		wr = wr.getLinkWith("Monitor Adverse Events").click();
 		assertEquals("iTrust - Monitor Adverse Events", wr.getTitle());
+		
 		// choose date range
 		WebForm form = wr.getForms()[0];
 		form.getScriptableObject().setParameterValue("startDate", "08/05/2000");
@@ -155,5 +170,6 @@ public class MonitorAdverseEventTest extends iTrustHTTPTest {
 //		form = wr.getForms()[0];
 		wr = wr.getLinkWith("View Chart").click();
 		assertTrue(wr.getText().contains("src=\"/iTrust/charts/"));
+		assertLogged(TransactionType.ADVERSE_EVENT_CHART_VIEW, 7000000001L, 0L, "");
 	}
 }

@@ -2,10 +2,12 @@ package edu.ncsu.csc.itrust.action;
 
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Date;
 import edu.ncsu.csc.itrust.beans.ApptBean;
 import edu.ncsu.csc.itrust.beans.LabProcedureBean;
 import edu.ncsu.csc.itrust.beans.OfficeVisitBean;
@@ -42,21 +44,28 @@ public class GenerateCalendarActionTest extends TestCase {
 	}
 	
 	public void testGetSend() throws SQLException {
-		action.getApptsTable(Calendar.getInstance().get(Calendar.MONTH), Calendar.getInstance().get(Calendar.YEAR));
+		action.getApptsTable(Calendar.getInstance().get(Calendar.MONTH),
+Calendar.getInstance().get(Calendar.YEAR));
 		List<ApptBean> aList = action.getSend();
+			
+		SimpleDateFormat year = new SimpleDateFormat("yyyy");
 		
-		Timestamp FirstDayOfMonth = Timestamp.valueOf("" + Calendar.getInstance().get(Calendar.YEAR) 
-										+ "-0" + (Calendar.getInstance().get(Calendar.MONTH)+1) + "-01 00:00:00");
+		SimpleDateFormat month = new SimpleDateFormat("-MM");
 		
-		Timestamp LastDayOfMonth = Timestamp.valueOf("" + Calendar.getInstance().get(Calendar.YEAR) 
-				+ "-0" + (Calendar.getInstance().get(Calendar.MONTH)+1) + "-31 23:59:59");		
+		Date now = Calendar.getInstance().getTime();
 		
+		Timestamp FirstDayOfMonth = Timestamp.valueOf(""+year.format(now)
+				+ month.format(now) + "-01 00:00:00");
+		Timestamp LastDayOfMonth = Timestamp.valueOf(""+year.format(now)
+				+ month.format(now)+ "-31 23:59:59");
+				
 		for(int i = 0; i < aList.size(); i++)
 		{
 			assertTrue(aList.get(i).getDate().after(FirstDayOfMonth));
 			assertTrue(aList.get(i).getDate().before(LastDayOfMonth));
 		}
 	}
+
 	
 	public void testGetConflicts() throws Exception {
 		TestDataGenerator gen = new TestDataGenerator();

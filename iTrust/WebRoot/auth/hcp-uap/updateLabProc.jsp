@@ -16,7 +16,6 @@ pageTitle = "iTrust - Update Lab Procedure";
 <%
 	String headerMessage = "";
 
-
 LabProcedureBean lbean = null;
 long requestID = 0L;
 String lpid = request.getParameter("ID");
@@ -45,6 +44,8 @@ if (lpid != null && !lpid.equals("")) {
 
 		try{
 		action2.updateProcedure(lbean);
+		LabProcedureBean bean = prodDAO.getLabProcedureDAO().getLabProcedure(requestID);
+		loggingAction.logEvent(TransactionType.LAB_RESULTS_EDIT, loggedInMID.longValue(), bean.getPid() , "Procedure: " + lpid);
 %>
 	<br />
 	<div align=center>
@@ -56,7 +57,7 @@ if (lpid != null && !lpid.equals("")) {
 %>
 	<br />
 	<div align=center>
-		<span class="iTrustError"><%=e.getMessage() %></span>
+		<span class="iTrustError"><%=StringEscapeUtils.escapeHtml(e.getMessage()) %></span>
 	</div>
 	<br />
 <%
@@ -67,7 +68,7 @@ if (lpid != null && !lpid.equals("")) {
 
 <%
 if (request.getParameter("message") != null) {
-	%><span class="iTrustMessage" style="font-size: 16px;"><%=request.getParameter("message") %></span><%
+	%><span class="iTrustMessage" style="font-size: 16px;"><%= StringEscapeUtils.escapeHtml("" + (request.getParameter("message") )) %></span><%
 }
 %>
 <br />
@@ -89,25 +90,27 @@ if (request.getParameter("message") != null) {
    			<th>Updated Date</th>
 
   	</tr>
-		<%LabProcedureBean bean = prodDAO.getLabProcedureDAO().getLabProcedure(requestID);%>
+		<%LabProcedureBean bean = prodDAO.getLabProcedureDAO().getLabProcedure(requestID);
+		loggingAction.logEvent(TransactionType.LAB_RESULTS_VIEW, loggedInMID.longValue(), bean.getPid() , "Procedure: " + lpid);
+		%>
 			<tr>
-				<td ><%=bean.getPid()%></td>
-				<td ><%=bean.getLoinc()%></td>
-				<td ><%=bean.getRights()%></td>
-				<td ><%=bean.getStatus()%></td>
-				<td ><%=bean.getCommentary()%></td>
-				<td ><%=bean.getResults()%></td>
-				<td ><%=bean.getOvID()%></td>
-				<td ><%=bean.getTimestamp()%></td>
+				<td ><%= StringEscapeUtils.escapeHtml("" + (bean.getPid())) %></td>
+				<td ><%= StringEscapeUtils.escapeHtml("" + (bean.getLoinc())) %></td>
+				<td ><%= StringEscapeUtils.escapeHtml("" + (bean.getRights())) %></td>
+				<td ><%= StringEscapeUtils.escapeHtml("" + (bean.getStatus())) %></td>
+				<td ><%= StringEscapeUtils.escapeHtml("" + (bean.getCommentary())) %></td>
+				<td ><%= StringEscapeUtils.escapeHtml("" + (bean.getResults())) %></td>
+				<td ><%= StringEscapeUtils.escapeHtml("" + (bean.getOvID())) %></td>
+				<td ><%= StringEscapeUtils.escapeHtml("" + (bean.getTimestamp())) %></td>
 				
 			</tr>
 </table>
 
 
-<form action="updateLabProc.jsp?ID=<%=lpid%>"&message="Updated Laboratory Procedure" method="post"><input type="hidden"
+<form action="updateLabProc.jsp?ID=<%= StringEscapeUtils.escapeHtml("" + (lpid)) %>"&message="Updated Laboratory Procedure" method="post"><input type="hidden"
 	name="formIsFilled" value="true"> <br />
 <br />
-	<%=headerMessage %>
+	<%= StringEscapeUtils.escapeHtml("" + (headerMessage )) %>
 <br />
 <table class="fTable">
 	<tr>
@@ -117,9 +120,9 @@ if (request.getParameter("message") != null) {
 		<td class="subHeaderVertical">Status:</td>
 		<td>
 		<select name="Status">
-		<option value="NOT YET RECEIVED"><%=lbean.Not_Received %></option>
-		<option value="PENDING"><%=lbean.Pending %></option>
-		<option value="COMPLETED"><%=lbean.Completed %></option>
+		<option value="NOT YET RECEIVED"><%= StringEscapeUtils.escapeHtml("" + (lbean.Not_Received )) %></option>
+		<option value="PENDING"><%= StringEscapeUtils.escapeHtml("" + (lbean.Pending )) %></option>
+		<option value="COMPLETED"><%= StringEscapeUtils.escapeHtml("" + (lbean.Completed )) %></option>
 		</select>
 		</td>
 	</tr>

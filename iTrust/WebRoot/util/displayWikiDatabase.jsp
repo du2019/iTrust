@@ -1,5 +1,6 @@
 <%@page import="java.sql.*"%>
 <%@page import="edu.ncsu.csc.itrust.dao.DAOFactory"%>
+<%@page import="org.apache.commons.lang.StringEscapeUtils"%>
 <html>
 <head>
 	<title>Display Database</title>
@@ -31,15 +32,16 @@
 <a href="/iTrust">Back to iTrust</a> - <a href="displayDatabase.jsp">View html format</a>
 <h2>FOR TESTING PURPOSES ONLY</h2>
 <%
+	
 	Connection conn = DAOFactory.getProductionInstance().getConnection();
 	ResultSet tableRS = conn.createStatement().executeQuery("show tables");
 	while(tableRS.next()){
 		String tableName = tableRS.getString(1);
 		ResultSet rs = conn.createStatement().executeQuery("SELECT * FROM " + tableName);
 		int numCol = rs.getMetaData().getColumnCount();
-		%><b>== <%=tableName%> ==</b><br />^<%
+		%><b>== <%= StringEscapeUtils.escapeHtml("" + (tableName)) %> ==</b><br />^<%
 		for(int i=1; i<=numCol;i++){
-			%><%=rs.getMetaData().getColumnName(i)%>^<%
+			%><%= StringEscapeUtils.escapeHtml("" + (rs.getMetaData().getColumnName(i))) %>^<%
 		}
 		%><%
 		while(rs.next()){
@@ -50,7 +52,7 @@
 					if(data!=null && data.equals("")){
 						data=" ";
 					}
-					%><%=data%>|<%
+					%><%= StringEscapeUtils.escapeHtml("" + (data)) %>|<%
 				} catch(SQLException e){
 					%>--Error in date, might be empty--|<%
 				}

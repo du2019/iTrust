@@ -13,8 +13,10 @@
 <%@page import="edu.ncsu.csc.itrust.dao.DAOFactory"%>
 <%@page import="edu.ncsu.csc.itrust.beans.DiagnosisBean"%>
 <%@page import="edu.ncsu.csc.itrust.beans.MedicationBean"%>
+<%@page import="edu.ncsu.csc.itrust.beans.OverrideReasonBean"%>
 <%@page import="edu.ncsu.csc.itrust.beans.ProcedureBean"%>
 <%@page import="edu.ncsu.csc.itrust.action.EditOfficeVisitAction"%>
+<%@page import="edu.ncsu.csc.itrust.action.AddOfficeVisitAction"%>
 <%@page import="edu.ncsu.csc.itrust.beans.forms.EditOfficeVisitForm"%>
 <%@page import="edu.ncsu.csc.itrust.exception.iTrustException"%>
 <%@page import="edu.ncsu.csc.itrust.beans.HospitalBean"%>
@@ -33,16 +35,21 @@ pageTitle = "iTrust - Document Office Visit";
 <%@include file="/header.jsp" %>
 
 <%
+	boolean createVisit = false;
 	String ovIDString = request.getParameter("ovID");
-
 	String pidString = (String)session.getAttribute("pid");
+	
+	if(ovIDString == null) {
+		createVisit = true;
+		AddOfficeVisitAction action = new AddOfficeVisitAction(prodDAO, pidString);
+		ovIDString = "" + action.addEmptyOfficeVisit(loggedInMID.longValue());
+		loggingAction.logEvent(TransactionType.OFFICE_VISIT_CREATE, loggedInMID, Long.parseLong(pidString), "Office visit ID: " + ovIDString);
+	}
+
 	if (pidString == null || 1 > pidString.length()) {
 		response.sendRedirect("/iTrust/auth/getPatientID.jsp?forward=hcp-uap/editOfficeVisit.jsp?ovID=" + ovIDString);
 	   	return;
 	}
-	//else {
-	//	session.removeAttribute("pid");
-	//}
 	
     EditOfficeVisitAction action = new EditOfficeVisitAction(prodDAO, loggedInMID, pidString, ovIDString);
 	long ovID = action.getOvID();
@@ -63,21 +70,48 @@ pageTitle = "iTrust - Document Office Visit";
 				form.setDosage(request.getParameter("medDos"));
 				form.setEndDate(request.getParameter("medEnd"));
 				form.setInstructions(request.getParameter("medInst"));
+				form.setOverrideCode(request.getParameterValues("overrideReasonCode"));
+				form.setOverrideComment(request.getParameter("overrideComment"));
 				String problem = action.hasInteraction(request.getParameter("testMed"), pidString, request.getParameter("medStart"), request.getParameter("medEnd"));
 				problem += action.isAllergyOnList(pidString,request.getParameter("testMed"));
 				new EmailUtil(prodDAO).sendEmail(action.makeEmailApp(loggedInMID,pidString,problem));
+				
 			}
 			
 			form.setHcpID("" + visit.getHcpID());
 			form.setPatientID("" + visit.getPatientID());
 			try {
 				confirm = action.updateInformation(form);
+				
+				if(!"".equals(request.getParameter("addLabProcID"))) {
+					loggingAction.logEvent(TransactionType.OFFICE_VISIT_EDIT, loggedInMID, Long.parseLong(pidString), 
+							"Procedure: " + request.getParameter("addLabProcID"));
+				}
+				
+				else if ( request.getParameter("checkPresc").equals("true") || !"".equals(request.getParameter("addMedID"))){
+						String loggingExtra = "";
+						if(request.getParameterValues("overrideReasonCode") != null) {
+							loggingExtra += ", Reason:";
+							for(String reason : request.getParameterValues("overrideReasonCode"))
+								loggingExtra += " " + reason;
+						}
+							
+						if(request.getParameter("overrideComment") != null) {
+							loggingExtra += ", Comment: " + request.getParameter("overrideComment");
+						}
+						loggingAction.logEvent(TransactionType.PRESCRIPTION_ADD, loggedInMID, Long.parseLong(pidString), 
+								"Prescription: " + request.getParameter("testMed") + loggingExtra);
+				} else {
+					loggingAction.logEvent(TransactionType.OFFICE_VISIT_EDIT, loggedInMID, Long.parseLong(pidString), "Office visit ID: " + ovIDString);
+				}
 			}
 			catch (FormValidationException e) {
 				e.printHTML(pageContext.getOut());
 				confirm = "Input not valid";
 			}
 		}
+	} else if(!createVisit) {
+		loggingAction.logEvent(TransactionType.OFFICE_VISIT_VIEW, loggedInMID, Long.parseLong(pidString), "Office visit ID: " + ovIDString);
 	}
 	OfficeVisitBean ov = action.getOfficeVisit();
 	List<HospitalBean> hcpHospitals = action.getHospitals(ov.getHcpID());
@@ -89,16 +123,17 @@ pageTitle = "iTrust - Document Office Visit";
 if (!"".equals(confirm)) {
 	if (request.getParameter("checkPresc").equals("false")){ %>
 		<span class="iTrustMessage">Operation Canceled</span>
-	<% } else if ("success".equals(confirm)) { %>
+	<% } else if ("success".equals(confirm)) { 
+			
+	%>
 		<span class="iTrustMessage">Information Successfully Updated</span>
 <%	}
 	else { %>
-		<span class="iTrustError"><%=confirm%></span>		
+		<span class="iTrustError"><%= StringEscapeUtils.escapeHtml("" + (confirm)) %></span>		
 <%	}
 }	
 %>
 </div>
-
 
 <script type="text/javascript">
 	function removeID(type, value) {
@@ -149,18 +184,18 @@ if (!"".equals(confirm)) {
 
 <form action="editOfficeVisit.jsp" method="post" id="mainForm">
 	<input type="hidden" name="formIsFilled" value="true" />
-	<input type="hidden" name="ovID" value="<%=ovID%>" />
+	<input type="hidden" name="ovID" value="<%= StringEscapeUtils.escapeHtml("" + (ovID)) %>" />
 	<input type="hidden" id="removeDiagID" name="removeDiagID" value="" />
 	<input type="hidden" id="removeMedID" name="removeMedID" value="" />
 	<input type="hidden" id="removeProcID" name="removeProcID" value="" />
 	<input type="hidden" id="removeImmunizationID" name="removeImmunizationID" value="" />
 	<input type="hidden" id="removeLabProcID" name="removeLabProcID" value="" />
 	<input type="hidden" id="checkPresc" name="checkPresc" value="" />
-	<input type="hidden" id="testMed" name="testMed" value=<%=request.getParameter("testMed") %> />
-	<input type="hidden" id="medDos" name="medDos" value=<%=request.getParameter("medDos") %> />
-	<input type="hidden" id="medStart" name="medStart" value=<%=request.getParameter("medStart") %> />
-	<input type="hidden" id="medEnd" name="medEnd" value=<%=request.getParameter("medEnd") %> />
-	<input type="hidden" id="medInst" name="medInst" value=<%=request.getParameter("medInst") %> />
+	<input type="hidden" id="testMed" name="testMed" value=<%= StringEscapeUtils.escapeHtml("" + (request.getParameter("testMed") )) %> />
+	<input type="hidden" id="medDos" name="medDos" value=<%= StringEscapeUtils.escapeHtml("" + (request.getParameter("medDos") )) %> />
+	<input type="hidden" id="medStart" name="medStart" value=<%= StringEscapeUtils.escapeHtml("" + (request.getParameter("medStart") )) %> />
+	<input type="hidden" id="medEnd" name="medEnd" value=<%= StringEscapeUtils.escapeHtml("" + (request.getParameter("medEnd") )) %> />
+	<input type="hidden" id="medInst" name="medInst" value=<%= StringEscapeUtils.escapeHtml("" + (request.getParameter("medInst") )) %> />
 
 <div align=center>
 <table class="fTable" align="center">
@@ -169,20 +204,20 @@ if (!"".equals(confirm)) {
 	</tr>
 	<tr>
 		<td class="subHeaderVertical">Patient ID:</td>
-		<td><%=prodDAO.getAuthDAO().getUserName(ov.getPatientID())%> </td>
+		<td><%= StringEscapeUtils.escapeHtml("" + (prodDAO.getAuthDAO().getUserName(ov.getPatientID()))) %> </td>
 	</tr>
 	<tr>
 		<td class="subHeaderVertical">Date of Visit:</td>
-		<td><input name="visitDate" value="<%=ov.getVisitDateStr()%>" /><input type="button" value="Select Date" onclick="displayDatePicker('visitDate');" /></td>
+		<td><input name="visitDate" value="<%= StringEscapeUtils.escapeHtml("" + (ov.getVisitDateStr())) %>" /><input type="button" value="Select Date" onclick="displayDatePicker('visitDate');" /></td>
 	</tr>
 	<tr>
 		<td class="subHeaderVertical">Hospital:</td>
 		<td><select name="hospitalID">
 				<option value="">N/A</option>
 				<%for(HospitalBean hos : hcpHospitals) {%>
-					<option value="<%=hos.getHospitalID()%>" 
-						<%=hos.getHospitalID().equals(ov.getHospitalID()) ? "selected=selected" : ""%> > 
-						<%=hos.getHospitalName()%>
+					<option value="<%= StringEscapeUtils.escapeHtml("" + (hos.getHospitalID())) %>" 
+						<%= StringEscapeUtils.escapeHtml("" + (hos.getHospitalID().equals(ov.getHospitalID()) ? "selected=selected" : "")) %> > 
+						<%= StringEscapeUtils.escapeHtml("" + (hos.getHospitalName())) %>
 					</option>
 				<%} %>				
 			</select>
@@ -190,7 +225,7 @@ if (!"".equals(confirm)) {
 	</tr>
 	<tr>
 		<td class="subHeaderVertical">Notes:</td>
-		<td><textarea rows="4" style="width: 100%;" name="notes"><%=ov.getNotes()%></textarea></td>
+		<td><textarea rows="4" style="width: 100%;" name="notes"><%= StringEscapeUtils.escapeHtml("" + (ov.getNotes())) %></textarea></td>
 	</tr>
 </table>
 <br />
@@ -217,11 +252,11 @@ if (!"".equals(confirm)) {
 	<%}else{ %>
 		<%for(PrescriptionBean pres : ov.getPrescriptions()){ %>
 		<tr>
-			<td align=center><a href="./editPrescription.jsp?presID=<%=pres.getId()%>&ovID=<%=ovIDString%>"><%=pres.getMedication().getDescription()%> (<%=pres.getMedication().getNDCode()%>)</a></td>
-			<td align=center><%=pres.getDosage()%>mg</td>
-			<td align=center><%=pres.getStartDateStr()%> to <%=pres.getEndDateStr()%></td>						
-			<td align=center colspan=2><%=pres.getInstructions()%></td>						
-			<td align=center><a href="javascript:removeID('removeMedID','<%=pres.getId()%>');">Remove</a></td>
+			<td align=center><a href="./editPrescription.jsp?presID=<%= StringEscapeUtils.escapeHtml("" + (pres.getId())) %>&ovID=<%= StringEscapeUtils.escapeHtml("" + (ovIDString)) %>"><%= StringEscapeUtils.escapeHtml("" + (pres.getMedication().getDescription())) %> (<%= StringEscapeUtils.escapeHtml("" + (pres.getMedication().getNDCode())) %>)</a></td>
+			<td align=center><%= StringEscapeUtils.escapeHtml("" + (pres.getDosage())) %>mg</td>
+			<td align=center><%= StringEscapeUtils.escapeHtml("" + (pres.getStartDateStr())) %> to <%= StringEscapeUtils.escapeHtml("" + (pres.getEndDateStr())) %></td>						
+			<td align=center colspan=2><%= StringEscapeUtils.escapeHtml("" + (pres.getInstructions())) %></td>						
+			<td align=center><a href="javascript:removeID('removeMedID','<%= StringEscapeUtils.escapeHtml("" + (pres.getId())) %>');">Remove</a></td>
 		</tr>
 		<%}
 	}%>
@@ -233,7 +268,7 @@ if (!"".equals(confirm)) {
 	 		<select name="addMedID" id="addMedID" style="font-size:10px;">
 	 			<option value=""> -- Please Select a Medication -- </option>
 	 			<%for(MedicationBean med : prodDAO.getNDCodesDAO().getAllNDCodes()){%>
-		 			<option value="<%=med.getNDCode()%>"><%=med.getNDCode()%> - <%=med.getDescription()%></option>
+		 			<option value="<%=med.getNDCode()%>"><%= StringEscapeUtils.escapeHtml("" + (med.getNDCode())) %> - <%= StringEscapeUtils.escapeHtml("" + (med.getDescription())) %></option>
 		 						 			
 	 			<%}%>
 	 		</select>
@@ -245,12 +280,12 @@ if (!"".equals(confirm)) {
 	 		<input type="text" name="startDate" id="startDate" style="width: 80px;" 
 	 			onclick="displayDatePicker('startDate');" 
 	 			onselect="displayDatePicker('startDate');"
-	 			value="<%=new SimpleDateFormat("MM/dd/yyyy").format(new Date())%>"> 
+	 			value="<%= StringEscapeUtils.escapeHtml("" + (new SimpleDateFormat("MM/dd/yyyy").format(new Date()))) %>"> 
 	 		to 
 			<input type="text" name="endDate" id="endDate" style="width: 80px;"
 				onclick="displayDatePicker('endDate');" 
 	 			onselect="displayDatePicker('endDate');"
-	 			value="<%=new SimpleDateFormat("MM/dd/yyyy").format(new Date())%>">
+	 			value="<%= StringEscapeUtils.escapeHtml("" + (new SimpleDateFormat("MM/dd/yyyy").format(new Date()))) %>">
 	 	</td>
 	 	<td align=center>
 	 		<input type="text" name="instructions" id="instructions" value="-- Instructions --" maxlength=500>
@@ -263,10 +298,25 @@ if (!"".equals(confirm)) {
 <%
 if (!("".equals(warning) )){ %>
 <br/>
-	<div style="background-color:yellow;color:black" align="center"><%=warning %></div>
+	<div style="background-color:yellow;color:black" align="center"><%= StringEscapeUtils.escapeHtml("" + (warning )) %></div>
+ 	<div style="background-color:yellow">
+	<select multiple name="overrideReasonCode" title="To select multiple reasons use Control+Click. (Or if on a Mac, Command+Click)" id="overrideReasonCode" style="font-size:10px;">
+		<%for(OverrideReasonBean bean : prodDAO.getORCodesDAO().getAllORCodes()){%>
+			<option value="<%=bean.getORCode()%>"><%= StringEscapeUtils.escapeHtml("" + (bean.getORCode())) %> - <%= StringEscapeUtils.escapeHtml("" + (bean.getDescription())) %></option>
+						 			
+		<%}%>
+	</select>
+	</div>
+	<div style="background-color:yellow">
+	Other reasons:<br/>
+	<textarea name="overrideComment" id="overrideComment" ROWS=5 COLS=40" maxlength=210"></textarea>
+	
+	</div>
 	<div style="background-color:yellow" align="center"><input type="button" onclick="presCont()" value="Continue" name="continue" id="continue"/>
 	<input type="button" onclick="location.href='/iTrust/auth/hcp-uap/editPHR.jsp'" value="Cancel" name="cancel" id="cancel"/>
-	</div><BR>
+	</div>
+	<BR>
+	
 <%}; %>
 
 
@@ -291,13 +341,13 @@ if (!("".equals(warning) )){ %>
 			<%} else { %>
 			<%for(LabProcedureBean labproc : lpBeans){ %>
 			<tr>
-				<td align=center><%=labproc.getLoinc()%></td>
-				<td align=center><%=labproc.getStatus()%></td>
-				<td align=center><%=labproc.getCommentary()%></td>
-				<td align=center><%=labproc.getResults()%></td>
-				<td align=center><%=labproc.getTimestamp()%></td>
+				<td align=center><%= StringEscapeUtils.escapeHtml("" + (labproc.getLoinc())) %></td>
+				<td align=center><%= StringEscapeUtils.escapeHtml("" + (labproc.getStatus())) %></td>
+				<td align=center><%= StringEscapeUtils.escapeHtml("" + (labproc.getCommentary())) %></td>
+				<td align=center><%= StringEscapeUtils.escapeHtml("" + (labproc.getResults())) %></td>
+				<td align=center><%= StringEscapeUtils.escapeHtml("" + (labproc.getTimestamp())) %></td>
 				<td ><a
-					href="javascript:removeID('removeLabProcID','<%=labproc.getProcedureID()%>');">Remove</a></td>
+					href="javascript:removeID('removeLabProcID','<%= StringEscapeUtils.escapeHtml("" + (labproc.getProcedureID())) %>');">Remove</a></td>
 			</tr>
 			<%} %>
 			<%} %>
@@ -309,10 +359,10 @@ if (!("".equals(warning) )){ %>
 					<select name="addLabProcID"	style="font-size: 10px;">
 						<option value="">-- Please Select a Procedure --</option>
 							<% for(LOINCbean loinc : prodDAO.getLOINCDAO().getAllLOINC()) { %>
-						<option value="<%=loinc.getLabProcedureCode()%>"> <%=loinc.getLabProcedureCode()%>
-					 		- <%=loinc.getComponent()%> - <%=loinc.getKindOfProperty()%> - <%=loinc.getTimeAspect()%>
-					 		- <%=loinc.getSystem()%> - <%=loinc.getScaleType()%> 
-					 		- <%=loinc.getMethodType()%></option>
+						<option value="<%=loinc.getLabProcedureCode()%>"> <%= StringEscapeUtils.escapeHtml("" + (loinc.getLabProcedureCode())) %>
+					 		- <%= StringEscapeUtils.escapeHtml("" + (loinc.getComponent())) %> - <%= StringEscapeUtils.escapeHtml("" + (loinc.getKindOfProperty())) %> - <%= StringEscapeUtils.escapeHtml("" + (loinc.getTimeAspect())) %>
+					 		- <%= StringEscapeUtils.escapeHtml("" + (loinc.getSystem())) %> - <%= StringEscapeUtils.escapeHtml("" + (loinc.getScaleType())) %> 
+					 		- <%= StringEscapeUtils.escapeHtml("" + (loinc.getMethodType())) %></option>
 							<% } %>
 					</select>
 					<input	type="submit" name="addLP" value="Add Lab Procedure" >
@@ -340,10 +390,10 @@ if (!("".equals(warning) )){ %>
 			<%} else { 
 					for(DiagnosisBean d : ov.getDiagnoses()) { %>
 			<tr>
-				<td align=center><%=d.getICDCode()%></td>
-				<td ><%=d.getDescription()%></td>
+				<td align=center><%= StringEscapeUtils.escapeHtml("" + (d.getICDCode())) %></td>
+				<td ><%= StringEscapeUtils.escapeHtml("" + (d.getDescription())) %></td>
 				<td ><a
-					href="javascript:removeID('removeDiagID','<%=d.getOvDiagnosisID()%>');">Remove</a></td>
+					href="javascript:removeID('removeDiagID','<%= StringEscapeUtils.escapeHtml("" + (d.getOvDiagnosisID())) %>');">Remove</a></td>
 			</tr>
 			<%		}
 				}%>
@@ -354,8 +404,8 @@ if (!("".equals(warning) )){ %>
 				<td colspan="3" align=center><select name="addDiagID" style="font-size:10">
 					<option value="">-- None Selected --</option>
 					<%for(DiagnosisBean diag : prodDAO.getICDCodesDAO().getAllICDCodes()) { %>
-					<option value="<%=diag.getICDCode()%>"><%=diag.getICDCode()%>
-					- <%=diag.getDescription()%></option>
+					<option value="<%=diag.getICDCode()%>"><%= StringEscapeUtils.escapeHtml("" + (diag.getICDCode())) %>
+					- <%= StringEscapeUtils.escapeHtml("" + (diag.getDescription())) %></option>
 					<%}%>
 					</select>
 					<input type="submit" value="Add Diagnosis">
@@ -382,9 +432,9 @@ if (!("".equals(warning) )){ %>
 			<% for (ProcedureBean proc : ov.getProcedures()) { 
 				if (null == proc.getAttribute() || !proc.getAttribute().equals("immunization")) {%>
 			<tr>
-				<td align="center"><%=proc.getCPTCode()%></td>
-				<td ><%=proc.getDescription()%></td>
-				<td ><a href="javascript:removeID('removeProcID','<%=proc.getOvProcedureID()%>');">Remove</a></td>
+				<td align="center"><%= StringEscapeUtils.escapeHtml("" + (proc.getCPTCode())) %></td>
+				<td ><%= StringEscapeUtils.escapeHtml("" + (proc.getDescription())) %></td>
+				<td ><a href="javascript:removeID('removeProcID','<%= StringEscapeUtils.escapeHtml("" + (proc.getOvProcedureID())) %>');">Remove</a></td>
 			</tr>
 			<% } } } %>
 			<tr>
@@ -396,7 +446,7 @@ if (!("".equals(warning) )){ %>
 						<option value="">-- Please Select a Procedure --</option>
 						<% for (ProcedureBean proc : prodDAO.getCPTCodesDAO().getAllCPTCodes()) {
 							if (null == proc.getAttribute() || !proc.getAttribute().equals("immunization")) { %>
-						<option value="<%=proc.getCPTCode() %>"><%=proc.getCPTCode() %> - <%=proc.getDescription() %></option>
+						<option value="<%=proc.getCPTCode() %>"><%= StringEscapeUtils.escapeHtml("" + (proc.getCPTCode() )) %> - <%= StringEscapeUtils.escapeHtml("" + (proc.getDescription() )) %></option>
 						<% } } %>
 					</select>
 					<input type="submit" name="addP" value="Add Procedure" >
@@ -423,9 +473,9 @@ if (!("".equals(warning) )){ %>
 			<%	for (ProcedureBean proc : ov.getProcedures()) { 
 					if (null != proc.getAttribute() && proc.getAttribute().equals("immunization")) { %>
 			<tr>
-				<td align="center"><%=proc.getCPTCode()%></td>
-				<td ><%=proc.getDescription()%></td>
-				<td ><a href="javascript:removeID('removeImmunizationID','<%=proc.getOvProcedureID()%>');">Remove</a></td>
+				<td align="center"><%= StringEscapeUtils.escapeHtml("" + (proc.getCPTCode())) %></td>
+				<td ><%= StringEscapeUtils.escapeHtml("" + (proc.getDescription())) %></td>
+				<td ><a href="javascript:removeID('removeImmunizationID','<%= StringEscapeUtils.escapeHtml("" + (proc.getOvProcedureID())) %>');">Remove</a></td>
 			</tr>
 			<% } } } %>
 			<tr >
@@ -436,7 +486,7 @@ if (!("".equals(warning) )){ %>
 					<select name="addImmunizationID" style="font-size: 10px;">
 						<option value="">-- Please Select a Procedure --</option>
 						<% for (ProcedureBean proc : prodDAO.getCPTCodesDAO().getImmunizationCPTCodes()) {%>
-							<option value="<%=proc.getCPTCode()%>"><%=proc.getCPTCode()%> - <%=proc.getDescription()%></option>
+							<option value="<%=proc.getCPTCode()%>"><%= StringEscapeUtils.escapeHtml("" + (proc.getCPTCode())) %> - <%= StringEscapeUtils.escapeHtml("" + (proc.getDescription())) %></option>
 						<% } %>
 					</select>
 					<input type="submit" name="addImmu" value="Add Immunization" >

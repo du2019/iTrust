@@ -8,7 +8,6 @@ import edu.ncsu.csc.itrust.dao.mysql.AuthDAO;
 import edu.ncsu.csc.itrust.dao.mysql.PatientDAO;
 import edu.ncsu.csc.itrust.dao.mysql.TransactionDAO;
 import edu.ncsu.csc.itrust.enums.Role;
-import edu.ncsu.csc.itrust.enums.TransactionType;
 import edu.ncsu.csc.itrust.exception.iTrustException;
 
 /**
@@ -69,8 +68,6 @@ public class EditRepresentativesAction extends PatientBaseAction {
 
 			boolean confirm = patientDAO.addRepresentative(pid, representee);
 			if (confirm) {
-				transDAO.logTransaction(TransactionType.DECLARE_REPRESENTATIVE, loggedInMID, pid, "patient "
-						+ pid + " now represents patient " + representee);
 				return "Patient represented";
 			} else
 				return "No change made";
@@ -92,8 +89,6 @@ public class EditRepresentativesAction extends PatientBaseAction {
 			long representee = Long.valueOf(input);
 			boolean confirm = patientDAO.removeRepresentative(pid, representee);
 			if (confirm) {
-				transDAO.logTransaction(TransactionType.DECLARE_REPRESENTATIVE, loggedInMID, pid, "patient "
-						+ pid + " no longer represents patient " + representee);
 				return "Patient represented";
 			} else
 				return "No change made";

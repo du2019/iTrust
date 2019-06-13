@@ -6,6 +6,7 @@ import com.meterware.httpunit.WebForm;
 import com.meterware.httpunit.WebTable;
 //import com.meterware.httpunit.WebForm;
 import com.meterware.httpunit.WebResponse;
+import edu.ncsu.csc.itrust.enums.TransactionType;
 
 public class PrescriptionInstructionsTest extends iTrustHTTPTest {
 
@@ -25,6 +26,7 @@ public class PrescriptionInstructionsTest extends iTrustHTTPTest {
 		WebConversation wc = login("9000000000", "pw");
 		WebResponse wr = wc.getCurrentPage();
 		assertEquals("iTrust - HCP Home", wr.getTitle());
+		assertLogged(TransactionType.HOME_VIEW, 9000000000L, 0L, "");
 		
 		wr = wr.getLinkWith("Document Office Visit").click();
 		assertEquals("iTrust - Please Select a Patient", wr.getTitle());
@@ -33,6 +35,7 @@ public class PrescriptionInstructionsTest extends iTrustHTTPTest {
 		patientForm.getButtons()[1].click();
 		wr = wc.getCurrentPage();
 		wr = wr.getLinkWith("06/10/2007").click();
+		assertLogged(TransactionType.OFFICE_VISIT_VIEW, 9000000000L, 2L, "Office visit");
 		
 		/* If you fail here, you need to make the first column a link */
 		assertTrue("First column in prescription table must be a link",
@@ -61,6 +64,7 @@ public class PrescriptionInstructionsTest extends iTrustHTTPTest {
 		WebTable wt = wr.getTableStartingWith("Prescription Updated!");
 		assertEquals("10mg", wt.getTableCell(2, 1).getText());
 		assertEquals("Take thrice daily", wt.getTableCell(2, 3).getText());
+		assertLogged(TransactionType.PRESCRIPTION_EDIT, 9000000000L, 2L, "");
 	}
 	
 	
@@ -69,12 +73,15 @@ public class PrescriptionInstructionsTest extends iTrustHTTPTest {
 		WebConversation wc = login("2", "pw");
 		WebResponse wr = wc.getCurrentPage();
 		assertEquals("iTrust - Patient Home", wr.getTitle());
+		assertLogged(TransactionType.HOME_VIEW, 2L, 0L, "");
 		
 		wr = wr.getLinkWith("Prescription Records").click();
 		assertEquals("iTrust - Get My Prescription Report", wr.getTitle());
 		WebForm viewForm = wr.getForms()[0];
 		viewForm.getButtons()[0].click();
 		wr = wc.getCurrentPage();
+		assertLogged(TransactionType.PRESCRIPTION_REPORT_VIEW, 2L, 2L, "");
+		
 		assertTrue(wr.getText().contains("Prioglitazone"));
 		
 		/* If you fail here, you need to make the first column a link */
@@ -124,10 +131,12 @@ public class PrescriptionInstructionsTest extends iTrustHTTPTest {
 		WebConversation wc = login("1", "pw");
 		WebResponse wr = wc.getCurrentPage();
 		assertEquals("iTrust - Patient Home", wr.getTitle());
+		assertLogged(TransactionType.HOME_VIEW, 1L, 0L, "");
 		
 		wr = wr.getLinkWith("My Diagnoses").click();
 		assertEquals("iTrust - My Diagnoses", wr.getTitle());
-
+		assertLogged(TransactionType.DIAGNOSES_LIST_VIEW, 1L, 1L, "");
+		
 		wr = wr.getLinkWith("Echovirus(79.10)").click();
 			
 		WebTable table = wr.getTableStartingWithPrefix("HCP");
@@ -144,6 +153,7 @@ public class PrescriptionInstructionsTest extends iTrustHTTPTest {
 		WebConversation wc = login("2", "pw");
 		WebResponse wr = wc.getCurrentPage();
 		assertEquals("iTrust - Patient Home", wr.getTitle());
+		assertLogged(TransactionType.HOME_VIEW, 2L, 0L, "");
 		
 		wr = wr.getLinkWith("My Expired Prescription Reports").click();
 		assertEquals("iTrust - Get My Expired Prescription Reports", wr.getTitle());
@@ -165,39 +175,6 @@ public class PrescriptionInstructionsTest extends iTrustHTTPTest {
 		WebTable wt = wr.getTableStartingWith("Prescription Information");
 		assertEquals("5mg", wt.getTableCell(2, 2).getText());
 		assertEquals("Take twice daily", wt.getTableCell(2, 4).getText());
-
-		
+		assertLogged(TransactionType.EXPIRED_PRESCRIPTION_VIEW, 2L, 2L, "");
 	}
-	
-	
-	/*
-	public void testOfficeVisitRemindersEmail() throws Exception {
-		
-		WebConversation wc = login("9900000000", "pw");
-		WebResponse wr = wc.getCurrentPage();
-		assertEquals("iTrust - HCP Home", wr.getTitle());
-		
-		wr = wr.getLinkWith("Office Visit Reminders").click();
-		assertTrue(wr.getText().contains("Patients Needing Visits"));
-		wr = wr.getForms()[0].submit();
-		assertTrue(wr.getText().contains("Darryl Thompson"));
-		wr = wr.getLinkWith("Darryl Thompson").click();
-		assertTrue(wr.getText().contains("Send Email Form"));
-	}
-	
-	public void testSendAnEmail() throws Exception {
-		
-		WebConversation wc = login("9900000000", "pw");
-		WebResponse wr = wc.getCurrentPage();
-		assertEquals("iTrust - HCP Home", wr.getTitle());
-		
-		wr = wr.getLinkWith("Office Visit Reminders").click();
-		assertTrue(wr.getText().contains("Patients Needing Visits"));
-		wr = wr.getForms()[0].submit();
-		assertTrue(wr.getText().contains("Darryl Thompson"));
-		wr = wr.getLinkWith("Darryl Thompson").click();
-		assertTrue(wr.getText().contains("Send Email Form"));
-		wr = wr.getForms()[0].submit();
-		assertTrue(wr.getText().contains("Your Email was sent:"));
-	}*/
 }

@@ -25,19 +25,39 @@ pageTitle = "iTrust - Maintain Appointment Types";
 			if(request.getParameter("name").equals("") || request.getParameter("duration").equals(""))
 				headerMessage = "Please fill in all fields.";
 			else {
-				ApptTypeBean apptType = new ApptTypeBean(request.getParameter("name"), Integer.parseInt(request.getParameter("duration")));
-				headerMessage = (request.getParameter("add") != null) ? atEditor.addApptType(apptType) : atEditor.editApptType(apptType);
+				try {
+					ApptTypeBean apptType = new ApptTypeBean(request.getParameter("name"), Integer.parseInt(request.getParameter("duration")));
+					headerMessage = (request.getParameter("add") != null) ? atEditor.addApptType(apptType) : atEditor.editApptType(apptType);
+					
+					if(!headerMessage.contains("already exists.") && !headerMessage.contains("fill in all fields") && !headerMessage.contains("already has a duration")) {
+						if(request.getParameter("add") != null) {
+							loggingAction.logEvent(TransactionType.APPOINTMENT_TYPE_ADD, loggedInMID, 0, "");
+							
+						}
+						if(request.getParameter("update") != null) {
+							loggingAction.logEvent(TransactionType.APPOINTMENT_TYPE_EDIT, loggedInMID, 0, "");
+						}
+					}
+				} catch (NumberFormatException e) {
+%>
+					<div align=center>
+					<span class="iTrustError">Error: Physical - Duration: must be an integer value.</span>
+				</div>
+<%
+				}
 			}
 		} 
 		catch(FormValidationException e) {
 %>
 	<div align=center>
-		<span class="iTrustError"><%=e.getMessage() %></span>
+		<span class="iTrustError"><%=StringEscapeUtils.escapeHtml(e.getMessage()) %></span>
 	</div>
 <%
 			headerMessage = "Validation Errors";
 		}
 		
+	} else {
+		loggingAction.logEvent(TransactionType.APPOINTMENT_TYPE_VIEW, loggedInMID, 0, "");
 	}
 	String headerColor = (headerMessage.indexOf("Error") > -1)
 			? "#ffcccc"
@@ -53,7 +73,7 @@ function fillUpdate(name) {
 
 <div align="center">
 <br />
-<span class="iTrustMessage"><%=headerMessage %></span>
+<span class="iTrustMessage" ><%= StringEscapeUtils.escapeHtml("" + (headerMessage )) %></span>
 <br />
 <br />
 
@@ -93,10 +113,10 @@ function fillUpdate(name) {
 			tempName = apptEntry.getName();
 	%>
 		<tr>
-			<td><a href="javascript:void(0)" onclick="fillUpdate('<%=tempName %>')"><%=tempName %></a>
-				<input type="hidden" id="<%=tempName%>" name="<%=tempName%>" value="<%=tempDuration%>" />		
+			<td><a href="javascript:void(0)" onclick="fillUpdate('<%= StringEscapeUtils.escapeHtml("" + (tempName )) %>')"><%= StringEscapeUtils.escapeHtml("" + (tempName )) %></a>
+				<input type="hidden" id="<%= StringEscapeUtils.escapeHtml("" + (tempName)) %>" name="<%= StringEscapeUtils.escapeHtml("" + (tempName)) %>" value="<%= StringEscapeUtils.escapeHtml("" + (tempDuration)) %>" />		
 			</td>
-			<td><%=tempDuration %></td>
+			<td><%= StringEscapeUtils.escapeHtml("" + (tempDuration )) %></td>
 		</tr>
 	<% } %>
 </table>

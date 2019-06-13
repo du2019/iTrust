@@ -5,6 +5,7 @@ import com.meterware.httpunit.WebConversation;
 import com.meterware.httpunit.WebForm;
 import com.meterware.httpunit.WebLink;
 import com.meterware.httpunit.WebResponse;
+import edu.ncsu.csc.itrust.enums.TransactionType;
 
 public class ReportAdverseImmuEventTest extends iTrustHTTPTest {
 
@@ -23,9 +24,12 @@ public class ReportAdverseImmuEventTest extends iTrustHTTPTest {
 		WebConversation wc = login("1", "pw");
 		WebResponse wr = wc.getCurrentPage();
 		assertEquals("iTrust - Patient Home", wr.getTitle());
+		assertLogged(TransactionType.HOME_VIEW, 1L, 0L, "");
 		
 		wr = wr.getLinkWith("View My Records").click();
 		assertEquals("iTrust - View My Records", wr.getTitle());
+		assertLogged(TransactionType.MEDICAL_RECORD_VIEW, 1L, 1L, "");
+		
 		WebLink[] weblinks = wr.getLinks();
 		for(int i = 0; i < weblinks.length; i++) {
 			if(weblinks[i].getText().equals("Report")) {
@@ -41,6 +45,7 @@ public class ReportAdverseImmuEventTest extends iTrustHTTPTest {
 		wr = wc.getCurrentPage();
 		assertEquals("iTrust - Patient Home", wr.getTitle());
 		assertTrue(wr.getText().contains("Adverse Event Successfully Reported"));
+		assertLogged(TransactionType.ADVERSE_EVENT_REPORT, 1L, 0L, "");
 	}
 	
 }

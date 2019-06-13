@@ -17,6 +17,8 @@ pageTitle = "iTrust - Visit Reminders";
 <%@include file="/header.jsp" %>
 
 <%
+loggingAction.logEvent(TransactionType.PATIENT_REMINDERS_VIEW, loggedInMID.longValue(), 0, "");
+
 GetVisitRemindersAction action = new GetVisitRemindersAction(prodDAO, loggedInMID.longValue());
 %>
 <div align="center">
@@ -28,8 +30,8 @@ GetVisitRemindersAction action = new GetVisitRemindersAction(prodDAO, loggedInMI
 <%
 	for (ReminderType rt : ReminderType.values()) {
 %>
-	<option	<%=rt.getTypeName().equals(request.getParameter("ReminderType")) ? " selected " : " "%> 
-		value="<%=rt.getTypeName() %>"><%=rt.getTypeName() %></option>
+	<option	<%= StringEscapeUtils.escapeHtml("" + (rt.getTypeName().equals(request.getParameter("ReminderType")) ? " selected " : " ")) %> 
+		value="<%=rt.getTypeName() %>"><%= StringEscapeUtils.escapeHtml("" + (rt.getTypeName() )) %></option>
 <%
 	}
 %>
@@ -52,14 +54,14 @@ if("Get Reminders".equals(request.getParameter("getReminders"))) {
 			<tr>
 				<td class="subHeaderVertical">Name:</td>
 				<td >
-					<a href="sendEmailNotification.jsp?mid=<%=reminder.getPatientID()%>">
-					<%=reminder.getFirstName()+" "+reminder.getLastName()%>
+					<a href="sendEmailNotification.jsp?mid=<%= StringEscapeUtils.escapeHtml("" + (reminder.getPatientID())) %>">
+					<%= StringEscapeUtils.escapeHtml("" + (reminder.getFirstName()+" "+reminder.getLastName())) %>
 					</a>
 				</td>
 			</tr>
 			<tr>
 				<td class="subHeaderVertical">Phone Number:</td>
-				<td ><%=reminder.getPhoneNumber()%></td>
+				<td ><%= StringEscapeUtils.escapeHtml("" + (reminder.getPhoneNumber())) %></td>
 			</tr>
 			<tr>
 				<td class="subHeaderVertical">Reasons:</td>
@@ -67,7 +69,7 @@ if("Get Reminders".equals(request.getParameter("getReminders"))) {
 <%
 			for(VisitFlag vf : reminder.getVisitFlags()) {
 %>
-					<%=vf.getType() %>: &nbsp;&nbsp; <%=vf.getValue() %><br />
+					<%= StringEscapeUtils.escapeHtml("" + (vf.getType() )) %>: &nbsp;&nbsp; <%= StringEscapeUtils.escapeHtml("" + (vf.getValue() )) %><br />
 <%
 			}
 %>
@@ -85,15 +87,15 @@ if("Get Reminders".equals(request.getParameter("getReminders"))) {
 			</tr>
 			<tr>
 				<td class="subHeaderVertical">Last Name:</td>
-				<td ><a href="sendEmailNotification.jsp?mid=<%=reminder.getPatientID()%>"><%=reminder.getLastName()%></a></td>
+				<td ><a href="sendEmailNotification.jsp?mid=<%= StringEscapeUtils.escapeHtml("" + (reminder.getPatientID())) %>"><%= StringEscapeUtils.escapeHtml("" + (reminder.getLastName())) %></a></td>
 			</tr>
 			<tr>
 				<td class="subHeaderVertical">First Name:</td>
-				<td ><%=reminder.getFirstName()%></td>
+				<td ><%= StringEscapeUtils.escapeHtml("" + (reminder.getFirstName())) %></td>
 			</tr>
 			<tr>
 				<td class="subHeaderVertical">Phone Number:</td>
-				<td ><%=reminder.getPhoneNumber()%></td>
+				<td ><%= StringEscapeUtils.escapeHtml("" + (reminder.getPhoneNumber())) %></td>
 			</tr>
 			<tr>
 				<td class="subHeaderVertical">Reasons:</td>
@@ -101,7 +103,7 @@ if("Get Reminders".equals(request.getParameter("getReminders"))) {
 <%
 			for(VisitFlag vf : reminder.getVisitFlags()) {
 %>
-					<%=vf.getType() %>: &nbsp;&nbsp; <%=vf.getValue() %><br />
+					<%= StringEscapeUtils.escapeHtml("" + (vf.getType() )) %>: &nbsp;&nbsp; <%= StringEscapeUtils.escapeHtml("" + (vf.getValue() )) %><br />
 <%
 			}
 %>

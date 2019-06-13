@@ -1,4 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"%>
+<%@page import="org.apache.commons.lang.StringEscapeUtils"%>
 
 <%@include file="/authenticate.jsp" %>
 
@@ -12,7 +13,7 @@
 "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 	<head>
-		<title><%=pageTitle %></title>
+		<title><%= StringEscapeUtils.escapeHtml("" + (pageTitle )) %></title>
 		<link href="/iTrust/css/main.css" type="text/css" rel="stylesheet" />
 		<link href="/iTrust/css/datepicker.css" type="text/css" rel="stylesheet" />
 		<script src="/iTrust/js/DatePicker.js" type="text/javascript"></script>

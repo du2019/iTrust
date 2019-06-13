@@ -17,6 +17,8 @@ pageTitle = "iTrust - View My Messages";
 <div align=center>
 	<h2>My Messages</h2>
 <%
+	loggingAction.logEvent(TransactionType.INBOX_VIEW, loggedInMID.longValue(), 0, "");
+	
 	ViewMyMessagesAction action = new ViewMyMessagesAction(prodDAO, loggedInMID.longValue());
 	List<MessageBean> messages = action.getAllMyMessages();
 	session.setAttribute("messages", messages);
@@ -31,10 +33,10 @@ pageTitle = "iTrust - View My Messages";
 <%		int index = 0; %>
 <%		for(MessageBean message : messages) { %>
 		<tr>
-			<td><%= action.getName(message.getFrom()) %></td>
-			<td><%= message.getBody() %></td>
-			<td><%= message.getSentDate() %></td>
-			<td><a href="reply.jsp?msg=<%= index %>">Reply</a></td>
+			<td><%= StringEscapeUtils.escapeHtml("" + ( action.getName(message.getFrom()) )) %></td>
+			<td><%= StringEscapeUtils.escapeHtml("" + ( message.getBody() )) %></td>
+			<td><%= StringEscapeUtils.escapeHtml("" + ( message.getSentDate() )) %></td>
+			<td><a href="reply.jsp?msg=<%= StringEscapeUtils.escapeHtml("" + ( index )) %>">Reply</a></td>
 		</tr>
 <%			index ++; %>
 <%		} %>

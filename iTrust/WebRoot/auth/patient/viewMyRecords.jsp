@@ -29,6 +29,7 @@
 
 <%
 session.removeAttribute("personnelList");
+Long originalLoggedInMID = loggedInMID;
 
 	String representee = request.getParameter("rep");
 	boolean isRepresenting = false;
@@ -57,13 +58,15 @@ session.removeAttribute("personnelList");
 	List<AllergyBean> allergies = action.getAllergies();
 	List<PatientBean> represented = action.getRepresented();
 	List<LabProcedureBean> procs = action.getLabs();
+	
+	loggingAction.logEvent(TransactionType.MEDICAL_RECORD_VIEW, originalLoggedInMID, patient.getMID(), "");
 %> 
 
 <%
 if (request.getParameter("message") != null) {
 %>
 	<div class="iTrustMessage" style="font-size: 24px;" align=center>
-		<%=request.getParameter("message") %>
+		<%= StringEscapeUtils.escapeHtml("" + (request.getParameter("message") )) %>
 	</div>
 <%
 }
@@ -78,24 +81,24 @@ if (request.getParameter("message") != null) {
 			</tr>
 			<tr>
 				<td class="subHeaderVertical">Name:</td>
-				<td ><%=patient.getFullName()%></td>
+				<td ><%= StringEscapeUtils.escapeHtml("" + (patient.getFullName())) %></td>
 			</tr>
 			<tr>
 				<td  class="subHeaderVertical">Address:</td>
 				<td >
-					<%=patient.getStreetAddress1()%><br />
+					<%= StringEscapeUtils.escapeHtml("" + (patient.getStreetAddress1())) %><br />
 					<%="".equals(patient.getStreetAddress2()) ? ""
 						: patient.getStreetAddress2() + "<br />"%>
-					<%=patient.getStreetAddress3()%><br />
+					<%= StringEscapeUtils.escapeHtml("" + (patient.getStreetAddress3())) %><br />
 				</td>
 			</tr>
 			<tr>
 				<td class="subHeaderVertical">Phone:</td>
-				<td ><%=patient.getPhone()%></td>
+				<td ><%= StringEscapeUtils.escapeHtml("" + (patient.getPhone())) %></td>
 			</tr>
 			<tr>
 				<td class="subHeaderVertical">Email:</td>
-				<td ><%=patient.getEmail()%></td>
+				<td ><%= StringEscapeUtils.escapeHtml("" + (patient.getEmail())) %></td>
 			</tr>
 			<tr>
 				<th colspan="2">
@@ -106,21 +109,21 @@ if (request.getParameter("message") != null) {
 				<td class="subHeaderVertical">
 					Provider Name:
 				</td>
-				<td ><%=patient.getIcName()%></td>
+				<td ><%= StringEscapeUtils.escapeHtml("" + (patient.getIcName())) %></td>
 			</tr>
 			<tr>
 				<td class="subHeaderVertical">Address:</td>
 				<td >
-					<%=patient.getIcAddress1()%><br />
+					<%= StringEscapeUtils.escapeHtml("" + (patient.getIcAddress1())) %><br />
 					<%="".equals(patient.getIcAddress2()) ? "" : patient
 						.getIcAddress2()
 						+ "<br />"%>
-					<%=patient.getIcAddress3()%><br />
+					<%= StringEscapeUtils.escapeHtml("" + (patient.getIcAddress3())) %><br />
 				</td>
 			</tr>
 			<tr>
 				<td class="subHeaderVertical">Phone:</td>
-				<td ><%=patient.getIcPhone()%></td>
+				<td ><%= StringEscapeUtils.escapeHtml("" + (patient.getIcPhone())) %></td>
 			</tr>
 		</table>
 	</div>
@@ -135,7 +138,7 @@ if (request.getParameter("message") != null) {
 %>
 			<tr>
 				<td >
-					<a href="viewOfficeVisit.jsp?ovID=<%=ov.getVisitID()%><%=isRepresenting ? "&repMID=" + loggedInMID.longValue() : "" %>"><%=df.format(ov.getVisitDate())%></a></td>
+					<a href="viewOfficeVisit.jsp?ovID=<%= StringEscapeUtils.escapeHtml("" + (ov.getVisitID())) %><%=isRepresenting ? "&repMID=" + loggedInMID.longValue() : "" %>"><%= StringEscapeUtils.escapeHtml("" + (df.format(ov.getVisitDate()))) %></a></td>
 <%
 		if (action.isSurveyCompleted(ov.getVisitID())) {
 %>
@@ -144,7 +147,7 @@ if (request.getParameter("message") != null) {
 		} else {
 %>
 				<td >
-					<a	href="survey.jsp?ovID=<%=ov.getVisitID()%>&ovDate=<%=df.format(ov.getVisitDate())%>">
+					<a href="survey.jsp?ovID=<%= StringEscapeUtils.escapeHtml("" + (ov.getVisitID())) %>&ovDate=<%= StringEscapeUtils.escapeHtml("" + (df.format(ov.getVisitDate()))) %>">
 						Complete Visit Survey
 					</a>
 				</td>
@@ -154,11 +157,8 @@ if (request.getParameter("message") != null) {
 %>
 			</tr>
 			<tr>
-				<td>&nbsp;</td>
-			</tr>
-			<tr>
 				<td colspan=2 align=center>
-					<a href="viewPrescriptionRecords.jsp?<%=isRepresenting ? "&rep=" + loggedInMID.longValue() : "" %>">
+					<a href="viewPrescriptionRecords.jsp?<%= StringEscapeUtils.escapeHtml("" + (isRepresenting ? "&rep=" + loggedInMID.longValue() : "" )) %>">
 						Get Prescriptions
 					</a>
 				</td>
@@ -200,8 +200,8 @@ if (request.getParameter("message") != null) {
 			for (FamilyMemberBean member : family) {
 	%>
 	<tr>
-		<td ><%=member.getFullName()%></td>
-		<td ><%=member.getRelation()%></td>
+		<td ><%= StringEscapeUtils.escapeHtml("" + (member.getFullName())) %></td>
+		<td ><%= StringEscapeUtils.escapeHtml("" + (member.getRelation())) %></td>
 		<td  align=center><%=action.doesFamilyMemberHaveHighBP(member) ? "x"
 							: ""%></td>
 		<td  align=center><%=action
@@ -217,7 +217,7 @@ if (request.getParameter("message") != null) {
 							: ""%></td>
 		<td  align=center><%=action.isFamilyMemberSmoker(member) ? "x"
 					: ""%></td>
-		<td ><%=action.getFamilyMemberCOD(member)%></td>
+		<td ><%= StringEscapeUtils.escapeHtml("" + (action.getFamilyMemberCOD(member))) %></td>
 	</tr>
 	<%
 			}
@@ -249,8 +249,8 @@ if (request.getParameter("message") != null) {
 		for (AllergyBean allergy : allergies) {
 %>
 			<tr>
-				<td ><%=allergy.getDescription()%></td>
-				<td ><%=df.format(allergy.getFirstFound())%></td>
+				<td ><%= StringEscapeUtils.escapeHtml("" + (allergy.getDescription())) %></td>
+				<td ><%= StringEscapeUtils.escapeHtml("" + (df.format(allergy.getFirstFound()))) %></td>
 			</tr>
 <%
 		}
@@ -262,7 +262,7 @@ if (request.getParameter("message") != null) {
 	<div style="float:left; margin-left:5px;">
 		<table class="fTable">
 			<tr>
-				<th> Patients <%=patient.getFirstName()%> Represents </th>
+				<th> Patients <%= StringEscapeUtils.escapeHtml("" + (patient.getFirstName())) %> Represents </th>
 			</tr>
 			<tr class="subHeader">
 				<td>Patient</td>
@@ -272,7 +272,7 @@ if (request.getParameter("message") != null) {
 %>
 			<tr>
 				<td >
-					<%=patient.getFirstName()%> is not representing any patients
+					<%= StringEscapeUtils.escapeHtml("" + (patient.getFirstName())) %> is not representing any patients
 				</td>
 			</tr>
 <%
@@ -285,11 +285,11 @@ if (request.getParameter("message") != null) {
 <%
 	if(isRepresenting) {
 %>
-		<%=p.getFullName()%>
+		<%= StringEscapeUtils.escapeHtml("" + (p.getFullName())) %>
 <%
 	} else {
 %>
-		<a href="viewMyRecords.jsp?rep=<%=index%>"><%=p.getFullName()%></a>
+		<a href="viewMyRecords.jsp?rep=<%= StringEscapeUtils.escapeHtml("" + (index)) %>"><%= StringEscapeUtils.escapeHtml("" + (p.getFullName())) %></a>
 <%
 	}
 %>
@@ -335,20 +335,20 @@ if (request.getParameter("message") != null) {
 		for (HealthRecord hr : records) {
 %>
 	<tr>
-		<td ><%=hr.getHeight()%>in</td>
-		<td ><%=hr.getWeight()%>lbs</td>
-		<td ><%=hr.isSmoker() ? "Y" : "N"%></td>
-		<td ><%=hr.getBloodPressure()%> mmHg</td>
-		<td ><%=hr.getCholesterolHDL()%> mg/dL</td>
-		<td ><%=hr.getCholesterolLDL()%> mg/dL</td>
-		<td ><%=hr.getCholesterolTri()%> mg/dL</td>
-		<td ><%=hr.getTotalCholesterol()%> mg/dL</td>
-		<td ><%=df.format(hr.getDateRecorded())%></td>
+		<td ><%= StringEscapeUtils.escapeHtml("" + (hr.getHeight())) %>in</td>
+		<td ><%= StringEscapeUtils.escapeHtml("" + (hr.getWeight())) %>lbs</td>
+		<td ><%= StringEscapeUtils.escapeHtml("" + (hr.isSmoker() ? "Y" : "N")) %></td>
+		<td ><%= StringEscapeUtils.escapeHtml("" + (hr.getBloodPressure())) %> mmHg</td>
+		<td ><%= StringEscapeUtils.escapeHtml("" + (hr.getCholesterolHDL())) %> mg/dL</td>
+		<td ><%= StringEscapeUtils.escapeHtml("" + (hr.getCholesterolLDL())) %> mg/dL</td>
+		<td ><%= StringEscapeUtils.escapeHtml("" + (hr.getCholesterolTri())) %> mg/dL</td>
+		<td ><%= StringEscapeUtils.escapeHtml("" + (hr.getTotalCholesterol())) %> mg/dL</td>
+		<td ><%= StringEscapeUtils.escapeHtml("" + (df.format(hr.getDateRecorded()))) %></td>
 		<%
 			PersonnelBean personnel = new PersonnelDAO(prodDAO).getPersonnel(hr.getPersonnelID());
 			personnelList.add(personnel);
 		%>
-		<td ><a href="/iTrust/auth/viewPersonnel.jsp?personnel=<%=index%>"><%=personnel.getFullName()%></a></td>
+		<td ><a href="/iTrust/auth/viewPersonnel.jsp?personnel=<%= StringEscapeUtils.escapeHtml("" + (index)) %>"><%= StringEscapeUtils.escapeHtml("" + (personnel.getFullName())) %></a></td>
 	</tr>
 <%
 			index++;
@@ -386,13 +386,13 @@ if (request.getParameter("message") != null) {
 		for (LabProcedureBean bean : procs) {
 %>
 	<tr>
-		<td ><%=patient.getFullName()%></td>
-		<td ><%=bean.getLoinc()%></td>
-		<td ><%=bean.getStatus()%></td>
-		<td ><%=bean.getResults()%></td>
-		<td ><%=bean.getOvID()%></td>
-		<td ><%=bean.getCommentary()%></td>
-		<td ><%=df.format(bean.getTimestamp())%></td>
+		<td ><%= StringEscapeUtils.escapeHtml("" + (patient.getFullName())) %></td>
+		<td ><%= StringEscapeUtils.escapeHtml("" + (bean.getLoinc())) %></td>
+		<td ><%= StringEscapeUtils.escapeHtml("" + (bean.getStatus())) %></td>
+		<td ><%= StringEscapeUtils.escapeHtml("" + (bean.getResults())) %></td>
+		<td ><%= StringEscapeUtils.escapeHtml("" + (bean.getOvID())) %></td>
+		<td ><%= StringEscapeUtils.escapeHtml("" + (bean.getCommentary())) %></td>
+		<td ><%= StringEscapeUtils.escapeHtml("" + (df.format(bean.getTimestamp()))) %></td>
 
 	</tr>
 <%
@@ -430,16 +430,16 @@ for (OfficeVisitBean ov: officeVisits) {
 			hasNoData=false;
 %>
 	<tr>
-		<td><%=proc.getCPTCode()%></td>
-		<td><%=proc.getDescription() %></td>
-		<td><%=proc.getDate() %></td>
+		<td><%= StringEscapeUtils.escapeHtml("" + (proc.getCPTCode())) %></td>
+		<td><%= StringEscapeUtils.escapeHtml("" + (proc.getDescription() )) %></td>
+		<td><%= StringEscapeUtils.escapeHtml("" + (proc.getDate() )) %></td>
 		<td>
 		<%
 			Date date = new Date();
 			date.setYear(date.getYear()-1);
 			if(proc.getDate().after(date)){
 		%>
-		<a href="reportAdverseEvent.jsp?presID=<%=proc.getDescription()%>&HCPMID=<%=ov.getHcpID() %>&code=<%=proc.getCPTCode()%>">Report</a>	
+		<a href="reportAdverseEvent.jsp?presID=<%= StringEscapeUtils.escapeHtml("" + (proc.getDescription())) %>&HCPMID=<%= StringEscapeUtils.escapeHtml("" + (ov.getHcpID() )) %>&code=<%= StringEscapeUtils.escapeHtml("" + (proc.getCPTCode())) %>">Report</a>	
 	
 <%
 		}%></td></tr><% }

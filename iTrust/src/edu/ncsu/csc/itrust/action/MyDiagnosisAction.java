@@ -16,7 +16,6 @@ import edu.ncsu.csc.itrust.dao.mysql.OfficeVisitDAO;
 import edu.ncsu.csc.itrust.dao.mysql.SurveyDAO;
 import edu.ncsu.csc.itrust.dao.mysql.PersonnelDAO;
 import edu.ncsu.csc.itrust.dao.mysql.LabProcedureDAO;
-import edu.ncsu.csc.itrust.enums.TransactionType;
 import edu.ncsu.csc.itrust.exception.DBException;
 import edu.ncsu.csc.itrust.exception.iTrustException;
 
@@ -76,8 +75,6 @@ public class MyDiagnosisAction {
 		HashMap<Long, HCPDiagnosisBean> hcpHash = new HashMap<Long, HCPDiagnosisBean>();
 		HashMap<Long, Long> patientHash = new HashMap<Long, Long>();
 	
-		transactionDAO.logTransaction(TransactionType.FIND_HCPS_WITH_EXP, loggedInMID);
-		
 		HCPDiagnosisBean diag = null;
 		List<OfficeVisitBean> beans = officeVisitDAO.getAllOfficeVisitsForDiagnosis(icdcode);
 		
@@ -90,7 +87,7 @@ public class MyDiagnosisAction {
 			
 			// Check to see if we already have a bean for the HCP associated with this visit
 			if (hcpHash.containsKey(bean.getHcpID())) {
-				diag = (HCPDiagnosisBean)hcpHash.get(bean.getHcpID());
+				diag = hcpHash.get(bean.getHcpID());
 				
 				for (PrescriptionBean p: bean.getPrescriptions()) {
 					List<MedicationBean> mlist = diag.getMedList();

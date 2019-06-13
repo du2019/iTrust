@@ -5,7 +5,6 @@ import edu.ncsu.csc.itrust.beans.PersonnelBean;
 import edu.ncsu.csc.itrust.beans.TransactionBean;
 import edu.ncsu.csc.itrust.dao.DAOFactory;
 import edu.ncsu.csc.itrust.datagenerators.TestDataGenerator;
-import edu.ncsu.csc.itrust.enums.TransactionType;
 import edu.ncsu.csc.itrust.exception.iTrustException;
 import edu.ncsu.csc.itrust.testutils.TestDAOFactory;
 import junit.framework.TestCase;
@@ -35,12 +34,6 @@ public class DeclareHCPActionTest extends TestCase {
 		List<PersonnelBean> decs = action.getDeclaredHCPS();
 		assertEquals(2, decs.size());
 		assertEquals(9000000000L, decs.get(0).getMID());
-		// Assert the transaction
-		List<TransactionBean> transList = factory.getTransactionDAO().getAllTransactions();
-		assertEquals(1, transList.size());
-		assertEquals(TransactionType.DECLARE_HCP, transList.get(0).getTransactionType());
-		assertEquals(2L, transList.get(0).getLoggedInMID());
-		assertEquals(9000000000L, transList.get(0).getSecondaryMID());
 
 	}
 
@@ -48,12 +41,6 @@ public class DeclareHCPActionTest extends TestCase {
 		assertEquals("HCP successfully undeclared", action.undeclareHCP("9000000003"));
 		List<PersonnelBean> decs = action.getDeclaredHCPS();
 		assertEquals(0, decs.size());
-		// Assert the transaction
-		List<TransactionBean> transList = factory.getTransactionDAO().getAllTransactions();
-		assertEquals(1, transList.size());
-		assertEquals(TransactionType.DECLARE_HCP, transList.get(0).getTransactionType());
-		assertEquals(2L, transList.get(0).getLoggedInMID());
-		assertEquals(9000000003L, transList.get(0).getSecondaryMID());
 	}
 
 	public void testDeclareAlreadyDeclared() throws Exception {

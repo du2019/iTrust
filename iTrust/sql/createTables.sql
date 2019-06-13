@@ -112,6 +112,12 @@ CREATE TABLE CPTCodes(
 	PRIMARY KEY (Code)
 ) ENGINE=MyISAM;
 
+CREATE TABLE DrugReactionOverrideCodes(
+	Code varchar(5) NOT NULL COMMENT 'Identifier for override reason',
+	Description varchar(80) NOT NULL COMMENT 'Description of override reason',
+	PRIMARY KEY (Code)
+) ENGINE=MyISAM;
+	
 CREATE TABLE NDCodes(
 	Code varchar(9) NOT NULL, 
 	Description varchar(40) NOT NULL, 
@@ -131,7 +137,7 @@ CREATE TABLE TransactionLog(
 	secondaryMID BIGINT unsigned NOT NULL DEFAULT '0', 
 	transactionCode int(10) UNSIGNED NOT NULL default '0', 
 	timeLogged timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP, 
-	addedInfo VARCHAR(50) default '',
+	addedInfo VARCHAR(255) default '',
 	PRIMARY KEY (transactionID)
 ) ENGINE=MyISAM;
 
@@ -216,6 +222,14 @@ CREATE TABLE OVMedication (
 	EndDate DATE,
 	Dosage INT DEFAULT 0 COMMENT 'Always in mg - this could certainly be changed later',
 	Instructions VARCHAR(500) DEFAULT ''
+) ENGINE=MyISAM;
+
+CREATE TABLE OVReactionOverride (
+	ID INT(10)  auto_increment primary key,
+	OVMedicationID INT(10) NOT NULL COMMENT 'Must correspond to an ID in OVMedication table',
+	OverrideCode VARCHAR(5) COMMENT 'Code identifier of the override reason',
+	OverrideComment VARCHAR(255) DEFAULT '' COMMENT 'Optional reason for override',
+	FOREIGN KEY (OVMedicationID) REFERENCES OVMedication (ID)
 ) ENGINE=MyISAM;
 
 CREATE TABLE OVDiagnosis (
@@ -327,6 +341,9 @@ CREATE TABLE RemoteMonitoringData (
 	systolicBloodPressure int(10) SIGNED default -1,
 	diastolicBloodPressure int(10) SIGNED default -1,
 	glucoseLevel int(10) SIGNED default -1,
+	height float default -1,
+	weight float default -1,
+	pedometerReading int(10) SIGNED default -1,
 	timeLogged timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
 	ReporterRole		TEXT,
 	ReporterID          BIGINT UNSIGNED NOT NULL,
@@ -336,6 +353,12 @@ CREATE TABLE RemoteMonitoringData (
 CREATE TABLE RemoteMonitoringLists (
 	PatientMID BIGINT unsigned default 0, 
 	HCPMID BIGINT unsigned default 0,
+	SystolicBloodPressure BOOLEAN default true,
+	DiastolicBloodPressure BOOLEAN default true,
+	GlucoseLevel BOOLEAN default true,
+	Height BOOLEAN default true,
+	Weight BOOLEAN default true,
+	PedometerReading BOOLEAN default true,
 	PRIMARY KEY  (PatientMID,HCPMID)
 ) ENGINE=MyISAM;
 
@@ -348,4 +371,10 @@ CREATE TABLE AdverseEvents (
 	Comment VARCHAR(2000),
 	Prescriber BIGINT unsigned default 0,
 	TimeLogged timestamp NOT NULL default CURRENT_TIMESTAMP
+) ENGINE=MyISAM;
+
+CREATE TABLE ProfilePhotos (
+	MID BIGINT (10) primary key,
+	Photo LONGBLOB,
+	UpdatedDate timestamp NOT NULL default CURRENT_TIMESTAMP
 ) ENGINE=MyISAM;

@@ -2,6 +2,7 @@
 
 <%
 pageTitle = "iTrust - ER Home";
+loggingAction.logEvent(TransactionType.HOME_VIEW, loggedInMID, 0, "ER Home");
 %>
 
 <%@include file="/header.jsp" %>

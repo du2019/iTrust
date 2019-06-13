@@ -4,6 +4,7 @@
 <%@page import="edu.ncsu.csc.itrust.dao.DAOFactory"%>
 <%@page import="edu.ncsu.csc.itrust.beans.DiagnosisBean"%>
 <%@page import="edu.ncsu.csc.itrust.action.EmergencyReportAction"%>
+<%@page import="org.apache.commons.lang.StringEscapeUtils"%>
 <%@page import="edu.ncsu.csc.itrust.beans.PrescriptionBean"%>
 <%@page import="edu.ncsu.csc.itrust.beans.AllergyBean"%>
 <%@page import="edu.ncsu.csc.itrust.beans.ProcedureBean"%>
@@ -34,7 +35,7 @@ if (!print) {
 	}
 	else {
 		session.setAttribute("printPid", pidString);
-		session.removeAttribute("pid");
+		
 	}
 }
 else {
@@ -59,7 +60,9 @@ else {%>
 <%@include file="/header.jsp" %>
 <%}%>
 
-<% if (!print) {
+<% 
+
+if (!print) {
 	
 	// Generate a report to the hcp's of this patient.
 	//  TODO: possibly change this to use messages and a different display format on
@@ -86,6 +89,7 @@ else {%>
 	
 	EmailUtil emailer = new EmailUtil(prodDAO);
 	emailer.sendEmail(myEmail);
+	loggingAction.logEvent(TransactionType.EMERGENCY_REPORT_VIEW, loggedInMID, Long.parseLong(pidString), "");
 	
 %>
 <form action="emergencyReport.jsp" method="post">
@@ -95,10 +99,10 @@ else {%>
 <%} %>
 
 <ul>
-<li>Name: <%=action.getPatientName()%></li>
-<li>Age: <%=action.getPatientAge()%></li>
-<li>Gender: <%=action.getPatientGender()%> </li>
-<li>Emergency Contact: <%=action.getPatientEmergencyContact() %></li>
+<li>Name: <%= StringEscapeUtils.escapeHtml("" + (action.getPatientName())) %></li>
+<li>Age: <%= StringEscapeUtils.escapeHtml("" + (action.getPatientAge())) %></li>
+<li>Gender: <%= StringEscapeUtils.escapeHtml("" + (action.getPatientGender())) %> </li>
+<li>Emergency Contact: <%= StringEscapeUtils.escapeHtml("" + (action.getPatientEmergencyContact() )) %></li>
 <li>Allergies:
 <%
 if (0 == action.getAllergies().size()) {
@@ -107,13 +111,13 @@ if (0 == action.getAllergies().size()) {
 else {
 	%><ul><%
 	for ( AllergyBean bean: action.getAllergies()) {
-		out.print("<li>" + bean.getDescription() + " " + bean.getFirstFoundStr() + "</li>");
+		out.print("<li>" + StringEscapeUtils.escapeHtml("" + (bean.getDescription())) + " " + StringEscapeUtils.escapeHtml("" + (bean.getFirstFoundStr())) + "</li>");
 	} 
 	%></ul><%
 }
 %>
 </li>
-<li>Blood Type: <%=action.getBloodType()%> </li>
+<li>Blood Type: <%= StringEscapeUtils.escapeHtml("" + (action.getBloodType())) %> </li>
 
 <li>Diagnoses: 
 <%
@@ -123,7 +127,7 @@ if (0 == action.getWarningDiagnoses().size()) {
 else {
 	%><ul><%
 	for(DiagnosisBean bean : action.getWarningDiagnoses()) {
-		out.print("<li>" + bean.getICDCode() + " " + bean.getDescription() + "</li>");
+		out.print("<li>" + StringEscapeUtils.escapeHtml("" + (bean.getICDCode())) + " " + StringEscapeUtils.escapeHtml("" + (bean.getDescription())) + "</li>");
 	} 
 	%></ul><%
 }
@@ -138,7 +142,7 @@ if (0 == action.getCurrentPrescriptions().size()) {
 else {
 	%><ul><%
 	for(PrescriptionBean bean : action.getCurrentPrescriptions()) {
-		out.print("<li>" + bean.getMedication().getNDCode() + " " + bean.getMedication().getDescription() + "</li>");
+		out.print("<li>" + StringEscapeUtils.escapeHtml("" + (bean.getMedication().getNDCode())) + " " + StringEscapeUtils.escapeHtml("" + (bean.getMedication().getDescription())) + "</li>");
 	} 
 	%></ul><%
 }
@@ -156,7 +160,7 @@ else {
 <%
 	for (ProcedureBean bean : action.getImmunizations()) {
 		if (null != bean.getAttribute() && bean.getAttribute().equals("immunization"))
-			out.print("<li>" + bean.getDescription() + " (" + bean.getCPTCode() +")" + "</li>");
+			out.print("<li>" + StringEscapeUtils.escapeHtml("" + (bean.getDescription())) + " (" + StringEscapeUtils.escapeHtml("" + (bean.getCPTCode())) +")" + "</li>");
 	} 
 %>
 </ul>

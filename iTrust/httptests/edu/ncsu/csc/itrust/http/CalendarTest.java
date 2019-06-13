@@ -4,6 +4,7 @@ import java.util.Calendar;
 import com.meterware.httpunit.WebConversation;
 import com.meterware.httpunit.WebLink;
 import com.meterware.httpunit.WebResponse;
+import edu.ncsu.csc.itrust.enums.TransactionType;
 
 public class CalendarTest extends iTrustHTTPTest {
 
@@ -28,6 +29,7 @@ public class CalendarTest extends iTrustHTTPTest {
 
 		// check title
 		assertTrue(wr.getTitle().contains("Appointment Calendar"));
+		assertLogged(TransactionType.CALENDAR_VIEW, 9000000000L, 0L, "");
 
 		// check for the right appointments
 		String[][] tableData = wr.getTableWithID("calendarTable").asText();
@@ -72,6 +74,7 @@ public class CalendarTest extends iTrustHTTPTest {
 
 		// check title
 		assertTrue(wr.getTitle().contains("Appointment Calendar"));
+		assertLogged(TransactionType.CALENDAR_VIEW, 2L, 0L, "");
 
 		// Patient 2 clicks the “487.00-Influenza” link on the 10th of the month.
 		wr = wr.getLinkWithName("487.00-Influenza-10").click();
@@ -107,6 +110,7 @@ public class CalendarTest extends iTrustHTTPTest {
 
 		// check title
 		assertTrue(wr.getTitle().contains("Appointment Calendar"));
+		assertLogged(TransactionType.CALENDAR_VIEW, 2L, 0L, "");
 
 		// Patient 2 clicks the “487.00-Influenza” link on the 10th of the month.
 		wr = wr.getLinkWithName("664662530-Penicillin-21").click();
@@ -122,6 +126,7 @@ public class CalendarTest extends iTrustHTTPTest {
 		assertTrue(wr.getText().contains("Penicillin (664662530)"));
 		assertTrue(wr.getText().contains("250mg"));
 		assertTrue(wr.getText().contains("Administer every 6 hours after meals"));
+		assertLogged(TransactionType.PRESCRIPTION_REPORT_VIEW, 2L, 2L, "");
 
 		// calculate date range
 		Calendar cal = Calendar.getInstance();
@@ -130,35 +135,6 @@ public class CalendarTest extends iTrustHTTPTest {
 		int year1 = cal.get(Calendar.YEAR);
 
 		assertTrue(wr.getText().contains(month1 + "/" + day1 + "/" + year1 + " to "));
-}
-
-	public void testHCPCalendarConflicts() throws Exception {
-		// Login
-		WebConversation wc = login("9000000000", "pw");
-		WebResponse wr = wc.getCurrentPage();
-
-		// Click Calendar
-		wr = wr.getLinkWith("Appointment Calendar").click();
-
-		// check title
-		assertTrue(wr.getTitle().contains("Appointment Calendar"));
-
-		// check for the bolded appointments
-		boolean testForBold = false;
-		String txt = wr.getText();
-		if (txt.contains(">5<")) {
-			String subTxt = txt.substring(txt.indexOf(">5<") + 1, txt.indexOf(">6<"));
-
-			// ensure that there are at least two bold's in this subtxt
-			if (subTxt.indexOf("conflict") != subTxt.lastIndexOf("conflict")) {
-				testForBold = true;
-			}
-
-		}
-
-		if (!testForBold) {
-			fail("No bolded overlaps found");
-		}
 	}
 	
 	public void testHCPViewAppointmentCalendarDetails() throws Exception {
@@ -171,6 +147,7 @@ public class CalendarTest extends iTrustHTTPTest {
 		
 		// check title
 		assertTrue(wr.getTitle().contains("Appointment Calendar"));
+		assertLogged(TransactionType.CALENDAR_VIEW, 9000000000L, 0L, "");
 		
 		WebLink[] links = wr.getLinks();
 		int count = 0;

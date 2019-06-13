@@ -4,6 +4,7 @@ import com.meterware.httpunit.WebConversation;
 import com.meterware.httpunit.WebForm;
 import com.meterware.httpunit.WebResponse;
 import com.meterware.httpunit.WebTable;
+import edu.ncsu.csc.itrust.enums.TransactionType;
 
 /**
  * Use Cases 9, 11 & 17
@@ -22,6 +23,8 @@ public class ImmunizationUseCasesTest extends iTrustHTTPTest {
 		
 		WebConversation wc = login("9000000003", "pw");
 		WebResponse wr = wc.getCurrentPage();
+		assertLogged(TransactionType.HOME_VIEW, 9000000003L, 0L, "");
+		
 		wr = wr.getLinkWith("Office Visit Reminders").click();
 		assertEquals("iTrust - Visit Reminders", wr.getTitle());
 		// Select "Immunization Needers"
@@ -49,6 +52,7 @@ public class ImmunizationUseCasesTest extends iTrustHTTPTest {
 			}
 		}
 		assertTrue(check);
+		assertLogged(TransactionType.PATIENT_REMINDERS_VIEW, 9000000003L, 0L, "");
 	}
 
 	
@@ -57,6 +61,8 @@ public class ImmunizationUseCasesTest extends iTrustHTTPTest {
 		boolean check = false;
 		WebConversation wc = login("9000000000", "pw");
 		WebResponse wr = wc.getCurrentPage();
+		assertLogged(TransactionType.HOME_VIEW, 9000000000L, 0L, "");
+		
 		wr = wr.getLinkWith("Office Visit Reminders").click();
 		assertEquals("iTrust - Visit Reminders", wr.getTitle());
 		// Select "Immunization Needers"
@@ -84,6 +90,7 @@ public class ImmunizationUseCasesTest extends iTrustHTTPTest {
 			}
 		}
 		assertTrue(check);
+		assertLogged(TransactionType.PATIENT_REMINDERS_VIEW, 9000000000L, 0L, "");
 	}
 	
 	public void testUpdateImmunizations() throws Exception {
@@ -91,6 +98,8 @@ public class ImmunizationUseCasesTest extends iTrustHTTPTest {
 		boolean check = false;
 		WebConversation wc = login("9000000000", "pw");
 		WebResponse wr = wc.getCurrentPage();
+		assertLogged(TransactionType.HOME_VIEW, 9000000000L, 0L, "");
+		
 		wr = wr.getLinkWith("Document Office Visit").click();
 		assertEquals("iTrust - Please Select a Patient", wr.getTitle());
 		// choose patient 1
@@ -103,6 +112,8 @@ public class ImmunizationUseCasesTest extends iTrustHTTPTest {
 		WebForm wf = wr.getFormWithID("mainForm");
 		wf.setParameter("addImmunizationID", "90371");
 		wr = wf.submit();
+		assertLogged(TransactionType.OFFICE_VISIT_EDIT, 9000000000L, 6L, "Office visit");
+		
 		wr = wr.getLinkWith("Office Visit Reminders").click();
 		assertEquals("iTrust - Visit Reminders", wr.getTitle());
 		// Select "Immunization Needers"
@@ -130,14 +141,19 @@ public class ImmunizationUseCasesTest extends iTrustHTTPTest {
 			}
 		}
 		assertTrue(check);
+		assertLogged(TransactionType.PATIENT_REMINDERS_VIEW, 9000000000L, 0L, "");
 	}
 	
 	public void testViewImmunizationRecord() throws Exception {
 		
 		WebConversation wc = login("6", "pw");
 		WebResponse wr = wc.getCurrentPage();
+		assertLogged(TransactionType.HOME_VIEW, 6L, 0L, "");
+		
 		wr = wr.getLinkWith("View My Records").click();
 		assertEquals("iTrust - View My Records", wr.getTitle());
+		assertLogged(TransactionType.MEDICAL_RECORD_VIEW, 6L, 6L, "");
+		
 		WebTable table = wr.getTableStartingWith("Immunizations");
 		assertEquals("90649", table.getCellAsText(2, 0));
 		assertEquals("90649", table.getCellAsText(3, 0));
@@ -169,8 +185,12 @@ public class ImmunizationUseCasesTest extends iTrustHTTPTest {
 		
 		WebConversation wc = login("2", "pw");
 		WebResponse wr = wc.getCurrentPage();
+		assertLogged(TransactionType.HOME_VIEW, 2L, 0L, "");
+		
 		wr = wr.getLinkWith("View My Records").click();
 		assertEquals("iTrust - View My Records", wr.getTitle());
+		assertLogged(TransactionType.MEDICAL_RECORD_VIEW, 2L, 2L, "");
+		
 		WebTable table = wr.getTableStartingWith("Immunizations");
 		assertEquals("No Data", table.getCellAsText(2, 0));
 		
@@ -180,6 +200,8 @@ public class ImmunizationUseCasesTest extends iTrustHTTPTest {
 		
 		WebConversation wc = login("9000000000", "pw");
 		WebResponse wr = wc.getCurrentPage();
+		assertLogged(TransactionType.HOME_VIEW, 9000000000L, 0L, "");
+		
 		wr = wr.getLinkWith("Document Office Visit").click();
 		assertEquals("iTrust - Please Select a Patient", wr.getTitle());
 		WebForm patientForm = wr.getForms()[0];
@@ -190,6 +212,7 @@ public class ImmunizationUseCasesTest extends iTrustHTTPTest {
 		wr = wr.getLinkWith("07/10/2004").click();
 		WebTable table = wr.getTableStartingWith("Immunizations");
 		assertEquals("90649", table.getCellAsText(2, 0));
+		assertLogged(TransactionType.OFFICE_VISIT_VIEW, 9000000000L, 6L, "Office visit");
 		
 	}
 	
@@ -197,6 +220,8 @@ public class ImmunizationUseCasesTest extends iTrustHTTPTest {
 		
 		WebConversation wc = login("9000000000", "pw");
 		WebResponse wr = wc.getCurrentPage();
+		assertLogged(TransactionType.HOME_VIEW, 9000000000L, 0L, "");
+		
 		wr = wr.getLinkWith("Document Office Visit").click();
 		assertEquals("iTrust - Please Select a Patient", wr.getTitle());
 		WebForm patientForm = wr.getForms()[0];
@@ -210,6 +235,7 @@ public class ImmunizationUseCasesTest extends iTrustHTTPTest {
 		wr = wr.getLinkWith("Remove").click();
 		table = wr.getTableStartingWith("Immunizations");
 		assertEquals("No immunizations on record", table.getCellAsText(2, 0));
+		assertLogged(TransactionType.OFFICE_VISIT_VIEW, 9000000000L, 7L, "Office visit");
 		
 	}
 }

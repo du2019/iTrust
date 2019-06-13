@@ -9,9 +9,7 @@ import de.laures.cewolf.DatasetProduceException;
 import junit.framework.TestCase;
 import edu.ncsu.csc.itrust.beans.AdverseEventBean;
 import edu.ncsu.csc.itrust.charts.AdverseEventsData;
-import edu.ncsu.csc.itrust.dao.DAOFactory;
 import edu.ncsu.csc.itrust.datagenerators.TestDataGenerator;
-import edu.ncsu.csc.itrust.testutils.TestDAOFactory;
 
 public class AverseEventsDataTest extends TestCase {
 	private AdverseEventsData chart;
@@ -39,11 +37,11 @@ public class AverseEventsDataTest extends TestCase {
 			chart.setAdverseEventsList(adEvents, codeName);
 			DefaultCategoryDataset data = (DefaultCategoryDataset)chart.produceDataset(params);
 			assertEquals(1.0, data.getValue(codeName, "Aug"));
+			assertEquals("AdverseEventsData DatasetProducer", chart.getProducerId());
 		} catch (DatasetProduceException e) {
 			e.printStackTrace();
 			fail();
 		}
-		
 	}
 	
 	

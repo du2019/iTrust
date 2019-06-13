@@ -44,6 +44,7 @@ session.removeAttribute("personnelList");
 	boolean hasData = false;
 	List<PersonnelBean> personnelList = new ArrayList<PersonnelBean>();
 	int index = 0;
+	loggingAction.logEvent(TransactionType.ACCESS_LOG_VIEW, loggedInMID, 0, "");
 	for(TransactionBean t : accesses){ 
 		PersonnelBean hcp = new PersonnelDAO(DAOFactory.getProductionInstance()).getPersonnel(t.getLoggedInMID());
 		if (hcp != null) {
@@ -51,10 +52,10 @@ session.removeAttribute("personnelList");
 
 	%>
 			<tr>
-				<td ><%=t.getTimeLogged()%></td>
-				<td ><a href="/iTrust/auth/viewPersonnel.jsp?personnel=<%=index%>"><%=hcp.getFullName()%></a></td>
-				<td><%=t.getRole() %></td>
-				<td ><%=t.getAddedInfo()%> (<%=t.getTransactionType().getCode()%>)</td>		
+				<td ><%= StringEscapeUtils.escapeHtml("" + (t.getTimeLogged())) %></td>
+				<td ><a href="/iTrust/auth/viewPersonnel.jsp?personnel=<%= StringEscapeUtils.escapeHtml("" + (index)) %>"><%= StringEscapeUtils.escapeHtml("" + (hcp.getFullName())) %></a></td>
+				<td><%= StringEscapeUtils.escapeHtml("" + (t.getRole() )) %></td>
+				<td ><%= StringEscapeUtils.escapeHtml("" + (t.getTransactionType().getDescription())) %></td>		
 			</tr>
 	<%
 		PersonnelBean personnel = new PersonnelDAO(prodDAO).getPersonnel(t.getLoggedInMID());
@@ -66,10 +67,10 @@ session.removeAttribute("personnelList");
 		PatientBean p = new PatientDAO(DAOFactory.getProductionInstance()).getPatient(t.getLoggedInMID());
 	%>
 			<tr>
-				<td ><%=t.getTimeLogged()%></td>
-				<td ><%=p.getFullName()%></td>
-				<td><%=t.getRole()%></td>
-				<td ><%=t.getAddedInfo()%> (<%=t.getTransactionType().getCode()%>)</td>		
+				<td ><%= StringEscapeUtils.escapeHtml("" + (t.getTimeLogged())) %></td>
+				<td ><%= StringEscapeUtils.escapeHtml("" + (p.getFullName())) %></td>
+				<td><%= StringEscapeUtils.escapeHtml("" + (t.getRole())) %></td>
+				<td ><%= StringEscapeUtils.escapeHtml("" + (t.getAddedInfo())) %> (<%= StringEscapeUtils.escapeHtml("" + (t.getTransactionType().getCode())) %>)</td>		
 			</tr>
 	<%
 
@@ -104,12 +105,12 @@ session.removeAttribute("personnelList");
 	<tr class="subHeader">
 		<td>Start Date:</td>
 		<td>
-			<input name="startDate" value="<%=startDate%>" size="10">
+			<input name="startDate" value="<%= StringEscapeUtils.escapeHtml("" + (startDate)) %>" size="10">
 			<input type=button value="Select Date" onclick="displayDatePicker('startDate');">
 		</td>
 		<td>End Date:</td>
 		<td>
-			<input name="endDate" value="<%=endDate%>">
+			<input name="endDate" value="<%= StringEscapeUtils.escapeHtml("" + (endDate)) %>">
 			<input type=button value="Select Date" onclick="displayDatePicker('endDate');">
 		</td>
 	</tr>

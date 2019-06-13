@@ -4,6 +4,7 @@ import com.meterware.httpunit.WebConversation;
 import com.meterware.httpunit.WebForm;
 import com.meterware.httpunit.WebResponse;
 import com.meterware.httpunit.WebTable;
+import edu.ncsu.csc.itrust.enums.TransactionType;
 
 /**
  * Use Case 11
@@ -23,7 +24,7 @@ public class DocumentOfficeVisitUseCaseTest extends iTrustHTTPTest {
 		assertEquals("iTrust - UAP Home", wr.getTitle());
 		// click Document Office Visit
 		wr = wr.getLinkWith("Document Office Visit").click();
-		// choose patient 1
+		// choose patient 2
 		WebForm patientForm = wr.getForms()[0];
 		patientForm.getScriptableObject().setParameterValue("UID_PATIENTID", "2");
 		patientForm.getButtons()[1].click();
@@ -51,7 +52,7 @@ public class DocumentOfficeVisitUseCaseTest extends iTrustHTTPTest {
 		assertEquals("iTrust - UAP Home", wr.getTitle());
 		// click Document Office Visit
 		wr = wr.getLinkWith("Document Office Visit").click();
-		// choose patient 1
+		// choose patient 2
 		WebForm patientForm = wr.getForms()[0];
 		patientForm.getScriptableObject().setParameterValue("UID_PATIENTID", "2");
 		patientForm.getButtons()[1].click();
@@ -68,8 +69,10 @@ public class DocumentOfficeVisitUseCaseTest extends iTrustHTTPTest {
 		//click the remove link
 		wt = wr.getTableStartingWith("Laboratory Procedures");
 		wr = wt.getTableCell(2, 5).getLinkWith("Remove").click();
+		assertLogged(TransactionType.OFFICE_VISIT_EDIT, 8000000009L, 2L, "Office visit");
 		assertEquals("iTrust - Document Office Visit", wr.getTitle());
 		assertTrue(wr.getText().contains("Information Successfully Updated"));
+		assertLogged(TransactionType.OFFICE_VISIT_VIEW, 8000000009L, 2L, "Office visit");
 		wt = wr.getTableStartingWith("Laboratory Procedures");
 		assertTrue(wt.getText().contains("No Laboratory Procedures on record"));
 	}

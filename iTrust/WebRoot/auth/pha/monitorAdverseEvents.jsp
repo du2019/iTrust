@@ -31,10 +31,11 @@ if(request.getParameter("prescriptions") != null) {
 	try{
 		events = action.getReports(true, request.getParameter("startDate"), request.getParameter("endDate"));
 		prescriptionImmunization = "Prescription";
+		loggingAction.logEvent(TransactionType.ADVERSE_EVENT_VIEW, loggedInMID, 0, "Prescription");
 	} catch(FormValidationException e){
 		%>
 		<div align=center>
-			<span class="iTrustError"><%=e.getMessage() %></span>
+			<span class="iTrustError"><%=StringEscapeUtils.escapeHtml(e.getMessage()) %></span>
 		</div>
 		<%
 	}
@@ -42,10 +43,11 @@ if(request.getParameter("prescriptions") != null) {
 	try{
 		events = action.getReports(false, request.getParameter("startDate"), request.getParameter("endDate"));
 		prescriptionImmunization = "Immunization";
+		loggingAction.logEvent(TransactionType.ADVERSE_EVENT_VIEW, loggedInMID, 0, "Immunization");
 	} catch(FormValidationException e){
 		%>
 		<div align=center>
-			<span class="iTrustError"><%=e.getMessage() %></span>
+			<span class="iTrustError"><%=StringEscapeUtils.escapeHtml(e.getMessage()) %></span>
 		</div>
 		<%
 	}
@@ -60,11 +62,11 @@ if(prescriptionImmunization != "") {
 <input type="hidden" name="eventNumber" value="" />
 	<table class="fTable" align="center">
 	<tr class="header">
-		<th><%=prescriptionImmunization %></th>
+		<th><%= StringEscapeUtils.escapeHtml("" + (prescriptionImmunization )) %></th>
 		<th>Reporter</th>
 		<th>Date</th>
 		<th>Details</th>
-		<th><%=prescriptionImmunization %> Reports By Month</th>
+		<th><%= StringEscapeUtils.escapeHtml("" + (prescriptionImmunization )) %> Reports By Month</th>
 	</tr>
 		<%
 		int i = 0;
@@ -89,7 +91,7 @@ if(prescriptionImmunization != "") {
 				} else {
 					%>
 					<script>
-					document.getElementById("chart<%=currentCode %>").rowSpan = <%=codeCount%>;
+					document.getElementById("chart<%= StringEscapeUtils.escapeHtml("" + (currentCode )) %>").rowSpan = <%= StringEscapeUtils.escapeHtml("" + (codeCount)) %>;
 					</script>
 					<%
 					codeCount = 1;
@@ -97,11 +99,11 @@ if(prescriptionImmunization != "") {
 				}
 				%>
 				
-				<%=event.getDrug() %>(<%=event.getCode() %>)</td>
+				<%= StringEscapeUtils.escapeHtml("" + (event.getDrug() )) %>(<%= StringEscapeUtils.escapeHtml("" + (event.getCode() )) %>)</td>
 				<% 
 				try { 
 				%>
-					<td><%=action.getName(Long.parseLong(event.getMID())) %></td>
+					<td><%= StringEscapeUtils.escapeHtml("" + (action.getName(Long.parseLong(event.getMID())) )) %></td>
 				<%
 				} catch(NumberFormatException e) {
 					%>
@@ -109,14 +111,14 @@ if(prescriptionImmunization != "") {
 					<%
 				}
 				%>
-				<td><%=event.getDate() %></td>
+				<td><%= StringEscapeUtils.escapeHtml("" + (event.getDate() )) %></td>
 				<td>
-				<a href="adverseEventDetails.jsp?eventNumber=<%=i %>">Get Details</a></td>
+				<a href="adverseEventDetails.jsp?eventNumber=<%= StringEscapeUtils.escapeHtml("" + (i )) %>">Get Details</a></td>
 				<%
 				if(codeCount == 1) {
 					%>
-					<td id="chart<%=currentCode %>" rowspan="1">
-					<a href="adverseEventChart.jsp?code=<%=currentCode %>">View Chart</a>
+					<td id="chart<%= StringEscapeUtils.escapeHtml("" + (currentCode )) %>" rowspan="1">
+					<a href="adverseEventChart.jsp?code=<%= StringEscapeUtils.escapeHtml("" + (currentCode )) %>">View Chart</a>
 					</td>
 					<%
 				}
@@ -130,7 +132,7 @@ if(prescriptionImmunization != "") {
 		%>	
 	</table>
 	<script>
-		document.getElementById("chart<%=currentCode %>").rowSpan = "<%=codeCount%>";
+		document.getElementById("chart<%= StringEscapeUtils.escapeHtml("" + (currentCode )) %>").rowSpan = "<%=codeCount%>";
 	</script>
 </form>
 	<%
@@ -145,12 +147,12 @@ String endDate = new SimpleDateFormat("MM/dd/yyyy").format(new Date());
 	<tr class="subHeader">
 		<td>Start Date:</td>
 		<td>
-			<input name="startDate" value="<%=startDate%>" size="10">
+			<input name="startDate" value="<%= StringEscapeUtils.escapeHtml("" + (startDate)) %>" size="10">
 			<input type=button value="Select Date"">
 		</td>
 		<td>End Date:</td>
 		<td>
-			<input name="endDate" value="<%=endDate%>" size = "10">
+			<input name="endDate" value="<%= StringEscapeUtils.escapeHtml("" + (endDate)) %>" size = "10">
 			<input type=button value="Select Date">
 		</td>
 	</tr>

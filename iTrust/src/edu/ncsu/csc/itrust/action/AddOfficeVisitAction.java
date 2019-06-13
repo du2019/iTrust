@@ -6,7 +6,6 @@ import edu.ncsu.csc.itrust.beans.OfficeVisitBean;
 import edu.ncsu.csc.itrust.dao.DAOFactory;
 import edu.ncsu.csc.itrust.dao.mysql.OfficeVisitDAO;
 import edu.ncsu.csc.itrust.dao.mysql.TransactionDAO;
-import edu.ncsu.csc.itrust.enums.TransactionType;
 import edu.ncsu.csc.itrust.exception.DBException;
 import edu.ncsu.csc.itrust.exception.iTrustException;
 
@@ -51,8 +50,6 @@ public class AddOfficeVisitAction extends PatientBaseAction {
 		ov.setHcpID(loggedInMID);
 		ov.setPatientID(pid);
 		long visitID = ovDAO.add(ov);
-		transDAO.logTransaction(TransactionType.DOCUMENT_OFFICE_VISIT, loggedInMID, pid, "visit id: "
-				+ visitID);
 		return visitID;
 	}
 

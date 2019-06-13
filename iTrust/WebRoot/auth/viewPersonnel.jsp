@@ -19,16 +19,18 @@ int personnelIndex = Integer.parseInt(personnel);
 List<PersonnelBean> personnelList = (List<PersonnelBean>) session.getAttribute("personnelList");
 PersonnelBean p = personnelList.get(personnelIndex);
 
+loggingAction.logEvent(TransactionType.PERSONNEL_VIEW, loggedInMID.longValue(), p.getMID(), "");
+
 ViewPersonnelAction action = new ViewPersonnelAction(prodDAO, loggedInMID.longValue());
 %>
 
 <br />
 <div align="center">
-	<span style="font-weight: bold; font-size: 24px;"><%=p.getFullName()%></span>
+	<span style="font-weight: bold; font-size: 24px;"><%= StringEscapeUtils.escapeHtml("" + (p.getFullName())) %></span>
 </div>
 <br />
 <div align="center">
-	<img src="/iTrust/image/user/<%=p.getMID()%>.png" alt="MID picture">
+	<img src="/iTrust/image/user/<%= StringEscapeUtils.escapeHtml("" + (p.getMID())) %>.png" alt="MID picture">
 </div>
 <br />
 <table class="fTable" align="center">
@@ -37,18 +39,18 @@ ViewPersonnelAction action = new ViewPersonnelAction(prodDAO, loggedInMID.longVa
 	</tr>
 	<tr >
 		<td class="subHeaderVertical">Specialty:</td>
-		<td><%=p.getSpecialty() %></td>
+		<td><%= StringEscapeUtils.escapeHtml("" + (p.getSpecialty() )) %></td>
 	<tr >
 		<td class="subHeaderVertical">Location:</td>
-		<td><%=p.getStreetAddress1() +" " + p.getStreetAddress2() + " " + p.getCity() + " " + p.getState() + " " + p.getZip() %></td>
+		<td><%= StringEscapeUtils.escapeHtml("" + (p.getStreetAddress1() +" " + p.getStreetAddress2() + " " + p.getCity() + " " + p.getState() + " " + p.getZip() )) %></td>
 	</tr>
 	<tr >
 		<td class="subHeaderVertical">Phone:</td>
-		<td><%=p.getPhone()%></td>
+		<td><%= StringEscapeUtils.escapeHtml("" + (p.getPhone())) %></td>
 	</tr>
 	<tr >
 		<td class="subHeaderVertical">Email:</td>
-		<td><%=p.getEmail() %></td>
+		<td><%= StringEscapeUtils.escapeHtml("" + (p.getEmail() )) %></td>
 	</tr>
 </table>
 <br />

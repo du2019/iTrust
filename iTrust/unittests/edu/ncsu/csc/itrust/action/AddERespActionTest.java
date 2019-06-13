@@ -10,8 +10,6 @@ import edu.ncsu.csc.itrust.dao.DAOFactory;
 import edu.ncsu.csc.itrust.datagenerators.TestDataGenerator;
 import edu.ncsu.csc.itrust.testutils.TestDAOFactory;
 import edu.ncsu.csc.itrust.enums.Role;
-import edu.ncsu.csc.itrust.enums.TransactionType;
-import static edu.ncsu.csc.itrust.testutils.JUnitiTrustUtils.assertTransactionOnly;
 
 public class AddERespActionTest extends TestCase {
 
@@ -44,7 +42,6 @@ public class AddERespActionTest extends TestCase {
 		person.setEmail("Paramedic@itrust.com");
 		long newMID = action.add(person);
 		assertEquals(person.getMID(), newMID);
-		assertTransactionOnly(TransactionType.CREATE_DISABLE_ER, 9000000000L, newMID, "Added New ER");
 	}
 	
 }

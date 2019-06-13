@@ -1,6 +1,7 @@
 package edu.ncsu.csc.itrust.action;
 
 import junit.framework.TestCase;
+import edu.ncsu.csc.itrust.beans.TelemedicineBean;
 import edu.ncsu.csc.itrust.datagenerators.TestDataGenerator;
 import edu.ncsu.csc.itrust.testutils.TestDAOFactory;
 
@@ -18,17 +19,17 @@ public class EditMonitoringListActionTest extends TestCase {
 	}
 
 	public void testAddToRemoveFromList() throws Exception {
-		assertTrue(action.addToList(1L));
-		assertFalse(action.addToList(1L));
+		TelemedicineBean tBean = new TelemedicineBean();
+		assertTrue(action.addToList(1L, tBean));
+		assertFalse(action.addToList(1L, tBean));
 		assertTrue(action.removeFromList(1L));
 		assertFalse(action.removeFromList(1L));
 	}
 	
 	public void testIsPatientInList() throws Exception {
-		action.addToList(1L);
+		TelemedicineBean tBean = new TelemedicineBean();
+		action.addToList(1L, tBean);
 		assertTrue(action.isPatientInList(1));
 		assertFalse(action.isPatientInList(2));
-		
 	}
-
 }

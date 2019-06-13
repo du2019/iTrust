@@ -36,7 +36,6 @@ String headerMessage = "Please fill out the form properly - comments are optiona
 			action.getName(patientID);
 		} catch (iTrustException ite) {
 			patientID = 0L;
-			session.removeAttribute("pid");
 		}
 	}
 	else {
@@ -62,15 +61,20 @@ String headerMessage = "Please fill out the form properly - comments are optiona
 					comment = request.getParameter("comment");
 				appt.setComment(comment);
 				try {
-				headerMessage = action.addAppt(appt);
-				if(headerMessage.startsWith("Success")) {
-					session.removeAttribute("pid");
-					response.sendRedirect("home.jsp");
-				}
-		
+					headerMessage = action.addAppt(appt);
+					if(headerMessage.startsWith("Success")) {
+						session.removeAttribute("pid");
+						loggingAction.logEvent(TransactionType.APPOINTMENT_ADD, loggedInMID.longValue(), patientID, "");
+					} else {
+						%>
+							<div align=center>
+								<span class="iTrustError">Error: Physical - Duration: must be an integer value.</span>
+							</div>
+						<%
+					}
 				} catch (FormValidationException e){
 				%>
-				<div align=center><span class="iTrustError"><%=e.getMessage()%></span></div>
+				<div align=center><span class="iTrustError"><%=StringEscapeUtils.escapeHtml(e.getMessage())%></span></div>
 				<%	
 				}
 			}
@@ -83,15 +87,15 @@ String headerMessage = "Please fill out the form properly - comments are optiona
 
 <div align="left">
 	<h2>Schedule an Appointment</h2>
-	<h4>with <%= action.getName(patientID) %> (<a href="/iTrust/auth/getPatientID.jsp?forward=hcp/scheduleAppt.jsp">someone else</a>):</h4>
-	<span class="iTrustMessage"><%=headerMessage %></span><br /><br />
+	<h4>with <%= StringEscapeUtils.escapeHtml("" + ( action.getName(patientID) )) %> (<a href="/iTrust/auth/getPatientID.jsp?forward=hcp/scheduleAppt.jsp">someone else</a>):</h4>
+	<span class="iTrustMessage"><%= StringEscapeUtils.escapeHtml("" + (headerMessage )) %></span><br /><br />
 	<form id="mainForm" method="post" action="scheduleAppt.jsp">
 		<span>Appointment Type: </span>
 		<select name="apptType">
 			<%
 				for(ApptTypeBean b : apptTypes) {
 					%>
-					<option value="<%= b.getName() %>"><%= b.getName() %> - <%= b.getDuration() %> minutes</option>
+					<option value="<%= b.getName() %>"><%= StringEscapeUtils.escapeHtml("" + ( b.getName() )) %> - <%= StringEscapeUtils.escapeHtml("" + ( b.getDuration() )) %> minutes</option>
 					<%
 				}
 			%>
@@ -106,7 +110,7 @@ String headerMessage = "Please fill out the form properly - comments are optiona
 					if(i < 10) hour = "0"+i;
 					else hour = i+"";
 					%>
-						<option value="<%=hour%>"><%=hour%></option>
+						<option value="<%=hour%>"><%= StringEscapeUtils.escapeHtml("" + (hour)) %></option>
 					<%
 				}
 			%>
@@ -117,7 +121,7 @@ String headerMessage = "Please fill out the form properly - comments are optiona
 					if(i < 10) min = "0"+i;
 					else min = i+"";
 					%>
-						<option value="<%=min%>"><%=min%></option>
+						<option value="<%=min%>"><%= StringEscapeUtils.escapeHtml("" + (min)) %></option>
 					<%
 				}
 			%>

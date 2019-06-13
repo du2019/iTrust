@@ -109,6 +109,20 @@ public class EditOfficeVisitActionTest extends TestCase {
 		frm.setNotes("semicolon test ;");
 		action.updateInformation(frm);
 	}
+	
+	public void testUpdateInformationOctothorpe() throws Exception {
+		EditOfficeVisitForm frm = new EditOfficeVisitForm();
+		frm.setHcpID("9000000000");
+		frm.setPatientID("1");
+		frm.setVisitDate("05/02/2001");
+		frm.setNotes("semicolon test #");
+		try {
+			action.updateInformation(frm);
+		} catch (FormValidationException e) {
+			fail(e.getMessage());
+		}
+
+	}
 
 	public void testCheckAddPrescription() throws FormValidationException {
 		EditOfficeVisitForm frm = new EditOfficeVisitForm();
@@ -119,7 +133,21 @@ public class EditOfficeVisitActionTest extends TestCase {
 		frm.setDosage("5");
 		frm.setStartDate("02/02/2007");
 		frm.setEndDate("02/02/2008");
+		frm.setOvID("9000000000");
+		
+		try {
+			frm.setOverrideCode(null);
+			fail();
+		} catch(FormValidationException e) {
+			
+		}
+		
+		String[] overrideCodes = {"00001", "00002"};
+		frm.setOverrideCode(overrideCodes);
+		frm.setOverrideComment("Other reasons");
 		action.updateInformation(frm);
+		
+		
 	}
 
 	public void testCheckRemoveSubaction() throws FormValidationException {

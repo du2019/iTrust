@@ -13,7 +13,6 @@ import edu.ncsu.csc.itrust.dao.mysql.OfficeVisitDAO;
 import edu.ncsu.csc.itrust.dao.mysql.PatientDAO;
 import edu.ncsu.csc.itrust.dao.mysql.PersonnelDAO;
 import edu.ncsu.csc.itrust.dao.mysql.TransactionDAO;
-import edu.ncsu.csc.itrust.enums.TransactionType;
 import edu.ncsu.csc.itrust.exception.DBException;
 import edu.ncsu.csc.itrust.exception.iTrustException;
 
@@ -124,9 +123,7 @@ public class ViewPatientOfficeVisitHistoryAction {
 		catch (iTrustException ie) {
 			
 		}
-		//log transaction
-		transDAO.logTransaction(TransactionType.VIEW_PATIENT_LIST,loggedInMID);
-		
+
 		return visits;
 	}
 	/**

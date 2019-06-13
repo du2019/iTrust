@@ -11,6 +11,7 @@ import edu.ncsu.csc.itrust.beans.HospitalBean;
 import edu.ncsu.csc.itrust.beans.LabProcedureBean;
 import edu.ncsu.csc.itrust.beans.MedicationBean;
 import edu.ncsu.csc.itrust.beans.OfficeVisitBean;
+import edu.ncsu.csc.itrust.beans.OverrideReasonBean;
 import edu.ncsu.csc.itrust.beans.PrescriptionBean;
 import edu.ncsu.csc.itrust.beans.PatientBean;
 import edu.ncsu.csc.itrust.beans.DrugInteractionBean;
@@ -27,7 +28,6 @@ import edu.ncsu.csc.itrust.dao.mysql.OfficeVisitDAO;
 import edu.ncsu.csc.itrust.dao.mysql.PatientDAO;
 import edu.ncsu.csc.itrust.dao.mysql.PersonnelDAO;
 import edu.ncsu.csc.itrust.dao.mysql.TransactionDAO;
-import edu.ncsu.csc.itrust.enums.TransactionType;
 import edu.ncsu.csc.itrust.exception.DBException;
 import edu.ncsu.csc.itrust.exception.FormValidationException;
 import edu.ncsu.csc.itrust.exception.iTrustException;
@@ -104,7 +104,6 @@ public class EditOfficeVisitAction extends OfficeVisitBaseAction {
 	 */
 	public OfficeVisitBean getOfficeVisit() throws iTrustException {
 		OfficeVisitBean officeVisit = ovDAO.getOfficeVisit(ovID);
-		transDAO.logTransaction(TransactionType.VIEW_OFFICE_VISIT, loggedInMID, pid, "EditOffceVisit - View office visits");
 		return officeVisit;
 	}
 	
@@ -118,7 +117,6 @@ public class EditOfficeVisitAction extends OfficeVisitBaseAction {
 	 */
 
 	public List<LabProcedureBean> getLabProcedures(long mid, long ovid) throws DBException {
-		transDAO.logTransaction(TransactionType.VIEW_LAB_PROCEDURE, loggedInMID, pid, "EditOffceVisit - View lab procedures");
 		return lpDAO.getAllLabProceduresForDocOV(mid, ovid);
 	}
 
@@ -173,7 +171,6 @@ public class EditOfficeVisitAction extends OfficeVisitBaseAction {
 			checkRemoveSubAction(OVSubAction.REMOVE_IMMUNIZATION, form.getRemoveImmunizationID());
 			checkRemoveSubAction(OVSubAction.REMOVE_MEDICATION, form.getRemoveMedID());
 			updateOv(form);
-			transDAO.logTransaction(TransactionType.DOCUMENT_OFFICE_VISIT, loggedInMID, getOfficeVisit().getPatientID(), "EditOfficeVisit - edited office visit " + ovID);
 			confirm = "success";
 			return confirm;
 		} catch (iTrustException e) {
@@ -298,8 +295,30 @@ public class EditOfficeVisitAction extends OfficeVisitBaseAction {
 			med.setNDCode(form.getAddMedID());
 			pres.setMedication(med);
 			pres.setVisitID(ovID);
-			transDAO.logTransaction(TransactionType.ADD_PRESCRIPTION, loggedInMID, pid, "EditOffceVisit - Add prescription - " + pres.getMedication().getNDCode());
-			ovDAO.addPrescription(pres);
+			
+			long presID = ovDAO.addPrescription(pres);
+			
+			if(form.getOverrideCodes() != null)
+			{
+				OverrideReasonBean orBean;
+				for(String code : form.getOverrideCodes())
+				{
+					orBean = new OverrideReasonBean();
+					orBean.setPresID(presID);
+					orBean.setORCode(code);
+					orBean.setDescription(null);
+					ovDAO.addReason(orBean);
+				}
+				if(form.getOverrideComment() != null && !form.getOverrideComment().equals("")) {
+					orBean = new OverrideReasonBean();
+					orBean.setPresID(presID);
+					orBean.setORCode("00000");
+					orBean.setDescription(form.getOverrideComment());
+					ovDAO.addReason(orBean);
+				}
+
+			}
+				
 		}
 	}
 
@@ -318,7 +337,6 @@ public class EditOfficeVisitAction extends OfficeVisitBaseAction {
 		ov.setHcpID(Long.valueOf(form.getHcpID()));
 		ov.setPatientID(Long.valueOf(form.getPatientID()));
 		ov.setHospitalID(form.getHospitalID());
-		transDAO.logTransaction(TransactionType.UPDATE_OFFICE_VISIT, loggedInMID, pid, "EditOffceVisit - Update office visit");
 		ovDAO.update(ov);
 	}
 

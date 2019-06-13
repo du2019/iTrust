@@ -95,7 +95,7 @@ public class MessageDAO {
 		ResultSet rs;
 
 		conn = factory.getConnection();
-		if(mid >= (long) 999999999){
+		if(mid >= 999999999){
 			ps = conn.prepareStatement("SELECT message.* FROM message, patients WHERE message.from_id=patients.mid AND message.to_id=? ORDER BY patients.lastName ASC, patients.firstName ASC, message.sent_date ASC");
 			ps.setLong(1, mid);
 			rs = ps.executeQuery();
@@ -125,7 +125,7 @@ public class MessageDAO {
 		ResultSet rs;
 
 		conn = factory.getConnection();
-		if(mid >= (long) 999999999){
+		if(mid >= 999999999){
 			ps = conn.prepareStatement("SELECT message.* FROM message, patients WHERE message.from_id=patients.mid AND message.to_id=? ORDER BY patients.lastName DESC, patients.firstName DESC, message.sent_date DESC");
 			ps.setLong(1, mid);
 			rs = ps.executeQuery();
@@ -200,7 +200,7 @@ public class MessageDAO {
 		ResultSet rs;
 
 		conn = factory.getConnection();
-		if(mid >= (long) 999999999){
+		if(mid >= 999999999){
 			ps = conn.prepareStatement("SELECT message.* FROM message, patients WHERE message.to_id=patients.mid AND message.from_id=? ORDER BY patients.lastName ASC, patients.firstName ASC, message.sent_date ASC");
 			ps.setLong(1, mid);
 			rs = ps.executeQuery();
@@ -230,7 +230,7 @@ public class MessageDAO {
 		ResultSet rs;
 
 		conn = factory.getConnection();
-		if(mid >= (long) 999999999){
+		if(mid >= 999999999){
 			ps = conn.prepareStatement("SELECT message.* FROM message, patients WHERE message.to_id=patients.mid AND message.from_id=? ORDER BY patients.lastName DESC, patients.firstName DESC, message.sent_date DESC");
 			ps.setLong(1, mid);
 			rs = ps.executeQuery();

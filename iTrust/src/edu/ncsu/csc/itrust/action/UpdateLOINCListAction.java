@@ -5,7 +5,6 @@ import edu.ncsu.csc.itrust.beans.LOINCbean;
 import edu.ncsu.csc.itrust.dao.DAOFactory;
 import edu.ncsu.csc.itrust.dao.mysql.LOINCDAO;
 import edu.ncsu.csc.itrust.dao.mysql.TransactionDAO;
-import edu.ncsu.csc.itrust.enums.TransactionType;
 import edu.ncsu.csc.itrust.exception.DBException;
 import edu.ncsu.csc.itrust.exception.FormValidationException;
 import edu.ncsu.csc.itrust.exception.iTrustException;
@@ -61,8 +60,6 @@ public class UpdateLOINCListAction {
 			throw new FormValidationException("Error: Code already exists.");
 		}
 		lDAO.addLOINC(diagn);
-		transDAO.logTransaction(TransactionType.MANAGE_LOINC, performerID, 0L, "added LOINC code "
-				+ diagn.getLabProcedureCode());
 		return "Success: " + diagn.getLabProcedureCode() + " added";
 	}
 
@@ -81,8 +78,6 @@ public class UpdateLOINCListAction {
 			if (0 == rows) {
 				return "Error: Code not found.";
 			} else {
-				transDAO.logTransaction(TransactionType.MANAGE_LOINC, performerID, 0L, "updated LOINC code "
-						+ diagn.getLabProcedureCode());
 				return "Success: " + diagn.getLabProcedureCode() + " updated";
 			}
 		} catch (DBException e) {

@@ -24,23 +24,24 @@ pageTitle = "iTrust - View My Report Requests";
 
 ViewMyReportRequestsAction action = new ViewMyReportRequestsAction(prodDAO, loggedInMID.longValue());
 String pidString = (String)session.getAttribute("pid");
-if (null != pidString && ! "".equals(pidString)) {
+if (request.getParameter("add") != null) {
 	try {
-		session.setAttribute("pid", null);
 		long patientMID = Long.parseLong(pidString);
 		long id = action.addReportRequest(patientMID);
+		loggingAction.logEvent(TransactionType.COMPREHENSIVE_REPORT_ADD, loggedInMID.longValue(), patientMID, "Report ID: "+id);
 		%><span>Report Request Accepted</span><%
 	} catch (Exception e) {
-		%><span><%=e.getMessage()%></span><%
+		%><span><%=StringEscapeUtils.escapeHtml(e.getMessage())%></span><%
 	}
 }
-else {
-	session.removeAttribute("pid");
-}
+//else {
+//	session.removeAttribute("pid");
+//}
 
 List<ReportRequestBean> list = action.getAllReportRequestsForRequester();
 %>
 <br /><br />
+<input type="hidden" name="add" id="add" />
 <table class="fTable" align="center">
 	<tr>
 		<th colspan="10">Report Requests</th>
@@ -63,12 +64,12 @@ List<ReportRequestBean> list = action.getAllReportRequestsForRequester();
  			patients.add(patient);
  %>
 			<tr>
-				<td ><%=bean.getID()%></td>
-				<td ><%=patient.getFullName()%></td>
-				<td ><%=bean.getRequestedDateString()%></td>
-				<td ><%=bean.getViewedDateString()%></td>
-				<td ><%=bean.getStatus()%></td>
-				<td ><a href="viewReport.jsp?patient=<%=index%>&requestID=<%=bean.getID()%>">View</a></td>
+				<td ><%= StringEscapeUtils.escapeHtml("" + (bean.getID())) %></td>
+				<td ><%= StringEscapeUtils.escapeHtml("" + (patient.getFullName())) %></td>
+				<td ><%= StringEscapeUtils.escapeHtml("" + (bean.getRequestedDateString())) %></td>
+				<td ><%= StringEscapeUtils.escapeHtml("" + (bean.getViewedDateString())) %></td>
+				<td ><%= StringEscapeUtils.escapeHtml("" + (bean.getStatus())) %></td>
+				<td ><a href="viewReport.jsp?patient=<%= StringEscapeUtils.escapeHtml("" + (index)) %>&requestID=<%= StringEscapeUtils.escapeHtml("" + (bean.getID())) %>">View</a></td>
 			</tr>
 <%			index ++;
 		} 
@@ -76,6 +77,6 @@ List<ReportRequestBean> list = action.getAllReportRequestsForRequester();
 %>
 </table>
 <br />
-<a href="/iTrust/auth/getPatientID.jsp?forward=hcp-uap/viewMyReportRequests.jsp">Add a new Report Request</a>
+<a href="/iTrust/auth/getPatientID.jsp?forward=hcp-uap/viewMyReportRequests.jsp?add=1">Add a new Report Request</a>
 
 <%@include file="/footer.jsp" %>

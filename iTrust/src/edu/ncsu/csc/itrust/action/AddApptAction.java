@@ -8,8 +8,6 @@ import edu.ncsu.csc.itrust.dao.mysql.ApptDAO;
 import edu.ncsu.csc.itrust.dao.mysql.PatientDAO;
 import edu.ncsu.csc.itrust.dao.mysql.PersonnelDAO;
 import edu.ncsu.csc.itrust.dao.mysql.TransactionDAO;
-import edu.ncsu.csc.itrust.enums.TransactionType;
-import edu.ncsu.csc.itrust.exception.DBException;
 import edu.ncsu.csc.itrust.exception.FormValidationException;
 import edu.ncsu.csc.itrust.exception.iTrustException;
 import edu.ncsu.csc.itrust.validate.ApptBeanValidator;
@@ -38,11 +36,9 @@ public class AddApptAction {
 		
 		try {
 			apptDAO.scheduleAppt(appt);
-			transDAO.logTransaction(TransactionType.ADD_APPT, loggedInMID, 0L,
-					"Added Appointment " + appt.getApptType());
 			return "Success: " + appt.getApptType() + " for " + appt.getDate() + " added";
 		}
-		catch (DBException e) {
+		catch (SQLException e) {
 			e.printStackTrace();
 			return e.getMessage();
 		} 

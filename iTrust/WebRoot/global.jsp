@@ -1,16 +1,28 @@
 <%@page import="edu.ncsu.csc.itrust.action.LoginFailureAction"%>
 <%@page import="edu.ncsu.csc.itrust.dao.DAOFactory"%>
 <%@page import="edu.ncsu.csc.itrust.dao.mysql.AuthDAO"%>
+<%@page import="edu.ncsu.csc.itrust.action.EventLoggingAction"%>
+<%@page import="edu.ncsu.csc.itrust.enums.TransactionType"%>
 
 <%
 DAOFactory prodDAO = DAOFactory.getProductionInstance(); 
 AuthDAO authDAO    = prodDAO.getAuthDAO();
-LoginFailureAction loginFailureAction = new LoginFailureAction(prodDAO, request.getRemoteAddr());
+EventLoggingAction loggingAction = new EventLoggingAction(prodDAO);
+LoginFailureAction loginFailureAction = (LoginFailureAction)session.getAttribute("loginFailureAction"); 
+
+if(loginFailureAction == null)
+{
+	loginFailureAction = new LoginFailureAction(prodDAO, request.getRemoteAddr());
+	session.setAttribute("loginFailureAction", loginFailureAction);
+}
+
+
 
 String pageTitle    = null;
 String loginMessage = null;
 String userName     = null; //"Andy Programmer";
 String errorMessage = null;
+String selectedPatientName = null;
 
 boolean validSession = true;
 
@@ -19,7 +31,7 @@ String userRole  = "";
 try {
 	loggedInMID = (Long) session.getAttribute("loggedInMID");
 	userRole    = (String) session.getAttribute("userRole");
-	
+
 	if (userRole == null) {
 		if (request.isUserInRole("patient")) {
 			userRole = "patient";

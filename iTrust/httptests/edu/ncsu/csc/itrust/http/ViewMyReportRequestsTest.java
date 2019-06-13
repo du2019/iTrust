@@ -5,6 +5,7 @@ import com.meterware.httpunit.WebForm;
 import com.meterware.httpunit.WebLink;
 import com.meterware.httpunit.WebResponse;
 import com.meterware.httpunit.WebTable;
+import edu.ncsu.csc.itrust.enums.TransactionType;
 
 public class ViewMyReportRequestsTest extends iTrustHTTPTest {
 
@@ -18,6 +19,7 @@ public class ViewMyReportRequestsTest extends iTrustHTTPTest {
 		WebConversation wc = login("9000000000", "pw");
 		WebResponse wr = wc.getCurrentPage();
 		assertEquals("iTrust - HCP Home", wr.getTitle());
+		assertLogged(TransactionType.HOME_VIEW, 9000000000L, 0L, "");
 	
 		wr = wr.getLinkWith("My Report Requests").click();
 		assertFalse(wr.getText().contains("Exception"));
@@ -27,6 +29,7 @@ public class ViewMyReportRequestsTest extends iTrustHTTPTest {
 		patientForm.getScriptableObject().setParameterValue("UID_PATIENTID", "2");
 		patientForm.getButtons()[1].click();
 		wr = wc.getCurrentPage();
+		assertLogged(TransactionType.COMPREHENSIVE_REPORT_ADD, 9000000000L, 2L, "");
 
 		WebTable table = wr.getTableStartingWithPrefix("Report Requests");
 		assertTrue(table.getCellAsText(2, 4).contains("Requested"));
@@ -53,6 +56,7 @@ public class ViewMyReportRequestsTest extends iTrustHTTPTest {
 		}
 		
 		assertEquals("iTrust - Comprehensive Patient Report", wr.getTitle());
+		assertLogged(TransactionType.COMPREHENSIVE_REPORT_VIEW, 9000000000L, 2L, "");
 		
 		
 	}

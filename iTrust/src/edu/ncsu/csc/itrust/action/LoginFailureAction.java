@@ -1,9 +1,9 @@
 package edu.ncsu.csc.itrust.action;
 
+import java.sql.SQLException;
 import edu.ncsu.csc.itrust.dao.DAOFactory;
 import edu.ncsu.csc.itrust.dao.mysql.AuthDAO;
 import edu.ncsu.csc.itrust.dao.mysql.TransactionDAO;
-import edu.ncsu.csc.itrust.enums.TransactionType;
 import edu.ncsu.csc.itrust.exception.DBException;
 
 /**
@@ -26,7 +26,8 @@ public class LoginFailureAction {
 	public static final int MAX_LOGIN_ATTEMPTS = 3;
 	private AuthDAO authDAO;
 	private String ipAddr;
-	private TransactionDAO transactionDAO;
+	private boolean validCaptcha;
+	private boolean hasAttempts;
 
 	/**
 	 * Set up defaults
@@ -36,7 +37,8 @@ public class LoginFailureAction {
 	public LoginFailureAction(DAOFactory factory, String ipAddr) {
 		this.authDAO = factory.getAuthDAO();
 		this.ipAddr = ipAddr;
-		this.transactionDAO = factory.getTransactionDAO();
+		validCaptcha = false;
+		hasAttempts = false;
 	}
 
 	/**
@@ -48,7 +50,7 @@ public class LoginFailureAction {
 		try {
 			authDAO.recordLoginFailure(ipAddr);
 			int loginFailures = authDAO.getLoginFailures(ipAddr);
-			transactionDAO.logTransaction(TransactionType.LOGIN_FAILURE, 0L, 0L, "IP: " + ipAddr);
+			hasAttempts = true;
 			return "Login failed, attempt " + loginFailures;
 		} catch (DBException e) {
 			e.printStackTrace();
@@ -63,10 +65,37 @@ public class LoginFailureAction {
 	 */
 	public boolean isValidForLogin() {
 		try {
-			return authDAO.getLoginFailures(ipAddr) < 3;
+			return authDAO.getLoginFailures(ipAddr) < 3 || validCaptcha;
+		} catch (DBException e) {
+			return false;
+		}
+	}
+	
+	public boolean needsCaptcha() {
+		try {
+			return authDAO.getLoginFailures(ipAddr) >= 3;
 		} catch (DBException e) {
 			System.err.println("Denying access due to DBException");
 			return false;
+		}
+	}
+	
+	public void resetFailures() throws DBException,SQLException{
+		if(hasAttempts) {
+			authDAO.resetLoginFailuresToZero(ipAddr);
+			hasAttempts = false;
+		}
+	}
+	
+	public void setCaptcha(boolean val) {
+		validCaptcha = val;
+	}
+	
+	public int getFailureCount() {
+		try {
+			return authDAO.getLoginFailures(ipAddr);
+		} catch (DBException e) {
+			return 0;
 		}
 	}
 }

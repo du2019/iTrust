@@ -322,7 +322,7 @@ LinkedList<String> rolesList = t.getRolesList();
 	for(String role : rolesList)
 	{
 %>
-<div align="left"><p style="font-family:verdana;font-size:1em;"><a name="<%=role%>"><%=role %></p></div>
+<div align="left"><p style="font-family:verdana;font-size:1em;"><a name="<%=role%>"><%= role %></p></div>
 <table class="fancyTable">
 	<tr class="fancyTable">
 		<th style="width:10%">Test ID</th>
@@ -341,7 +341,7 @@ LinkedList<String> rolesList = t.getRolesList();
 		{
 %>
 			<tr valign="top" <%if(i%2 == 0){ %>class="alt" <%} %>>
-				<%=test %>
+				<%= test %>
 			</tr>	
 <% 
 			i++;
@@ -375,7 +375,7 @@ document.write('<div id="divStayTopLeft" style="position:absolute">')
 	   for(String role : rolesList)
 	   {
 %>      
-	       <a href="<%="#"+role%>" style="font-size:15px;"><%=role %></a><br>
+	       <a href="<%="#"+role%>" style="font-size:15px;"><%= role %></a><br>
 <%
 	   }
 %>

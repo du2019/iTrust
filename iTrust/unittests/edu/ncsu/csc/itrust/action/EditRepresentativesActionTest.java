@@ -1,13 +1,11 @@
 package edu.ncsu.csc.itrust.action;
 
-import static edu.ncsu.csc.itrust.testutils.JUnitiTrustUtils.assertTransactionOnly;
 import static edu.ncsu.csc.itrust.testutils.JUnitiTrustUtils.assertTransactionsNone;
 import java.util.List;
 import junit.framework.TestCase;
 import edu.ncsu.csc.itrust.beans.PatientBean;
 import edu.ncsu.csc.itrust.dao.DAOFactory;
 import edu.ncsu.csc.itrust.datagenerators.TestDataGenerator;
-import edu.ncsu.csc.itrust.enums.TransactionType;
 import edu.ncsu.csc.itrust.exception.iTrustException;
 import edu.ncsu.csc.itrust.testutils.TestDAOFactory;
 
@@ -35,8 +33,6 @@ public class EditRepresentativesActionTest extends TestCase {
 		action = new EditRepresentativesAction(factory, 9000000000L, "2");
 		action.addRepresentative("4");
 		List<PatientBean> reps = action.getRepresented(2);
-		assertTransactionOnly(TransactionType.DECLARE_REPRESENTATIVE, 9000000000L, 2L,
-				"patient 2 now represents patient 4");
 		assertEquals(2, reps.size());
 		assertEquals(4L, reps.get(1).getMID());
 	}
@@ -45,8 +41,6 @@ public class EditRepresentativesActionTest extends TestCase {
 		action = new EditRepresentativesAction(factory, 9000000000L, "2");
 		action.removeRepresentative("1");
 		List<PatientBean> reps = action.getRepresented(2);
-		assertTransactionOnly(TransactionType.DECLARE_REPRESENTATIVE, 9000000000L, 2L,
-				"patient 2 no longer represents patient 1");
 		assertEquals(0, reps.size());
 	}
 

@@ -18,7 +18,6 @@ import edu.ncsu.csc.itrust.beans.Email;
 public class ReportAdverseEventActionTest extends TestCase {
 
 	private DAOFactory factory;
-	//private GregorianCalendar gCal;
 	private AdverseEventDAO adverseDAO;
 	private ReportAdverseEventAction advAction;
 	private ReportAdverseEventAction advMultiAction;
@@ -99,9 +98,8 @@ public class ReportAdverseEventActionTest extends TestCase {
 		badBean.setCode("999999999");
 		badBean.setDescription("I'm not a rat!");
 		badBean.setPrescriber("9000000000");
-		String results = "";
 		try{
-			results = advAction.addReport(badBean);
+			advAction.addReport(badBean);
 		}
 		catch(Exception e)
 		{

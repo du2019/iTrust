@@ -5,7 +5,6 @@ import edu.ncsu.csc.itrust.beans.ReferralBean;
 import edu.ncsu.csc.itrust.dao.DAOFactory;
 import edu.ncsu.csc.itrust.dao.mysql.ReferralDAO;
 import edu.ncsu.csc.itrust.dao.mysql.TransactionDAO;
-import edu.ncsu.csc.itrust.enums.TransactionType;
 import edu.ncsu.csc.itrust.exception.iTrustException;
 import edu.ncsu.csc.itrust.exception.DBException;
 import java.util.List;
@@ -40,7 +39,6 @@ public class ReferralManagementAction {
 	 */
 	public void sendReferral(ReferralBean r) throws DBException {
 		referralDAO.addReferral(r);
-		transDAO.logTransaction(TransactionType.SEND_REFERRAL, loggedInMID);
 	}
 	
 	/**

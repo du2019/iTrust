@@ -32,7 +32,7 @@ public class PrescriptionBeanLoader implements BeanLoader<PrescriptionBean> {
 	public PrescriptionBean loadSingle(ResultSet rs) throws SQLException {
 		PrescriptionBean pres = new PrescriptionBean();
 		pres.setId(rs.getLong("ID"));
-		pres.setVisitID((long) rs.getInt("VisitID"));
+		pres.setVisitID(rs.getInt("VisitID"));
 		pres.setStartDateStr(new SimpleDateFormat("MM/dd/yyyy").format(new java.util.Date(rs.getDate(
 				"StartDate").getTime())));
 		pres.setEndDateStr(new SimpleDateFormat("MM/dd/yyyy").format(new java.util.Date(rs.getDate("EndDate")

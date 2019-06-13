@@ -27,6 +27,17 @@ public class ViewMyApptsAction {
 	}
 	
 	/**
+	 * Gets a user's appointments
+	 * 
+	 * @param mid the MID of the user
+	 * @return a list of the user's appointments
+	 * @throws SQLException
+	 */
+	public List<ApptBean> getAppointments(long MID) throws SQLException {
+		return apptDAO.getApptsFor(MID);
+	}
+	
+	/**
 	 * Gets a users's name from their MID
 	 * 
 	 * @param mid the MID of the user
@@ -39,13 +50,5 @@ public class ViewMyApptsAction {
 		else
 			return personnelDAO.getName(mid);
 	}
-	
-	/**
-	 * Get All Appointments for the admins use... may need to change!
-	 * @return
-	 * @throws SQLException
-	 */
-	public List<ApptBean> getAllAppts()  throws SQLException {
-		return apptDAO.getAllAppts();
-	}
+
 }

@@ -4,7 +4,6 @@ import edu.ncsu.csc.itrust.beans.HospitalBean;
 import edu.ncsu.csc.itrust.dao.DAOFactory;
 import edu.ncsu.csc.itrust.dao.mysql.HospitalsDAO;
 import edu.ncsu.csc.itrust.dao.mysql.TransactionDAO;
-import edu.ncsu.csc.itrust.enums.TransactionType;
 import edu.ncsu.csc.itrust.exception.DBException;
 import edu.ncsu.csc.itrust.exception.FormValidationException;
 import edu.ncsu.csc.itrust.exception.iTrustException;
@@ -45,8 +44,6 @@ public class UpdateHospitalListAction {
 		new HospitalBeanValidator().validate(hosp);
 		try {
 			if (hospDAO.addHospital(hosp)) {
-				transDAO.logTransaction(TransactionType.MAINTAIN_HOSPITALS, performerID, 0L,
-						"added hospital " + hosp.getHospitalName());
 				return "Success: " + hosp.getHospitalID() + " - " + hosp.getHospitalName() + " added";
 			} else
 				return "The database has become corrupt. Please contact the system administrator for assistance.";

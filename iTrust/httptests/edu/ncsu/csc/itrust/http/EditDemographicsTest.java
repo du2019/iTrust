@@ -3,6 +3,7 @@ package edu.ncsu.csc.itrust.http;
 import com.meterware.httpunit.WebConversation;
 import com.meterware.httpunit.WebForm;
 import com.meterware.httpunit.WebResponse;
+import edu.ncsu.csc.itrust.enums.TransactionType;
 
 public class EditDemographicsTest extends iTrustHTTPTest {
 	@Override
@@ -29,6 +30,8 @@ public class EditDemographicsTest extends iTrustHTTPTest {
 		WebConversation wc = login("8000000009", "uappass1");
 		WebResponse wr = wc.getCurrentPage();
 		assertEquals("iTrust - UAP Home", wr.getTitle());
+		assertLogged(TransactionType.HOME_VIEW, 8000000009L, 0L, "");
+		
 		// choose Edit Patient
 		wr = wr.getLinkWith("Edit Patient").click();
 		// choose patient 2
@@ -37,12 +40,14 @@ public class EditDemographicsTest extends iTrustHTTPTest {
 		patientForm.getButtons()[1].click();
 		wr = wc.getCurrentPage();
 		assertEquals(ADDRESS + "auth/hcp-uap/editPatient.jsp", wr.getURL().toString());
+		
 		// update street address to be blank
 		WebForm form = wr.getForms()[0];
 		form.setParameter("streetAddress1", "<script>alert('HACK!');</script>");
 		form.getSubmitButtons()[0].click();
 		wr = wc.getCurrentPage();
 		assertTrue(wr.getText().contains("Street Address 1: Up to 30 alphanumeric characters, and ."));
+		assertNotLogged(TransactionType.DEMOGRAPHICS_EDIT, 8000000009L, 2L, "");
 	}
 
 	/*
@@ -63,6 +68,8 @@ public class EditDemographicsTest extends iTrustHTTPTest {
 		WebConversation wc = login("8000000009", "uappass1");
 		WebResponse wr = wc.getCurrentPage();
 		assertEquals("iTrust - UAP Home", wr.getTitle());
+		assertLogged(TransactionType.HOME_VIEW, 8000000009L, 0L, "");
+		
 		// choose Edit Patient
 		wr = wr.getLinkWith("Edit Patient").click();
 		// choose patient 2
@@ -80,6 +87,7 @@ public class EditDemographicsTest extends iTrustHTTPTest {
 		form.getSubmitButtons()[0].click();
 		wr = wc.getCurrentPage();
 		assertTrue(wr.getText().contains("Information Successfully Updated"));
+		assertLogged(TransactionType.DEMOGRAPHICS_EDIT, 8000000009L, 2L, "");
 	}
 
 	/*
@@ -99,6 +107,8 @@ public class EditDemographicsTest extends iTrustHTTPTest {
 		WebConversation wc = login("8000000009", "uappass1");
 		WebResponse wr = wc.getCurrentPage();
 		assertEquals("iTrust - UAP Home", wr.getTitle());
+		assertLogged(TransactionType.HOME_VIEW, 8000000009L, 0L, "");
+		
 		// choose Edit Patient
 		wr = wr.getLinkWith("Edit Patient").click();
 		// choose patient 2
@@ -113,6 +123,7 @@ public class EditDemographicsTest extends iTrustHTTPTest {
 		form.getSubmitButtons()[0].click();
 		wr = wc.getCurrentPage();
 		assertTrue(wr.getText().contains("Information Successfully Updated"));
+		assertLogged(TransactionType.DEMOGRAPHICS_EDIT, 8000000009L, 2L, "");
 	}
 
 	/*
@@ -133,6 +144,8 @@ public class EditDemographicsTest extends iTrustHTTPTest {
 		WebConversation wc = login("8000000009", "uappass1");
 		WebResponse wr = wc.getCurrentPage();
 		assertEquals("iTrust - UAP Home", wr.getTitle());
+		assertLogged(TransactionType.HOME_VIEW, 8000000009L, 0L, "");
+		
 		// choose Edit Patient
 		wr = wr.getLinkWith("Edit Patient").click();
 		// choose patient 2
@@ -150,5 +163,6 @@ public class EditDemographicsTest extends iTrustHTTPTest {
 		form.getButtons()[2].click();
 		WebResponse add = wc.getCurrentPage();
 		assertTrue(add.getText().contains("This form has not been validated correctly."));
+		assertNotLogged(TransactionType.DEMOGRAPHICS_EDIT, 8000000009L, 2L, "");
 	}
 }

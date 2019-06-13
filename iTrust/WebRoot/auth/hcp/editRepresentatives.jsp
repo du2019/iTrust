@@ -33,16 +33,18 @@ try {
 	String confirm = "";
 	if(representee!=null && !representee.equals("")){
 		confirm = action.addRepresentative(representee);
+		loggingAction.logEvent(TransactionType.HEALTH_REPRESENTATIVE_DECLARE, loggedInMID, Long.parseLong(representee), "Represented by: " + pid);
 	}
 	String removeId = request.getParameter("removeId");
 	if(removeId!=null && !removeId.equals("")){
 		confirm = action.removeRepresentative(removeId);
+		loggingAction.logEvent(TransactionType.HEALTH_REPRESENTATIVE_UNDECLARE, loggedInMID, Long.parseLong(removeId), "Represented by: " + pid);
 	}
 
 	if(!"".equals(confirm)){
 %>
 	<div align=center>
-		<span class="iTrustMessage"><%=confirm%></span>
+		<span class="iTrustMessage"><%= StringEscapeUtils.escapeHtml("" + (confirm)) %></span>
 	</div>
 	<br />
 <%
@@ -50,7 +52,7 @@ try {
 } catch(iTrustException ite) {
 %>
 	<div align=center>
-		<span class="iTrustError"><%=ite.getMessage() %></span>
+		<span class="iTrustError"><%=StringEscapeUtils.escapeHtml(ite.getMessage()) %></span>
 	</div>
 	<br />
 <%
@@ -60,7 +62,7 @@ try {
 %>
 
 <form method="post" name="mainForm">
-<input type="hidden" name="pid" value="<%=pid %>">
+<input type="hidden" name="pid" value="<%= StringEscapeUtils.escapeHtml("" + (pid )) %>">
 <input type="hidden" id="removeId" name="removeId" value="">
 <script type="text/javascript">
 	function removeRep(repMID) {
@@ -86,9 +88,9 @@ try {
 	    for(PatientBean p : representees){
 %>
 				<tr>		
-					<!-- <td ><%=p.getMID() %></td>-->
-					<td ><%=p.getFullName()%></td>
-					<td ><a href="javascript:removeRep('<%=p.getMID()%>')">Remove</a></td>
+					<!-- <td ><%= StringEscapeUtils.escapeHtml("" + (p.getMID() )) %></td>-->
+					<td ><%= StringEscapeUtils.escapeHtml("" + (p.getFullName())) %></td>
+					<td ><a href="javascript:removeRep('<%= StringEscapeUtils.escapeHtml("" + (p.getMID())) %>')">Remove</a></td>
 				</tr>
 <% 
 	    }

@@ -31,7 +31,7 @@ public enum ValidationFormat {
 	ZIPCODE("([0-9]{5})|([0-9]{5}-[0-9]{4})", "xxxxx or xxxxx-xxxx"), // ^[0-9]{5}(?:-[0-9]{4})?$
 	BLOODTYPE("((O)|(A)|(B)|(AB))([+-]{1})", "Must be [O,A,B,AB]+/-"), // ^(?:O|A|B|AB)[+-]$
 	GENDER("(Male)|(Female)", "Only Male or Female"), // ^(?:Male|Female)$
-	NOTES("[a-zA-Z0-9\\s'\"?!:;\\-._\n\t]{1,300}",
+	NOTES("[a-zA-Z0-9\\s'\"?!:#;\\-._\n\t]{1,300}",
 			"Up to 300 alphanumeric characters, with space, and other punctuation"),
 	MESSAGES_BODY("[a-zA-Z0-9\\s'\"?!:;\\-.,_\n\t()]{1,1000}",
 			"Up to 1000 alphanumeric characters, with space, and other punctuation"),
@@ -54,16 +54,21 @@ public enum ValidationFormat {
 	Weight("[\\d]{0,4}(\\.(\\d){0,1}){0,1}", "Up to 4-digit number + up to 1 decimal place"),
 	YEAR("[\\d]{4}", "Must be 4 digits"), 
 	GENDERCOD("(Male)|(Female)|(Not Specified)", "Only Male, Female, or All Patients"),
-	ND("[\\d]{1,9}", "Up to nine digit integer"),
 	LOINC("[\\d]{5}[-]{1}[\\d]{1}", "Must be in format nnnnn-n"),
+	ND("[\\d]{1,9}", "Up to nine digit integer"),
 	LOINC_ITEM("[a-zA-Z0-9\\s]{1,100}", "Up to 100 characters, letters, numbers, and a space"),
 	COMMENTS("[a-zA-Z0-9.\\s]{1,500}", "Up to 500 alphanumeric characters"),
 	LAB_STATUS("(NOT YET RECEIVED)|(PENDING)|(COMPLETED)", "Only NOT YET RECEIVED, PENDING, or COMPLETED"),
 	LAB_RIGHTS("(ALLOWED)|(RESTRICTED)", "Only ALLOWED, or RESTRICTED"),
 	SYSTOLIC_BLOOD_PRESSURE("^([4-9][0-9]|1[0-9][0-9]|2[0-3][0-9]|240)$", "Must be between 40 and 240"),
 	DIASTOLIC_BLOOD_PRESSURE("^([4-9][0-9]|1[0-4][0-9]|150)$", "Must be between 40 and 150"),
-	GLUCOSE_LEVEL("^([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|250)$", "Must be between 0 and 250");
-	
+	GLUCOSE_LEVEL("^([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|250)$", "Must be between 0 and 250"),
+	PEDOMETER_READING("^([0-9]{1,10})$", "Up to ten digit integer"),
+	HEIGHT("^([0-9]{1,4}\\.[0-9])$", "Up to 4 digit number and 1 decimal place"),
+	WEIGHT("^([0-9]{1,4}\\.[0-9])$", "Up to 4 digit number and 1 decimal place"),
+	ORC("[\\d]{1,5}", "Up to five digit integer"),
+	OR_CODE_DESCRIPTION("[a-zA-Z0-9\\s]{1,80}", "Up to 80 characters, letters, numbers, and a space"),
+	THEME_COLOR("[a-fA-F0-9]{6}", "6 Hex characters");
 
 	private Pattern regex;
 	private String description;

@@ -26,9 +26,10 @@ if (formIsFilled) {
 		String password;
 		password = p.getPassword();
 		fullname = p.getFullName();
+		loggingAction.logEvent(TransactionType.PATIENT_CREATE, loggedInMID.longValue(), newMID, "");
 %>
 	<div align=center>
-		<span class="iTrustMessage">New patient <%=fullname%> successfully added!</span>
+		<span class="iTrustMessage">New patient <%= StringEscapeUtils.escapeHtml("" + (fullname)) %> successfully added!</span>
 		<br />
 		<table class="fTable">
 			<tr>
@@ -36,14 +37,14 @@ if (formIsFilled) {
 			</tr>
 			<tr>
 				<td class="subHeaderVertical">MID:</td>
-				<td><%=newMID%></td>
+				<td><%= StringEscapeUtils.escapeHtml("" + (newMID)) %></td>
 			</tr>
 			<tr>
 				<td class="subHeaderVertical">Temporary Password:</td>
-				<td><%=password%></td>
+				<td><%= StringEscapeUtils.escapeHtml("" + (password)) %></td>
 			</tr>
 		</table>
-		<br />Please get this information to <b><%=fullname%></b>! 
+		<br />Please get this information to <b><%= StringEscapeUtils.escapeHtml("" + (fullname)) %></b>! 
 		<p>
 			<a href = "/iTrust/auth/hcp-uap/editPatient.jsp">Continue to patient information.</a>
 		</p>
@@ -52,7 +53,7 @@ if (formIsFilled) {
 	} catch(FormValidationException e){
 %>
 	<div align=center>
-		<span class="iTrustError"><%=e.getMessage() %></span>
+		<span class="iTrustError"><%=StringEscapeUtils.escapeHtml(e.getMessage()) %></span>
 	</div>
 <%
 	}

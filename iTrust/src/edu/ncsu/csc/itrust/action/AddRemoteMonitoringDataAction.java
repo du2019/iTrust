@@ -1,11 +1,12 @@
 package edu.ncsu.csc.itrust.action;
 
+import java.util.List;
 import edu.ncsu.csc.itrust.beans.RemoteMonitoringDataBean;
+import edu.ncsu.csc.itrust.beans.TelemedicineBean;
 import edu.ncsu.csc.itrust.dao.DAOFactory;
 import edu.ncsu.csc.itrust.dao.mysql.AuthDAO;
 import edu.ncsu.csc.itrust.dao.mysql.RemoteMonitoringDAO;
 import edu.ncsu.csc.itrust.dao.mysql.TransactionDAO;
-import edu.ncsu.csc.itrust.enums.TransactionType;
 import edu.ncsu.csc.itrust.exception.DBException;
 import edu.ncsu.csc.itrust.exception.FormValidationException;
 import edu.ncsu.csc.itrust.exception.iTrustException;
@@ -37,54 +38,22 @@ public class AddRemoteMonitoringDataAction {
 		this.authDAO = factory.getAuthDAO();
 		this.patientMID = patientMID;
 	}
+	
+	public List<TelemedicineBean> getTelemedicineBean(long patientMID) throws DBException {
+		return rmDAO.getTelemedicineBean(patientMID);
+	}
 
 	/**
-	 * Adds a patients remote monitoring data to the database.
+	 * Adds a patient's telemedicine data to the database.
 	 * 
-	 * @param glucoseLevel
+	 * @param weight
+	 * @param pedometerReading
 	 * @throws DBException
 	 */
-	public void addRemoteMonitoringData(int glucoseLevel)
+	public void addRemoteMonitoringData(RemoteMonitoringDataBean rmdBean)
 	  throws DBException, FormValidationException,iTrustException {
-		//Validation - Only need to validate the three integer parameters
-		RemoteMonitoringDataBean m = new RemoteMonitoringDataBean();
-		m.setGlucoseLevel(glucoseLevel);
-		m.setDiastolicBloodPressure(60);
-		m.setSystolicBloodPressure(60);
-		validator.validate(m);
-		m.setDiastolicBloodPressure(-1);
-		m.setSystolicBloodPressure(-1);
-		//Log transaction
-		transDAO.logTransaction(TransactionType.TELEMEDICINE_MONITORING, loggedInMID);
-		String role;
-		if (loggedInMID == patientMID){
-			role = "self-reported";
-		} else if (authDAO.getUserRole(loggedInMID).getUserRolesString().equals("uap")){
-			role = "case-manager";
-		} else {
-			role = "patient representative";
-		}		
-		//Store in DB
-		rmDAO.storePatientData(patientMID, glucoseLevel, role, loggedInMID);
-	}
-	
-	/**
-	 * Adds a patients remote monitoring data to the database.
-	 * 
-	 * @param systolicBloodPressure
-	 * @param diastolicBloodPressure
-	 * @throws DBException
-	 */
-	public void addRemoteMonitoringData(int systolicBloodPressure, int diastolicBloodPressure)
-	  throws DBException, FormValidationException,iTrustException {
-		//Validation - Only need to validate the three integer parameters
-		RemoteMonitoringDataBean m = new RemoteMonitoringDataBean();
-		m.setSystolicBloodPressure(systolicBloodPressure);
-		m.setDiastolicBloodPressure(diastolicBloodPressure);
-		validator.validate(m);
+		validator.validate(rmdBean);
 		
-		//Log transaction
-		transDAO.logTransaction(TransactionType.TELEMEDICINE_MONITORING, loggedInMID);
 		String role;
 		if (loggedInMID == patientMID){
 			role = "self-reported";
@@ -94,40 +63,9 @@ public class AddRemoteMonitoringDataAction {
 			role = "patient representative";
 		}		
 		//Store in DB
-		rmDAO.storePatientData(patientMID, systolicBloodPressure, diastolicBloodPressure, role, loggedInMID);
+		rmDAO.storePatientData(patientMID, rmdBean, role, loggedInMID);
 	}
-	
-	/**
-	 * Adds a patients remote monitoring data to the database.
-	 * 
-	 * @param systolicBloodPressure
-	 * @param diastolicBloodPressure
-	 * @param glucoseLevel
-	 * @throws DBException
-	 */
-	public void addRemoteMonitoringData(int systolicBloodPressure, int diastolicBloodPressure, int glucoseLevel)
-	  throws DBException, FormValidationException,iTrustException {
-		//Validation - Only need to validate the three integer parameters
-		RemoteMonitoringDataBean m = new RemoteMonitoringDataBean();
-		m.setSystolicBloodPressure(systolicBloodPressure);
-		m.setDiastolicBloodPressure(diastolicBloodPressure);
-		m.setGlucoseLevel(glucoseLevel);
-		validator.validate(m);
-		
-		//Log transaction
-		transDAO.logTransaction(TransactionType.TELEMEDICINE_MONITORING, loggedInMID);
-		String role;
-		if (loggedInMID == patientMID){
-			role = "self-reported";
-		} else if (authDAO.getUserRole(loggedInMID).getUserRolesString().equals("uap")){
-			role = "case-manager";
-		} else {
-			role = "patient representative";
-		}		
-		//Store in DB
-		rmDAO.storePatientData(patientMID, systolicBloodPressure, diastolicBloodPressure, glucoseLevel, role, loggedInMID);
-	}
-	
+
 	/**
 	 * returns the patient name
 	 * 
@@ -138,5 +76,4 @@ public class AddRemoteMonitoringDataAction {
 	public String getPatientName(long pid) throws DBException, iTrustException {
 		return authDAO.getUserName(pid);
 	}
-	
 }

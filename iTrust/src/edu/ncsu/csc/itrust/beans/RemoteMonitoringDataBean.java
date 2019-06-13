@@ -16,6 +16,9 @@ public class RemoteMonitoringDataBean {
 	private int systolicBloodPressure;
 	private int diastolicBloodPressure;
 	private int glucoseLevel;
+	private float height;
+	private float weight;
+	private int pedometerReading;
 	private String reporterRole;
 	private long reporterMID;
 
@@ -79,6 +82,30 @@ public class RemoteMonitoringDataBean {
 	
 	public void setGlucoseLevel(int glucoseLevel) {
 		this.glucoseLevel = glucoseLevel;
+	}
+	
+	public float getHeight() {
+		return height;
+	}
+	
+	public void setHeight(float height) {
+		this.height = height;
+	}
+	
+	public float getWeight() {
+		return weight;
+	}
+	
+	public void setWeight(float weight) {
+		this.weight = weight;
+	}
+	
+	public int getPedometerReading() {
+		return pedometerReading;
+	}
+	
+	public void setPedometerReading(int pedometerReading) {
+		this.pedometerReading = pedometerReading;
 	}
 	
 	public String getReporterRole() {

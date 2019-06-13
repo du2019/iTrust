@@ -5,8 +5,9 @@ import java.util.List;
 import edu.ncsu.csc.itrust.beans.TransactionBean;
 import edu.ncsu.csc.itrust.enums.TransactionType;
 import edu.ncsu.csc.itrust.exception.DBException;
+import edu.ncsu.csc.itrust.http.iTrustHTTPTest;
 
-public class JUnitiTrustUtils {
+public class JUnitiTrustUtils  extends iTrustHTTPTest{
 
 	public static void assertTransactionOnly(TransactionType transType, long loggedInMID, long secondaryMID,
 			String addedInfo) throws DBException {
@@ -14,6 +15,16 @@ public class JUnitiTrustUtils {
 				.getAllTransactions();
 		assertEquals("Only one transaction should have been logged", 1, transList.size());
 		assertTransaction(transType, loggedInMID, secondaryMID, addedInfo, transList.get(0));
+	}
+	
+	public static void assertLogged(TransactionType code, long loggedInMID, long secondaryMID, String addedInfo)
+		throws DBException {
+		List<TransactionBean> transList = TestDAOFactory.getTestInstance().getTransactionDAO().getAllTransactions();
+		TransactionBean lastRecordedAction = transList.get(0);
+		assertTrue(lastRecordedAction.getTransactionType() == code);
+		assertTrue(lastRecordedAction.getLoggedInMID() == loggedInMID);
+		assertTrue(lastRecordedAction.getSecondaryMID() == secondaryMID);
+		assertTrue(lastRecordedAction.getAddedInfo().equals(addedInfo));
 	}
 
 	public static void assertTransactionsNone() throws DBException {

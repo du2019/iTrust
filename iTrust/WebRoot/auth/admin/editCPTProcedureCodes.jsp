@@ -29,16 +29,33 @@ pageTitle = "iTrust - Maintain CPT Codes";
 			
 			ProcedureBean proc = new ProcedureBean(request.getParameter("code"), request.getParameter("description"), attribute );
 			headerMessage = (request.getParameter("add") != null) ? cptUpdater.addCPTCode(proc)	: cptUpdater.updateInformation(proc);
+			
+			if(!headerMessage.contains("Error")) {
+				if (null != request.getParameter("attribute")) {
+					if(request.getParameter("add") != null)
+						loggingAction.logEvent(TransactionType.IMMUNIZATION_CODE_ADD, loggedInMID, 0, request.getParameter("code") );
+					else
+						loggingAction.logEvent(TransactionType.IMMUNIZATION_CODE_EDIT, loggedInMID, 0, request.getParameter("code") );
+				} else {
+					if(request.getParameter("add") != null)
+						loggingAction.logEvent(TransactionType.MEDICAL_PROCEDURE_CODE_ADD, loggedInMID, 0,request.getParameter("code") );
+					else if(request.getParameter("update") != null)
+						loggingAction.logEvent(TransactionType.MEDICAL_PROCEDURE_CODE_EDIT, loggedInMID, 0,request.getParameter("code") );
+				}
+			}
 		} 
 		catch(FormValidationException e) {
 %>
 	<div align=center>
-		<span class="iTrustError"><%=e.getMessage() %></span>
+		<span class="iTrustError"><%=StringEscapeUtils.escapeHtml(e.getMessage()) %></span>
 	</div>
 <%
 			headerMessage = "Validation Errors";
 		}
 		
+	} else {
+		loggingAction.logEvent(TransactionType.MEDICAL_PROCEDURE_CODE_VIEW, loggedInMID, 0,"" );
+		loggingAction.logEvent(TransactionType.IMMUNIZATION_CODE_VIEW, loggedInMID, 0,"" );
 	}
 	String headerColor = (headerMessage.indexOf("Error") > -1)
 			? "#ffcccc"
@@ -61,7 +78,7 @@ function fillUpdate(code) {
 
 <div align="center">
 <br />
-<span class="iTrustMessage"><%=headerMessage %></span>
+<span class="iTrustMessage"><%= StringEscapeUtils.escapeHtml("" + (headerMessage )) %></span>
 <br />
 <br />
 
@@ -110,12 +127,12 @@ function fillUpdate(code) {
 			escapedDescrip = URLEncoder.encode(tempDescrip, "UTF-8").replaceAll("\\+", "%20");
 	%>
 		<tr>
-			<td><%=tempCode %></td>
+			<td><%= StringEscapeUtils.escapeHtml("" + (tempCode )) %></td>
 			<td><a href="javascript:void(0)" onclick="fillUpdate('<%=tempCode %>')"><%=HtmlEncoder.encode(tempDescrip)%></a>
-				<input type="hidden" id="UPD<%=tempCode %>"	name="UPD<%=tempCode %>" value="<%=escapedDescrip %>" />
-				<input type="hidden" id="CLASS<%=tempCode%>" name="CLASS<%=tempCode%>" value="<%=tempClass%>" />		
+				<input type="hidden" id="UPD<%= StringEscapeUtils.escapeHtml("" + (tempCode )) %>"	name="UPD<%= StringEscapeUtils.escapeHtml("" + (tempCode )) %>" value="<%=escapedDescrip %>" />
+				<input type="hidden" id="CLASS<%= StringEscapeUtils.escapeHtml("" + (tempCode)) %>" name="CLASS<%= StringEscapeUtils.escapeHtml("" + (tempCode)) %>" value="<%=tempClass%>" />		
 			</td>
-			<td><%=("immunization".equals(codeEntry.getAttribute()))?"Yes":"No"%></td>
+			<td><%= StringEscapeUtils.escapeHtml("" + (("immunization".equals(codeEntry.getAttribute()))?"Yes":"No")) %></td>
 		</tr>
 	<% } %>
 </table>

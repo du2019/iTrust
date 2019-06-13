@@ -20,6 +20,7 @@ pageTitle = "iTrust - Email History";
 	List<Email> Emails = action.getEmailHistory();
 	%><table class="fTable"><%
 	if (Emails.size() != 0){
+		loggingAction.logEvent(TransactionType.EMAIL_HISTORY_VIEW, loggedInMID, 0, "");
 		%> 
 		
 			<tr>
@@ -32,10 +33,10 @@ pageTitle = "iTrust - Email History";
 		for (Email email : Emails){
 %>
 		<tr>
-			<td > <%=email.getToListStr()%> </td>
-			<td > <%=email.getSubject()%> </td> 
-			<td > <%=email.getBody()%> </td>
-			<td > <%=email.getTimeAdded() %> </td>
+			<td > <%= StringEscapeUtils.escapeHtml("" + (email.getToListStr())) %> </td>
+			<td > <%= StringEscapeUtils.escapeHtml("" + (email.getSubject())) %> </td> 
+			<td > <%= StringEscapeUtils.escapeHtml("" + (email.getBody())) %> </td>
+			<td > <%= StringEscapeUtils.escapeHtml("" + (email.getTimeAdded() )) %> </td>
 		</tr>
 <%}
 

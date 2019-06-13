@@ -1,5 +1,7 @@
 <%@ page import="java.sql.*, edu.ncsu.csc.itrust.*, edu.ncsu.csc.itrust.users.*, edu.ncsu.csc.itrust.beans.*"  %>
 <%@ page import="java.util.*, com.lowagie.text.html.HtmlEncoder" %>
+<%@page import="org.apache.commons.lang.StringEscapeUtils"%>
+
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
@@ -11,7 +13,7 @@
 
 <%			
 
-				
+			
 			Calendar today=Calendar.getInstance();
 			int curMonth=today.get(Calendar.MONTH);
 			int curYear=today.get(Calendar.YEAR);
@@ -60,7 +62,7 @@ else {
 			</td>
 			<td>
 				<select name="startMonth">
-					<% out.println("<option value="+firstMonth+">"+months[Integer.parseInt(firstMonth)-1]+"</option>"); %>
+					<% out.println("<option value="+StringEscapeUtils.escapeHtml("" + firstMonth)+">"+StringEscapeUtils.escapeHtml("" + months[Integer.parseInt(firstMonth)-1])+"</option>"); %>
 					<option value="01">January</option>
 					<option value="02">February</option>
 					<option value="03">March</option>
@@ -75,9 +77,9 @@ else {
 					<option value="12">December</option>
 				</select><br />
 				<select name="startYear">
-					<% out.println("<option value="+firstYear+">"+firstYear+"</option>"); %>
+					<% out.println("<option value="+StringEscapeUtils.escapeHtml("" + firstYear)+">"+StringEscapeUtils.escapeHtml("" + firstYear)+"</option>"); %>
 					<% for (int cnt=curYear;cnt+1>Integer.parseInt(firstYear);cnt--) 
-						out.println("<option value="+cnt+">"+cnt+"</option>"); %>
+						out.println("<option value="+StringEscapeUtils.escapeHtml("" + cnt)+">"+StringEscapeUtils.escapeHtml("" + cnt)+"</option>"); %>
 				</select>
 			</td>
 			<tr style="background-color:#ffcccc">
@@ -86,7 +88,7 @@ else {
 			</td>
 			<td>
 				<select name="endMonth">
-					<% out.println("<option value="+(curMonth+1)+">"+months[curMonth]+"</option>"); %>
+					<% out.println("<option value="+StringEscapeUtils.escapeHtml("" + (curMonth+1))+">"+StringEscapeUtils.escapeHtml("" + months[curMonth])+"</option>"); %>
 					<option value="01">January</option>
 					<option value="02">February</option>
 					<option value="03">March</option>
@@ -101,9 +103,9 @@ else {
 					<option value="12">December</option>
 				</select><br />
 				<select name="endYear">
-					<% out.println("<option value="+curYear+">"+curYear+"</option>"); %>
+					<% out.println("<option value="+StringEscapeUtils.escapeHtml("" + curYear)+">"+StringEscapeUtils.escapeHtml("" + curYear)+"</option>"); %>
 					<% for (int cnt=curYear-1;cnt+1>Integer.parseInt(firstYear);cnt--) 
-						out.println("<option value="+cnt+">"+cnt+"</option>"); %>
+						out.println("<option value="+StringEscapeUtils.escapeHtml("" + cnt)+">"+StringEscapeUtils.escapeHtml("" + cnt)+"</option>"); %>
 				</select>
 			</td>
 			
@@ -140,7 +142,7 @@ else {
 			catch (UserDataException e) {
 				out.println("<table align=center bgcolor=red><tr><td><font color=white>");
 				out.println("<b>An Error has Occured</b>: <br />");
-				out.println(e.getErrorMessage());
+				out.println(StringEscapeUtils.escapeHtml("" + e.getErrorMessage()));
 				out.println("</font></td></tr></table>");
 			}
 			Vector<Integer> minors=vr.getMinors();
@@ -221,8 +223,8 @@ else {
 						int top = ( GRAPH_VALUES - i ) * VALUE_HEIGHT;
 						%>
 						
-						<div style="position: absolute; text-align: right; width:100%; height: <%=VALUE_HEIGHT%>px; top: <%=top%>px">
-							<%=val%>
+						<div style="position: absolute; text-align: right; width:100%; height: <%= StringEscapeUtils.escapeHtml("" + (VALUE_HEIGHT)) %>px; top: <%= StringEscapeUtils.escapeHtml("" + (top)) %>px">
+							<%= StringEscapeUtils.escapeHtml("" + (val)) %>
 						</div>
 						
 						<%
@@ -235,7 +237,7 @@ else {
 				</td>
 				
 				<!-- actual graph -->
-				<td valign="top" style="font-size: 50%; width: <%=GRAPH_WIDTH%>px; height: <%=GRAPH_HEIGHT%>px">
+				<td valign="top" style="font-size: 50%; width: <%= StringEscapeUtils.escapeHtml("" + (GRAPH_WIDTH)) %>px; height: <%= StringEscapeUtils.escapeHtml("" + (GRAPH_HEIGHT)) %>px">
 				<br />
 				<div style="position: relative;font-size:1px">
 				
@@ -246,7 +248,7 @@ else {
 					int top = ( GRAPH_VALUES - i ) * VALUE_HEIGHT;
 					%>
 					
-					<div style="position: absolute; background-color:#666; width:100%; height:1px; top: <%=top%>px"></div>
+					<div style="position: absolute; background-color:#666; width:100%; height:1px; top: <%= StringEscapeUtils.escapeHtml("" + (top)) %>px"></div>
 					
 					<%
 				}
@@ -262,7 +264,7 @@ else {
 					int invHeight = GRAPH_HEIGHT - height;
 					
 					%>
-<div style="position:absolute;top:<%=invHeight%>px;left:<%=left%>px;height:<%=height%>px;width:<%=DAY_WIDTH%>px;background-color:#0066FF;border: solid 1px #0099FF; border-right:solid 1px #003366; border-bottom:solid 1px #003366"></div>
+<div style="position:absolute;top:<%= StringEscapeUtils.escapeHtml("" + (invHeight)) %>px;left:<%= StringEscapeUtils.escapeHtml("" + (left)) %>px;height:<%= StringEscapeUtils.escapeHtml("" + (height)) %>px;width:<%= StringEscapeUtils.escapeHtml("" + (DAY_WIDTH)) %>px;background-color:#0066FF;border: solid 1px #0099FF; border-right:solid 1px #003366; border-bottom:solid 1px #003366"></div>
 					<%
 					int left2 = ( (i*2+2) * DAY_SPACING ) - ( DAY_WIDTH / 2 );
 					int height2 = (int)(GRAPH_HEIGHT * (( adults.elementAt(i) - leastVisits ) / (float)(valueRange)));
@@ -273,7 +275,7 @@ else {
 					int invHeight2 = GRAPH_HEIGHT - height2;
 					
 					%>
-<div style="position:absolute;top:<%=invHeight2%>px;left:<%=left2%>px;height:<%=height2%>px;width:<%=DAY_WIDTH%>px;background-color:#CC66FF;border: solid 1px #CC99FF; border-right:solid 1px #CC3366; border-bottom:solid 1px #CC3366"></div>
+<div style="position:absolute;top:<%= StringEscapeUtils.escapeHtml("" + (invHeight2)) %>px;left:<%= StringEscapeUtils.escapeHtml("" + (left2)) %>px;height:<%= StringEscapeUtils.escapeHtml("" + (height2)) %>px;width:<%= StringEscapeUtils.escapeHtml("" + (DAY_WIDTH)) %>px;background-color:#CC66FF;border: solid 1px #CC99FF; border-right:solid 1px #CC3366; border-bottom:solid 1px #CC3366"></div>
 
 					<%
 				}
@@ -290,11 +292,11 @@ else {
 			
 			<td align="right">
 				<br /><br />
-				<%= DateStartStr %>
+				<%= StringEscapeUtils.escapeHtml("" + ( DateStartStr )) %>
 			</td>
 			<td align="right">
 				<br /><br />
-				<%= DateEndStr %>
+				<%= StringEscapeUtils.escapeHtml("" + ( DateEndStr )) %>
 			</td>
 			
 			</tr>

@@ -13,7 +13,7 @@ pageTitle = "iTrust - Get Prescription Report";
 %>
 
 <%@include file="/header.jsp" %>
-
+<itrust:patientNav thisTitle="Prescriptions"/>
 <div align=center>
 <h1>Prescription Report</h1>
 <%
@@ -22,14 +22,12 @@ pageTitle = "iTrust - Get Prescription Report";
 		response.sendRedirect("/iTrust/auth/getPatientID.jsp?forward=hcp-uap/getPrescriptionReport.jsp");
   		return;
 	}
-	//else {
-	//	session.removeAttribute("pid");
-	//}
 	
 	long pid = Long.parseLong(pidString);
 	ViewPrescriptionRecordsAction action = new ViewPrescriptionRecordsAction(DAOFactory.getProductionInstance(), loggedInMID);
 	PatientBean patient = action.getPatient(pid);
 	List<PrescriptionBean> prescriptions = action.getPrescriptionsForPatient(pid);
+	loggingAction.logEvent(TransactionType.PRESCRIPTION_REPORT_VIEW, loggedInMID, pid, "");
 
 	if (prescriptions.size() == 0) { %>
 	<i>No prescriptions found</i><br />
@@ -45,10 +43,10 @@ pageTitle = "iTrust - Get Prescription Report";
 		</tr>
 <%			for (PrescriptionBean prescription : prescriptions) { %>
 		<tr>
-			<td ><%=prescription.getMedication().getNDCodeFormatted() %></td>
-			<td ><%=prescription.getMedication().getDescription() %></td>
-			<td ><%=prescription.getStartDateStr() %> to <%=prescription.getEndDateStr() %></td>
-			<td ><%= action.getPrescribingDoctor(prescription).getFullName() %></td>
+			<td ><%= StringEscapeUtils.escapeHtml("" + (prescription.getMedication().getNDCodeFormatted() )) %></td>
+			<td ><%= StringEscapeUtils.escapeHtml("" + (prescription.getMedication().getDescription() )) %></td>
+			<td ><%= StringEscapeUtils.escapeHtml("" + (prescription.getStartDateStr() )) %> to <%= StringEscapeUtils.escapeHtml("" + (prescription.getEndDateStr() )) %></td>
+			<td ><%= StringEscapeUtils.escapeHtml("" + ( action.getPrescribingDoctor(prescription).getFullName() )) %></td>
 		</tr>
 <%			} %>
 	</table>
@@ -57,6 +55,4 @@ pageTitle = "iTrust - Get Prescription Report";
 <br />
 <br />
 <itrust:patientNav thisTitle="Prescriptions"/>
-
-
 <%@include file="/footer.jsp" %>

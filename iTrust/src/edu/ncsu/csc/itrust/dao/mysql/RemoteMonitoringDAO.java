@@ -9,8 +9,12 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import edu.ncsu.csc.itrust.DBUtil;
+import edu.ncsu.csc.itrust.beans.PersonnelBean;
 import edu.ncsu.csc.itrust.beans.RemoteMonitoringDataBean;
+import edu.ncsu.csc.itrust.beans.TelemedicineBean;
 import edu.ncsu.csc.itrust.beans.loaders.RemoteMonitoringDataBeanLoader;
+import edu.ncsu.csc.itrust.beans.loaders.PersonnelLoader;
+import edu.ncsu.csc.itrust.beans.loaders.RemoteMonitoringListsBeanLoader;
 import edu.ncsu.csc.itrust.dao.DAOFactory;
 import edu.ncsu.csc.itrust.exception.DBException;
 import edu.ncsu.csc.itrust.exception.iTrustException;
@@ -30,6 +34,8 @@ import edu.ncsu.csc.itrust.exception.iTrustException;
 public class RemoteMonitoringDAO {
 	private DAOFactory factory;
 	private RemoteMonitoringDataBeanLoader loader = new RemoteMonitoringDataBeanLoader();
+	private RemoteMonitoringListsBeanLoader rmListLoader = new RemoteMonitoringListsBeanLoader();
+	private PersonnelLoader personnelLoader = new PersonnelLoader();
 
 	/**
 	 * The typical constructor.
@@ -37,6 +43,31 @@ public class RemoteMonitoringDAO {
 	 */
 	public RemoteMonitoringDAO(DAOFactory factory) {
 		this.factory = factory;
+	}
+	
+	/**
+	 * Return remote monitoring list data for a given patient.
+	 * 
+	 * @param patientMID Patient to retrieve data for.
+	 * @return List of TelemedicineBeans
+	 * @throws DBException
+	 */
+	public List<TelemedicineBean> getTelemedicineBean(long patientMID) throws DBException {
+		Connection conn = null;
+		PreparedStatement ps = null;
+		try {
+			conn = factory.getConnection();
+			ps = conn.prepareStatement("SELECT * FROM RemoteMonitoringLists WHERE PatientMID=?");
+			ps.setLong(1, patientMID);
+			ResultSet rs = ps.executeQuery();
+			
+			return rmListLoader.loadList(rs);
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new DBException(e);
+		} finally {
+			DBUtil.closeConnection(conn, ps);
+		}
 	}
 
 	/**
@@ -55,7 +86,7 @@ public class RemoteMonitoringDAO {
 			ResultSet patientRS = ps.executeQuery();
 			ps = conn.prepareStatement("SELECT * FROM RemoteMonitoringData WHERE timelogged >= CURRENT_DATE ORDER BY PatientID, timeLogged DESC");
 			ResultSet dataRS = ps.executeQuery();
-			
+
 			List<String> patientList = new ArrayList<String>();
 			while(patientRS.next()) {
 				patientList.add(patientRS.getLong("PatientMID") + "");
@@ -115,77 +146,27 @@ public class RemoteMonitoringDAO {
 			DBUtil.closeConnection(conn, ps);
 		}
 	}
-
-	/**
-	 * Store data for a given patient in the RemoteMonitoringData table
-	 * 
-	 * @param patientMID The MID of the patient
-	 * @param systolicBloodPressure The systolic blood pressure of the patient
-	 * @param diastolicBloodPressure The diastolic blood pressure of the patient
-	 * @param glucoseLevel The glucose level of the patient
-	 * @param reporterRole  The role of the person that reported these monitoring stats
-	 * @param reporterMID  The MID of the person that reported these monitoring stats
-	 * @throws DBException
-	 */
-	public void storePatientData(long patientMID, int systolicBloodPressure, int diastolicBloodPressure, int glucoseLevel, String reporterRole, long reporterMID)
-			throws DBException, iTrustException {
-		if(getNumberOfDailyEntries(patientMID) >= 10)
-			throw new iTrustException("Patient entries for today cannot exceed 10.");
-		
-		if(reporterRole.equals("patient representative"))
-			validatePR(reporterMID, patientMID);
-		
-		Connection conn = null;
-		PreparedStatement ps = null;
-		try {
-			conn = factory.getConnection();
-			ps = conn.prepareStatement("INSERT INTO RemoteMonitoringData(PatientID, systolicBloodPressure, "
-					+ "diastolicBloodPressure, glucoseLevel, ReporterRole, ReporterID) VALUES(?,?,?,?,?,?)");
-			ps.setLong(1, patientMID);
-			ps.setLong(2, systolicBloodPressure);
-			ps.setInt(3, diastolicBloodPressure);
-			ps.setInt(4, glucoseLevel);
-			ps.setString(5, reporterRole);
-			ps.setLong(6, reporterMID);
-			ps.executeUpdate();
-		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new DBException(e);
-		} finally {
-			DBUtil.closeConnection(conn, ps);
-		}
-	}
 	
 	/**
-	 * Store data for a given patient in the RemoteMonitoringData table
+	 * Get the requested type of data for the specified patient.
 	 * 
 	 * @param patientMID The MID of the patient
-	 * @param systolicBloodPressure The systolic blood pressure of the patient
-	 * @param diastolicBloodPressure The diastolic blood pressure of the patient
-	 * @param glucoseLevel The glucose level of the patient
-	 * @param reporterRole  The role of the person that reported these monitoring stats
-	 * @param reporterMID  The MID of the person that reported these monitoring stats
+	 * @param dataType The type of telemedicine data to return
+	 * @return A list of beans which all contain information of the requested type
 	 * @throws DBException
 	 */
-	public void storePatientData(long patientMID, int glucoseLevel, String reporterRole, long reporterMID)
-			throws DBException, iTrustException {
-		if(getNumberOfDailyEntries(patientMID) >= 10)
-			throw new iTrustException("Patient entries for today cannot exceed 10.");
-		
-		if(reporterRole.equals("patient representative"))
-			validatePR(reporterMID, patientMID);
-		
+	public List<RemoteMonitoringDataBean> getPatientDataByType(long patientMID, String dataType) throws DBException{
 		Connection conn = null;
 		PreparedStatement ps = null;
-		try {
+		try{
 			conn = factory.getConnection();
-			ps = conn.prepareStatement("INSERT INTO RemoteMonitoringData(PatientID, glucoseLevel, ReporterRole, ReporterID) VALUES(?,?,?,?)");
+			ps = conn.prepareStatement("SELECT * FROM remotemonitoringdata WHERE PatientID=? AND "+dataType+" != -1 ORDER BY timeLogged ASC");
 			ps.setLong(1, patientMID);
-			ps.setInt(2, glucoseLevel);
-			ps.setString(3, reporterRole);
-			ps.setLong(4, reporterMID);
-			ps.executeUpdate();
-		} catch (SQLException e) {
+
+			ResultSet rs = ps.executeQuery();
+			List<RemoteMonitoringDataBean> dataList = loader.loadList(rs);
+			return dataList;
+		}catch (SQLException e) {
 			e.printStackTrace();
 			throw new DBException(e);
 		} finally {
@@ -194,20 +175,44 @@ public class RemoteMonitoringDAO {
 	}
 
 	/**
-	 * Store data for a given patient in the RemoteMonitoringData table
+	 * Store pedometer reading and height/weight data for a given patient in the RemoteMonitoringData table
 	 * 
 	 * @param patientMID The MID of the patient
-	 * @param systolicBloodPressure The systolic blood pressure of the patient
-	 * @param diastolicBloodPressure The diastolic blood pressure of the patient
-	 * @param glucoseLevel The glucose level of the patient
+	 * @param height The height of the patient
+	 * @param weight The weight of the patient
+	 * @param pedometerReading The pedometer reading of the patient
 	 * @param reporterRole  The role of the person that reported these monitoring stats
 	 * @param reporterMID  The MID of the person that reported these monitoring stats
 	 * @throws DBException
 	 */
-	public void storePatientData(long patientMID, int systolicBloodPressure, int diastolicBloodPressure, String reporterRole, long reporterMID)
-			throws DBException, iTrustException {
-		if(getNumberOfDailyEntries(patientMID) >= 10)
-			throw new iTrustException("Patient entries for today cannot exceed 10.");
+	public void storePatientData(long patientMID, RemoteMonitoringDataBean bean, String reporterRole, long reporterMID)
+	throws DBException, iTrustException {
+		float height = bean.getHeight();
+		float weight = bean.getWeight();
+		int pedometer = bean.getPedometerReading();
+		int sbp = bean.getSystolicBloodPressure();
+		int dbp = bean.getDiastolicBloodPressure();
+		int glucose = bean.getGlucoseLevel();
+		
+		if (height == 0)	height		= -1;
+		if (weight == 0)	weight		= -1;
+		if (pedometer == 0)	pedometer	= -1;
+		if (sbp == 0)		sbp			= -1;
+		if (dbp == 0)		dbp			= -1;
+		if (glucose == 0)	glucose		= -1;
+		
+		if (getNumberOfDailyEntries(patientMID, "height") >= 1 && height != -1)
+			throw new iTrustException("Patient height entries for today cannot exceed 1.");
+		if (getNumberOfDailyEntries(patientMID, "weight") >= 1 && weight != -1)
+			throw new iTrustException("Patient weight entries for today cannot exceed 1.");
+		if (getNumberOfDailyEntries(patientMID, "pedometerReading") >= 1 && pedometer != -1)
+			throw new iTrustException("Patient pedometer reading entries for today cannot exceed 1.");
+		if (getNumberOfDailyEntries(patientMID, "glucoseLevel") >= 10 && glucose != -1)
+			throw new iTrustException("Patient glucose level entries for today cannot exceed 10.");
+		if (getNumberOfDailyEntries(patientMID, "systolicBloodPressure") >= 10 && sbp != -1)
+			throw new iTrustException("Patient systolic blood pressure entries for today cannot exceed 10.");
+		if (getNumberOfDailyEntries(patientMID, "diastolicBloodPressure") >= 10 && dbp != -1)
+			throw new iTrustException("Patient diastolic blood pressure entries for today cannot exceed 10.");
 		
 		if(reporterRole.equals("patient representative"))
 			validatePR(reporterMID, patientMID);
@@ -216,13 +221,17 @@ public class RemoteMonitoringDAO {
 		PreparedStatement ps = null;
 		try {
 			conn = factory.getConnection();
-			ps = conn.prepareStatement("INSERT INTO RemoteMonitoringData(PatientID, systolicBloodPressure, "
-					+ "diastolicBloodPressure, ReporterRole, ReporterID) VALUES(?,?,?,?,?)");
+			ps = conn.prepareStatement("INSERT INTO RemoteMonitoringData(PatientID, height, weight, "
+					+ "pedometerReading, systolicBloodPressure, diastolicBloodPressure, glucoseLevel, ReporterRole, ReporterID) VALUES(?,?,?,?,?,?,?,?,?)");
 			ps.setLong(1, patientMID);
-			ps.setLong(2, systolicBloodPressure);
-			ps.setInt(3, diastolicBloodPressure);
-			ps.setString(4, reporterRole);
-			ps.setLong(5, reporterMID);
+			ps.setFloat(2, height);
+			ps.setFloat(3, weight);
+			ps.setInt(4, pedometer);
+			ps.setInt(5, sbp);
+			ps.setInt(6, dbp);
+			ps.setInt(7, glucose);
+			ps.setString(8, reporterRole);
+			ps.setLong(9, reporterMID);
 			ps.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -238,7 +247,7 @@ public class RemoteMonitoringDAO {
 	 * @return the number of entries
 	 * @throws DBException
 	 */
-	private int getNumberOfDailyEntries(long patientMID) throws DBException{
+/*	private int getNumberOfDailyEntries(long patientMID) throws DBException{
 		Connection conn = null;
 		PreparedStatement ps = null;
 		try {
@@ -249,6 +258,35 @@ public class RemoteMonitoringDAO {
 			List<RemoteMonitoringDataBean> patients = loader.loadList(rs);
 			return patients.size();
 			
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new DBException(e);
+		} finally {
+			DBUtil.closeConnection(conn, ps);
+		}
+	}*/
+	
+	/**
+	 * Private method to get the number of entries for a certain patientID and a certain
+	 * data type for today.
+	 * @param patientMID
+	 * @param dataType
+	 * @return the number of entries
+	 * @throws DBException
+	 */
+	private int getNumberOfDailyEntries(long patientMID, String dataType) throws DBException{
+		Connection conn = null;
+		PreparedStatement ps = null;
+		try {
+			conn = factory.getConnection();
+			ps = conn.prepareStatement("SELECT * FROM RemoteMonitoringData WHERE PatientID=? AND "
+										+ dataType + "!=? AND DATE(timeLogged)=CURRENT_DATE");
+			ps.setLong(1, patientMID);
+			ps.setInt(2, -1);
+			System.out.println(ps.toString());
+			ResultSet rs = ps.executeQuery();
+			List<RemoteMonitoringDataBean> patients = loader.loadList(rs);
+			return patients.size();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			throw new DBException(e);
@@ -279,13 +317,41 @@ public class RemoteMonitoringDAO {
 	}
 	
 	/**
+	 * Show the list of HCPs monitoring this patient
+	 * 
+	 * @param patientMID The MID of the patient
+	 * @return list of HCPs monitoring the provided patient
+	 */
+	public List<PersonnelBean> getMonitoringHCPs(long patientMID) throws DBException {
+		Connection conn = null;
+		PreparedStatement ps = null;
+		try {
+			conn = factory.getConnection();
+			ps = conn.prepareStatement("SELECT * FROM Personnel, RemoteMonitoringLists "
+					+ "WHERE RemoteMonitoringLists.PatientMID=? AND RemoteMonitoringLists.HCPMID=Personnel.MID");
+			ps.setLong(1, patientMID);
+			ResultSet rs = ps.executeQuery();
+			return personnelLoader.loadList(rs);
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new DBException(e);
+		} finally {
+			DBUtil.closeConnection(conn, ps);
+		}
+	}
+
+	
+	/**
 	 * Add a patient to the list of HCPs' monitoring lists of Patients
 	 * 
 	 * @param patientMID The MID of the patient
 	 * @param HCPMID The MID of the HCP
+	 * @param tBean The TelemedicineBean indicating what telemedicine data the patient is allowed to enter.
 	 * @return true if added successfully, false if already in list
 	 */
-	public boolean addPatientToList(long patientMID, long HCPMID) throws DBException {
+	public boolean addPatientToList(long patientMID,
+									long HCPMID,
+									TelemedicineBean tBean) throws DBException {
 		Connection conn = null;
 		PreparedStatement ps = null;
 		try {
@@ -296,9 +362,16 @@ public class RemoteMonitoringDAO {
 			ResultSet rs = ps.executeQuery();
 			if(rs.next())
 				return false;
-			ps = conn.prepareStatement("INSERT INTO RemoteMonitoringLists(PatientMID, HCPMID) VALUES(?,?)");
+			String permissionPS = "SystolicBloodPressure, DiastolicBloodPressure, GlucoseLevel, Height, Weight, PedometerReading";
+			ps = conn.prepareStatement("INSERT INTO RemoteMonitoringLists(PatientMID, HCPMID, " + permissionPS + ") VALUES(?,?,?,?,?,?,?,?)");
 			ps.setLong(1, patientMID);
 			ps.setLong(2, HCPMID);
+			ps.setBoolean(3, tBean.isSystolicBloodPressureAllowed());
+			ps.setBoolean(4, tBean.isDiastolicBloodPressureAllowed());
+			ps.setBoolean(5, tBean.isGlucoseLevelAllowed());
+			ps.setBoolean(6, tBean.isHeightAllowed());
+			ps.setBoolean(7, tBean.isWeightAllowed());
+			ps.setBoolean(8, tBean.isPedometerReadingAllowed());
 			ps.executeUpdate();
 			return true;
 		} catch (SQLException e) {
@@ -321,12 +394,6 @@ public class RemoteMonitoringDAO {
 		PreparedStatement ps = null;
 		try {
 			conn = factory.getConnection();
-			/*ps = conn.prepareStatement("SELECT * FROM RemoteMonitoringList WHERE PatientMID = ? AND HCPMID = ?");
-			ps.setLong(1, patientMID);
-			ps.setLong(2, HCPMID);
-			ResultSet rs = ps.executeQuery();
-			if(!rs.next())
-				return false;*/
 			ps = conn.prepareStatement("DELETE FROM RemoteMonitoringLists WHERE PatientMID = ? AND HCPMID = ?");
 			ps.setLong(1, patientMID);
 			ps.setLong(2, HCPMID);
@@ -340,5 +407,4 @@ public class RemoteMonitoringDAO {
 			DBUtil.closeConnection(conn, ps);
 		}
 	}
-	
 }

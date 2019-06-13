@@ -113,6 +113,10 @@ pageTitle = "iTrust - View My Message ";
 		}
 	}
 	else {
+		if(request.getParameter("edit") == null && request.getParameter("filter") == null) {
+			loggingAction.logEvent(TransactionType.INBOX_VIEW, loggedInMID, 0, "");
+		}
+		
 		messages = action.getAllMyMessages();
 	}
 	
@@ -148,30 +152,30 @@ pageTitle = "iTrust - View My Message ";
 						<tr style="text-align: right;">
 							<td>
 								<label for="sender">Sender: </label>
-								<input type="text" name="sender" id="sender" value="<%=fields[0] %>" />
+								<input type="text" name="sender" id="sender" value="<%= StringEscapeUtils.escapeHtml("" + (fields[0] )) %>" />
 							</td>
 							<td style="padding-left: 10px; padding-right: 10px;">
 								<label for="hasWords">Has the words: </label>
-								<input type="text" name="hasWords" id="hasWords" value="<%=fields[2] %>" />
+								<input type="text" name="hasWords" id="hasWords" value="<%= StringEscapeUtils.escapeHtml("" + (fields[2] )) %>" />
 							</td>
 							<td>
 								<label for="startDate">Start Date: </label>
-								<input type="text" name="startDate" id="startDate" value="<%=fields[4] %>" />
+								<input type="text" name="startDate" id="startDate" value="<%= StringEscapeUtils.escapeHtml("" + (fields[4] )) %>" />
 								<input type="button" value="Select Date" onclick="displayDatePicker('startDate');" />
 							</td>
 						</tr>
 						<tr style="text-align: right;">
 							<td>
 								<label for="subject">Subject: </label>
-								<input type="text" name="subject" id="subject" value="<%=fields[1] %>" />
+								<input type="text" name="subject" id="subject" value="<%= StringEscapeUtils.escapeHtml("" + (fields[1] )) %>" />
 							</td>
 							<td style="padding-left: 10px; padding-right: 10px;">
 								<label for="notWords">Does not have the words: </label>
-								<input type="text" name="notWords" id="notWords" value="<%=fields[3] %>" />
+								<input type="text" name="notWords" id="notWords" value="<%= StringEscapeUtils.escapeHtml("" + (fields[3] )) %>" />
 							</td>
 							<td>
 								<label for="endDate">End Date: </label>
-								<input type="text" name="endDate" id="endDate" value="<%=fields[5] %>" />
+								<input type="text" name="endDate" id="endDate" value="<%= StringEscapeUtils.escapeHtml("" + (fields[5] )) %>" />
 								<input type="button" value="Select Date" onclick="displayDatePicker('endDate');" />
 							</td>
 						</tr>
@@ -192,7 +196,7 @@ pageTitle = "iTrust - View My Message ";
 	
 	%>
 	
-	<form method="post" action="messageInbox.jsp<%=is_filtered?"?filter=true":"" %>">	
+	<form method="post" action="messageInbox.jsp<%= StringEscapeUtils.escapeHtml("" + (is_filtered?"?filter=true":"" )) %>">	
 	<table>
 	<tr>
 		<td>
@@ -232,17 +236,17 @@ pageTitle = "iTrust - View My Message ";
 		for(MessageBean message : messages) {
 		if(message.getRead() == 0) {%>
 		<tr style="font-weight: bold;" <%=(index%2 == 1)?"class=\"alt\"":"" %>>
-			<td><%= action.getName(message.getFrom()) %></td>
-			<td><%= message.getSubject() %></td>
-			<td><%= message.getSentDate() %></td>
-			<td><a href="viewMessageInbox.jsp?msg=<%= index %>">Read</a></td>
+			<td><%= StringEscapeUtils.escapeHtml("" + ( action.getName(message.getFrom()) )) %></td>
+			<td><%= StringEscapeUtils.escapeHtml("" + ( message.getSubject() )) %></td>
+			<td><%= StringEscapeUtils.escapeHtml("" + ( message.getSentDate() )) %></td>
+			<td><a href="viewMessageInbox.jsp?msg=<%= StringEscapeUtils.escapeHtml("" + ( index )) %>">Read</a></td>
 		</tr>
 <% 			   } else { %>
 		<tr <%=(index%2 == 1)?"class=\"alt\"":"" %>>
-			<td><%= action.getName(message.getFrom()) %></td>
-			<td><%= message.getSubject() %></td>
-			<td><%= message.getSentDate() %></td>
-			<td><a href="viewMessageInbox.jsp?msg=<%= index %>">Read</a></td>
+			<td><%= StringEscapeUtils.escapeHtml("" + ( action.getName(message.getFrom()) )) %></td>
+			<td><%= StringEscapeUtils.escapeHtml("" + ( message.getSubject() )) %></td>
+			<td><%= StringEscapeUtils.escapeHtml("" + ( message.getSentDate() )) %></td>
+			<td><a href="viewMessageInbox.jsp?msg=<%= StringEscapeUtils.escapeHtml("" + ( index )) %>">Read</a></td>
 		</tr>
 <% 			  } %>
 <%			index ++; %>

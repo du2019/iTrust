@@ -2,6 +2,7 @@ package edu.ncsu.csc.itrust.http;
 
 import com.meterware.httpunit.WebConversation;
 import com.meterware.httpunit.WebResponse;
+import edu.ncsu.csc.itrust.enums.TransactionType;
 //import com.meterware.httpunit.WebTable;
 
 public class ViewExpiredPrescriptionsTest extends iTrustHTTPTest {
@@ -34,6 +35,8 @@ public class ViewExpiredPrescriptionsTest extends iTrustHTTPTest {
 		WebConversation wc = login("2", "pw");
 		WebResponse wr = wc.getCurrentPage();
 		assertEquals("iTrust - Patient Home", wr.getTitle());
+		assertLogged(TransactionType.HOME_VIEW, 2L, 0L, "");
+		
 		// click on My Expired Prescription Reports
 		wr = wr.getLinkWith("My Expired Prescription Reports").click();
 		assertTrue(wr.getText().contains("00904-2407"));
@@ -48,6 +51,8 @@ public class ViewExpiredPrescriptionsTest extends iTrustHTTPTest {
 		assertTrue(wr.getText().contains("999-888-7777"));
 		assertTrue(wr.getText().contains("kdoctor@iTrust.org"));
 		assertFalse(wr.getText().contains("9000000000"));
+		assertLogged(TransactionType.EXPIRED_PRESCRIPTION_VIEW, 2L, 2L, "");
+		
 	}
 	
 	/*
@@ -61,6 +66,8 @@ public class ViewExpiredPrescriptionsTest extends iTrustHTTPTest {
 		WebConversation wc = login("99", "pw");
 		WebResponse wr = wc.getCurrentPage();
 		assertEquals("iTrust - Patient Home", wr.getTitle());
+		assertLogged(TransactionType.HOME_VIEW, 99L, 0L, "");
+		
 		// click on My Expired Prescription Reports
 		wr = wr.getLinkWith("My Expired Prescription Reports").click();
 		assertTrue(wr.getText().contains("00904-2407"));
@@ -77,6 +84,7 @@ public class ViewExpiredPrescriptionsTest extends iTrustHTTPTest {
 		assertTrue(wr.getText().contains("999-888-7777"));
 		assertTrue(wr.getText().contains("tarehart@iTrust.org"));
 		assertFalse(wr.getText().contains("9900000000"));
+		assertLogged(TransactionType.EXPIRED_PRESCRIPTION_VIEW, 99L, 99L, "");
 	}
 	
 	/*
@@ -90,12 +98,15 @@ public class ViewExpiredPrescriptionsTest extends iTrustHTTPTest {
 		WebConversation wc = login("99", "pw");
 		WebResponse wr = wc.getCurrentPage();
 		assertEquals("iTrust - Patient Home", wr.getTitle());
+		assertLogged(TransactionType.HOME_VIEW, 99L, 0L, "");
+		
 		// click on My Expired Prescription Reports
 		wr = wr.getLinkWith("My Expired Prescription Reports").click();
 		assertTrue(wr.getText().contains("00904-2407"));
 		assertTrue(wr.getText().contains("08109-6"));
 		assertFalse(wr.getText().contains("9000000000"));
 		assertFalse(wr.getText().contains("9900000000"));
+		assertLogged(TransactionType.EXPIRED_PRESCRIPTION_VIEW, 99L, 99L, "");
 		// click on a particular office visit to check medication and diagnoses
 		wr = wr.getLinkWith("Kelly Doctor").click();  // This click does not work at the moment.
 		assertTrue(wr.getText().contains("surgeon"));
@@ -105,7 +116,7 @@ public class ViewExpiredPrescriptionsTest extends iTrustHTTPTest {
 		assertTrue(wr.getText().contains("12345-1234"));
 		assertTrue(wr.getText().contains("999-888-7777"));
 		assertTrue(wr.getText().contains("kdoctor@iTrust.org"));
-		assertFalse(wr.getText().contains("9000000000"));
+		assertFalse(wr.getText().contains("9000000000"));		
 	}
 	
 	/*
@@ -119,12 +130,15 @@ public class ViewExpiredPrescriptionsTest extends iTrustHTTPTest {
 		WebConversation wc = login("99", "pw");
 		WebResponse wr = wc.getCurrentPage();
 		assertEquals("iTrust - Patient Home", wr.getTitle());
+		assertLogged(TransactionType.HOME_VIEW, 99L, 0L, "");
+		
 		// click on My Expired Prescription Reports
 		wr = wr.getLinkWith("My Expired Prescription Reports").click();
 		assertTrue(wr.getText().contains("00904-2407"));
 		assertTrue(wr.getText().contains("08109-6"));
 		assertFalse(wr.getText().contains("9000000000"));
 		assertFalse(wr.getText().contains("9900000000"));
+		assertLogged(TransactionType.EXPIRED_PRESCRIPTION_VIEW, 99L, 99L, "");
 		// click on a particular office visit to check medication and diagnoses
 		wr = wr.getLinkWith("Jimmy Incomplete").click();  // This click does not work at the moment.
 		assertFalse(wr.getText().contains("null"));

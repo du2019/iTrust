@@ -4,7 +4,6 @@ import edu.ncsu.csc.itrust.beans.MedicationBean;
 import edu.ncsu.csc.itrust.dao.DAOFactory;
 import edu.ncsu.csc.itrust.dao.mysql.NDCodesDAO;
 import edu.ncsu.csc.itrust.dao.mysql.TransactionDAO;
-import edu.ncsu.csc.itrust.enums.TransactionType;
 import edu.ncsu.csc.itrust.exception.DBException;
 import edu.ncsu.csc.itrust.exception.FormValidationException;
 import edu.ncsu.csc.itrust.exception.iTrustException;
@@ -49,8 +48,6 @@ public class UpdateNDCodeListAction {
 		validator.validate(med);
 		try {
 			if (ndDAO.addNDCode(med)) {
-				transDAO.logTransaction(TransactionType.MANAGE_DRUG_CODE, performerID, 0L, "added ND code "
-						+ med.getNDCode());
 				return "Success: " + med.getNDCode() + " - " + med.getDescription() + " added";
 			} else
 				return "The database has become corrupt. Please contact the system administrator for assistance.";
@@ -77,8 +74,6 @@ public class UpdateNDCodeListAction {
 			if (0 == rows) {
 				return "Error: Code not found.";
 			} else {
-				transDAO.logTransaction(TransactionType.MANAGE_DRUG_CODE, performerID, 0L, "updated ND code "
-						+ med.getNDCode());
 				return "Success: " + rows + " row(s) updated";
 			}
 		} catch (DBException e) {

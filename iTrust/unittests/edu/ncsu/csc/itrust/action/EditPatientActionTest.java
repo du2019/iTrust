@@ -1,13 +1,10 @@
 package edu.ncsu.csc.itrust.action;
 
-import java.util.List;
 import junit.framework.TestCase;
 import edu.ncsu.csc.itrust.beans.PatientBean;
-import edu.ncsu.csc.itrust.beans.TransactionBean;
 import edu.ncsu.csc.itrust.dao.DAOFactory;
 import edu.ncsu.csc.itrust.dao.mysql.PatientDAO;
 import edu.ncsu.csc.itrust.datagenerators.TestDataGenerator;
-import edu.ncsu.csc.itrust.enums.TransactionType;
 import edu.ncsu.csc.itrust.exception.iTrustException;
 import edu.ncsu.csc.itrust.exception.FormValidationException;
 import edu.ncsu.csc.itrust.testutils.TestDAOFactory;
@@ -119,8 +116,5 @@ public class EditPatientActionTest extends TestCase {
 	public void testGetPatientLogged() throws Exception {
 		PatientBean patient = action.getPatient();
 		assertEquals(2L, patient.getMID());
-		List<TransactionBean> transList = factory.getTransactionDAO().getAllTransactions();
-		assertEquals(1, transList.size());
-		assertEquals(TransactionType.ENTER_EDIT_DEMOGRAPHICS, transList.get(0).getTransactionType());
 	}
 }

@@ -25,9 +25,9 @@ if (pidString == null || 1 > pidString.length()) {
 	response.sendRedirect("/iTrust/auth/getPatientID.jsp?forward=hcp-uap/LabProcUAP.jsp");
    	return;
 }
-else {
-	session.removeAttribute("pid");
-}
+//else {
+//	session.removeAttribute("pid");
+//}
 
 /* If the patient id doesn't check out, then kick 'em out to the exception handler */
 EditPatientAction epaction = new EditPatientAction(prodDAO,loggedInMID.longValue(),pidString);
@@ -57,16 +57,16 @@ List<LabProcedureBean> proc = action.viewProcedures(pid);
 		<%for(LabProcedureBean bean : proc){ 
 		PatientBean patient = new PatientDAO(prodDAO).getPatient(bean.getPid());%>
 			<tr>
-				<td ><%=patient.getFullName()%></td>
-				<td ><%=bean.getLoinc()%></td>
-				<td ><%=bean.getRights()%></td>
-				<td ><%=bean.getStatus()%></td>
-				<td ><%=bean.getCommentary()%></td>
-				<td ><%=bean.getResults()%></td>
-				<td ><%=bean.getOvID()%></td>
-				<td ><%=bean.getTimestamp()%></td>
+				<td ><%= StringEscapeUtils.escapeHtml("" + (patient.getFullName())) %></td>
+				<td ><%= StringEscapeUtils.escapeHtml("" + (bean.getLoinc())) %></td>
+				<td ><%= StringEscapeUtils.escapeHtml("" + (bean.getRights())) %></td>
+				<td ><%= StringEscapeUtils.escapeHtml("" + (bean.getStatus())) %></td>
+				<td ><%= StringEscapeUtils.escapeHtml("" + (bean.getCommentary())) %></td>
+				<td ><%= StringEscapeUtils.escapeHtml("" + (bean.getResults())) %></td>
+				<td ><%= StringEscapeUtils.escapeHtml("" + (bean.getOvID())) %></td>
+				<td ><%= StringEscapeUtils.escapeHtml("" + (bean.getTimestamp())) %></td>
 				<td >
-					<a href="updateLabProc.jsp?ID=<%=bean.getProcedureID()%>">Update</a>
+					<a href="updateLabProc.jsp?ID=<%= StringEscapeUtils.escapeHtml("" + (bean.getProcedureID())) %>">Update</a>
 				</td>
 				
 			</tr>

@@ -93,28 +93,29 @@ public class PatientValidatorTest extends TestCase {
 			assertEquals("Last name: " + ValidationFormat.NAME.getDescription(), e.getErrorList().get(1));
 			assertEquals("Date of Birth: MM/DD/YYYY", e.getErrorList().get(2));
 			assertEquals("Date of Death: MM/DD/YYYY", e.getErrorList().get(3));
-			assertEquals("Cause of Death: xxx.xx", e.getErrorList().get(4));
+			assertEquals("Cause of Death cannot be specified without Date of Death!", e.getErrorList().get(4));
+			assertEquals("Cause of Death: xxx.xx", e.getErrorList().get(5));
 			assertEquals(false, val.validateEmail("andy.programmer?gmail.com"));
-			assertEquals("Street Address 1: " + ValidationFormat.ADDRESS.getDescription(), e.getErrorList().get(6));
-			assertEquals("Street Address 2: " + ValidationFormat.ADDRESS.getDescription(), e.getErrorList().get(7));
-			assertEquals("City: " + ValidationFormat.CITY.getDescription(), e.getErrorList().get(8));
-			assertEquals("State: " + ValidationFormat.STATE.getDescription(), e.getErrorList().get(9));
-			assertEquals("Zip Code: " + ValidationFormat.ZIPCODE.getDescription(), e.getErrorList().get(10));
-			assertEquals("Phone Number: " + ValidationFormat.PHONE_NUMBER.getDescription(), e.getErrorList().get(11));
-			assertEquals("Emergency Contact Name: " + ValidationFormat.NAME.getDescription(), e.getErrorList().get(12));
-			assertEquals("Emergency Contact Phone: " + ValidationFormat.PHONE_NUMBER.getDescription(), e.getErrorList().get(13));
-			assertEquals("Insurance Company Name: " + ValidationFormat.NAME.getDescription(), e.getErrorList().get(14));
-			assertEquals("Insurance Company Address 1: " + ValidationFormat.ADDRESS.getDescription(), e.getErrorList().get(15));
-			assertEquals("Insurance Company Address 2: " + ValidationFormat.ADDRESS.getDescription(), e.getErrorList().get(16));
-			assertEquals("Insurance Company City: " + ValidationFormat.CITY.getDescription(), e.getErrorList().get(17));
-			assertEquals("Insurance Company State: " + ValidationFormat.STATE.getDescription(), e.getErrorList().get(18));
-			assertEquals("Insurance Company Zip: " + ValidationFormat.ZIPCODE.getDescription(), e.getErrorList().get(19));
-			assertEquals("Insurance Company Phone: " + ValidationFormat.PHONE_NUMBER.getDescription(), e.getErrorList().get(20));
-			assertEquals("Insurance Company ID: " + ValidationFormat.INSURANCE_ID.getDescription(), e.getErrorList().get(21));
-			assertEquals("Mother MID: " + ValidationFormat.MID.getDescription(), e.getErrorList().get(22));
-			assertEquals("Father MID: " + ValidationFormat.MID.getDescription(), e.getErrorList().get(23));
-			assertEquals("Topical Notes: " + ValidationFormat.NOTES.getDescription(), e.getErrorList().get(24));
-			assertEquals("number of errors", 25, e.getErrorList().size());
+			assertEquals("Street Address 1: " + ValidationFormat.ADDRESS.getDescription(), e.getErrorList().get(7));
+			assertEquals("Street Address 2: " + ValidationFormat.ADDRESS.getDescription(), e.getErrorList().get(8));
+			assertEquals("City: " + ValidationFormat.CITY.getDescription(), e.getErrorList().get(9));
+			assertEquals("State: " + ValidationFormat.STATE.getDescription(), e.getErrorList().get(10));
+			assertEquals("Zip Code: " + ValidationFormat.ZIPCODE.getDescription(), e.getErrorList().get(11));
+			assertEquals("Phone Number: " + ValidationFormat.PHONE_NUMBER.getDescription(), e.getErrorList().get(12));
+			assertEquals("Emergency Contact Name: " + ValidationFormat.NAME.getDescription(), e.getErrorList().get(13));
+			assertEquals("Emergency Contact Phone: " + ValidationFormat.PHONE_NUMBER.getDescription(), e.getErrorList().get(14));
+			assertEquals("Insurance Company Name: " + ValidationFormat.NAME.getDescription(), e.getErrorList().get(15));
+			assertEquals("Insurance Company Address 1: " + ValidationFormat.ADDRESS.getDescription(), e.getErrorList().get(16));
+			assertEquals("Insurance Company Address 2: " + ValidationFormat.ADDRESS.getDescription(), e.getErrorList().get(17));
+			assertEquals("Insurance Company City: " + ValidationFormat.CITY.getDescription(), e.getErrorList().get(18));
+			assertEquals("Insurance Company State: " + ValidationFormat.STATE.getDescription(), e.getErrorList().get(19));
+			assertEquals("Insurance Company Zip: " + ValidationFormat.ZIPCODE.getDescription(), e.getErrorList().get(20));
+			assertEquals("Insurance Company Phone: " + ValidationFormat.PHONE_NUMBER.getDescription(), e.getErrorList().get(21));
+			assertEquals("Insurance Company ID: " + ValidationFormat.INSURANCE_ID.getDescription(), e.getErrorList().get(22));
+			assertEquals("Mother MID: " + ValidationFormat.MID.getDescription(), e.getErrorList().get(23));
+			assertEquals("Father MID: " + ValidationFormat.MID.getDescription(), e.getErrorList().get(24));
+			assertEquals("Topical Notes: " + ValidationFormat.NOTES.getDescription(), e.getErrorList().get(25));
+			assertEquals("number of errors", 26, e.getErrorList().size());
 		}
 	}
 	
@@ -124,7 +125,7 @@ public class PatientValidatorTest extends TestCase {
 		p.setLastName("LastName5");
 		p.setDateOfBirthStr("10/10/3000");
 		p.setDateOfDeathStr("");
-		p.setCauseOfDeath("Q150");
+		p.setCauseOfDeath("");
 		p.setEmail("andy.programmer?gmail.com");
 		p.setStreetAddress1("344 East < Ave.");
 		p.setStreetAddress2("?");
@@ -156,6 +157,46 @@ public class PatientValidatorTest extends TestCase {
 		} catch (FormValidationException e) {
 			assertEquals("Birth date cannot be in the future!", e.getErrorList().get(2));
 			//assertEquals("Date of Death: MM/DD/YYYY", e.getErrorList().get(3));
+		}
+	}
+	
+	public void testCauseOfDeathValidation(){
+		PatientBean p = new PatientBean();
+		p.setFirstName("Person5");
+		p.setLastName("LastName5");
+		p.setDateOfBirthStr("10/10/2000");
+		p.setDateOfDeathStr("");
+		p.setCauseOfDeath("Q150");
+		p.setEmail("andy.programmer?gmail.com");
+		p.setStreetAddress1("344 East < Ave.");
+		p.setStreetAddress2("?");
+		p.setCity("Wr0ng");
+		p.setState("Pa");
+		p.setZip1("17534-");
+		p.setPhone1("555");
+		p.setEmergencyName("Tow #ater");
+		p.setEmergencyPhone1("(809)");
+		p.setIcName("Dewie Che@tum and Howe the 2nd");
+		p.setIcAddress1("458 Ripoff Blvd?");
+		p.setIcAddress2("Greedy Suite                        ");
+		p.setIcCity("%");
+		p.setIcState("mI");
+		p.setIcZip1("48169-0000 ");
+		p.setIcPhone1(" 666-059-4023 ");
+		p.setIcID("$$");
+		p.setMotherMID("-1");
+		p.setFatherMID("-2");
+		p.setBloodTypeStr("AB");
+		p.setEthnicityStr("Caucasion");
+		p.setGenderStr("female");
+		p.setTopicalNotes("<script>alert('hello');</script>");
+		p.setPassword("toooooooooooooooooooooooooo long password");
+		p.setPassword("toooooooooooooooooooooooooo long password");
+		try {
+			new PatientValidator().validate(p);
+			fail("exception should have been thrown");
+		} catch (FormValidationException e) {
+			assertEquals("Cause of Death cannot be specified without Date of Death!", e.getErrorList().get(2));
 		}
 	}
 	

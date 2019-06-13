@@ -2,6 +2,7 @@
 <%@page errorPage="/auth/exceptionHandler.jsp"%>
 
 <%@page import="edu.ncsu.csc.itrust.action.EditMonitoringListAction"%>
+<%@page import="edu.ncsu.csc.itrust.beans.TelemedicineBean"%>
 
 <%@include file="/global.jsp" %>
 
@@ -16,13 +17,9 @@ pageTitle = "iTrust - Edit Patient List";
 String pidString = (String)session.getAttribute("pid");
 String addOrRemove = "Add";
 if (pidString == null || 1 > pidString.length() || "false".equals(request.getParameter("confirmAction"))) {
-	session.removeAttribute("pid");
 	response.sendRedirect("/iTrust/auth/getPatientID.jsp?forward=hcp/editPatientList.jsp");
    	return;
 }
-//else {
-//	session.removeAttribute("pid");
-//}
 	
 EditMonitoringListAction action = new EditMonitoringListAction(prodDAO,loggedInMID.longValue());
 long pid = Long.parseLong(pidString);
@@ -34,35 +31,121 @@ String confirm = "";
 boolean conf_bool = false;
 
 if ("true".equals(request.getParameter("confirmAction"))) {
-	if(addOrRemove.equals("Add")) {
-		conf_bool = action.addToList(pid);
-		if(conf_bool)
-			confirm = "Patient " + patientName + " Added";
-	} else {
+	System.out.println(request.getParameter("fSubmit"));
+	if (request.getParameter("fSubmit").equals("Update Permissions")) {
+		System.out.println("Updating permissions");
+		String[] checkBoxes = new String[] {
+				request.getParameter("bloodPressure"),
+				request.getParameter("glucose"),
+				request.getParameter("height"),
+				request.getParameter("weight"),
+				request.getParameter("pedometer")};
+		boolean[] permissions = new boolean[5];
+		for (int i = 0; i < 5; i++) {
+			permissions[i] = checkBoxes[i] != null && checkBoxes[i].equals("on");
+		}
+		
+		TelemedicineBean tBean = new TelemedicineBean();
+		tBean.setSystolicBloodPressureAllowed(permissions[0]);
+		tBean.setDiastolicBloodPressureAllowed(permissions[0]);
+		tBean.setGlucoseLevelAllowed(permissions[1]);
+		tBean.setHeightAllowed(permissions[2]);
+		tBean.setWeightAllowed(permissions[3]);
+		tBean.setPedometerReadingAllowed(permissions[4]);
+		
 		conf_bool = action.removeFromList(pid);
-		if(conf_bool)
-			confirm = "Patient " + patientName + " Removed";
+		System.out.println("action.removeFromList(pid): " + conf_bool);
+		boolean conf_bool2 = action.addToList(pid, tBean);
+		System.out.println("action.addToList(pid): " + conf_bool2);
+		if(conf_bool && conf_bool2) {
+			confirm = patientName + "'s Permissions Changed";
+			loggingAction.logEvent(TransactionType.PATIENT_LIST_EDIT, loggedInMID, pid, "");
+		}
+		session.removeAttribute("pid");
+	} else if (request.getParameter("fSubmit").contains("Telemedicine Permissions")) {
+%>
+<form action="editPatientList.jsp" method="post">
+	<input type="hidden" name="confirmAction" value="true"></input>
+	<h3>Please indicate which data <%= StringEscapeUtils.escapeHtml("" + (patientName)) %> should be allowed to enter:</h3>
+	<input type="checkbox" name="bloodPressure" />Blood Pressure<br />
+	<input type="checkbox" name="glucose" />Glucose Level<br />
+	<input type="checkbox" name="height" />Height<br />
+	<input type="checkbox" name="weight" />Weight<br />
+	<input type="checkbox" name="pedometer" />Pedometer<br />
+	<input type="submit" name="fSubmit" value="Update Permissions">
+</form>
+<%
+	} else {
+		if(addOrRemove.equals("Add")) {
+			String[] checkBoxes = new String[] {
+										request.getParameter("bloodPressure"),
+										request.getParameter("glucose"),
+										request.getParameter("height"),
+										request.getParameter("weight"),
+										request.getParameter("pedometer")};
+			boolean[] permissions = new boolean[5];
+			for (int i = 0; i < 5; i++) {
+				permissions[i] = checkBoxes[i] != null && checkBoxes[i].equals("on");
+			}
+			
+			TelemedicineBean tBean = new TelemedicineBean();
+			tBean.setSystolicBloodPressureAllowed(permissions[0]);
+			tBean.setDiastolicBloodPressureAllowed(permissions[0]);
+			tBean.setGlucoseLevelAllowed(permissions[1]);
+			tBean.setHeightAllowed(permissions[2]);
+			tBean.setWeightAllowed(permissions[3]);
+			tBean.setPedometerReadingAllowed(permissions[4]);
+	
+			conf_bool = action.addToList(pid, tBean);
+			if(conf_bool) {
+				confirm = "Patient " + patientName + " Added";
+				loggingAction.logEvent(TransactionType.PATIENT_LIST_ADD, loggedInMID, pid, "");
+			}
+		} else {
+			conf_bool = action.removeFromList(pid);
+			if(conf_bool) {
+				confirm = "Patient " + patientName + " Removed";
+				loggingAction.logEvent(TransactionType.PATIENT_LIST_REMOVE, loggedInMID, pid, "");
+			}
+		}
+		session.removeAttribute("pid");
 	}
-	
-	session.removeAttribute("pid");
-	
 }
 
 if (!"".equals(confirm)) {
 %>
 	<div align=center>
-		<span class="iTrustMessage"><%=confirm%></span>
+		<span class="iTrustMessage"><%= StringEscapeUtils.escapeHtml("" + (confirm)) %></span>
 	</div>
 <%
-} else {
+} else if (!(request.getParameter("fSubmit") != null && request.getParameter("fSubmit").contains("Change"))) {
 %>
 
 <br />
 
 <form action="editPatientList.jsp" method="post">
 	<input type="hidden" name="confirmAction" value="true"></input>
-	<input type="submit" value="<%=addOrRemove %> <%=patientName %>">
-	<input type="submit" value="Choose Different Patient" onClick="javascript:differentPatient();">
+<%
+if (addOrRemove.equals("Add")) {
+%>
+	<h3>Please indicate which data <%= StringEscapeUtils.escapeHtml("" + (patientName)) %> should be allowed to enter:</h3>
+	<input type="checkbox" name="bloodPressure" />Blood Pressure<br />
+	<input type="checkbox" name="glucose" />Glucose Level<br />
+	<input type="checkbox" name="height" />Height<br />
+	<input type="checkbox" name="weight" />Weight<br />
+	<input type="checkbox" name="pedometer" />Pedometer<br />
+<%
+}
+%>
+	<input type="submit" name="fSubmit" value="<%=addOrRemove %> <%= StringEscapeUtils.escapeHtml("" + (patientName )) %>">
+<%
+if (!addOrRemove.equals("Add")) {
+%>
+	<input type="submit" name="fSubmit" value="Change <%= StringEscapeUtils.escapeHtml("" + (patientName )) %>'s Telemedicine Permissions">
+<%
+}
+%>
+	<input type="submit" name="fSubmit" value="Choose Different Patient" onClick="javascript:differentPatient();">
 </form>
 
 <script type="text/javascript">

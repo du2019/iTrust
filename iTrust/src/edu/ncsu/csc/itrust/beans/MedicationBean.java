@@ -63,10 +63,6 @@ public class MedicationBean {
 				&& this.equals((MedicationBean) other);
 	}
 
-	public int hashCode() {
-		assert false : "hashCode not designed";
-		return 42; // any arbitrary constant will do
-	}
 
 	private boolean equals(MedicationBean other) {
 		return description.equals(other.description) && NDCode.equals(other.NDCode);

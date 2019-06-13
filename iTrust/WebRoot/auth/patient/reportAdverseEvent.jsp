@@ -38,14 +38,22 @@ if(request.getParameter("Comment") != (null) && session.getAttribute("HCPMID") =
 			aeBean.setPrescriber("" + lBean.getPrescriberMID());
 			adverseList.add(aeBean);
 			
-			String msg = action.addReport(aeBean);
+			String msg = "";
+			try
+			{
+				action.addReport(aeBean);
+				loggingAction.logEvent(TransactionType.ADVERSE_EVENT_REPORT, loggedInMID.longValue(), 0, "");
+			} catch(Exception e)
+			{
+				msg = e.getMessage();
+			}
 			
 			if(!msg.equals("")){
 				bad = true;
 				
 				%>
 			<div align=center>
-				<span class="iTrustError"><%=msg %></span>
+				<span class="iTrustError"><%= StringEscapeUtils.escapeHtml("" + (msg )) %></span>
 			</div>
 			<%
 			}
@@ -69,6 +77,7 @@ if(request.getParameter("Comment") != (null) && session.getAttribute("HCPMID") !
 	//aeBean = new BeanBuilder<AdverseEventBean>().build(request.getParameterMap(), new AdverseEventBean());
 	action.addReport(aeBean);
 	action.sendMail(aeBean);
+	loggingAction.logEvent(TransactionType.ADVERSE_EVENT_REPORT, loggedInMID.longValue(), 0, "");
 	response.sendRedirect("home.jsp?rep=1");
 	
 }

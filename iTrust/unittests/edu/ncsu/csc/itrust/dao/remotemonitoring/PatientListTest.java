@@ -1,6 +1,7 @@
 package edu.ncsu.csc.itrust.dao.remotemonitoring;
 
 import junit.framework.TestCase;
+import edu.ncsu.csc.itrust.beans.TelemedicineBean;
 import edu.ncsu.csc.itrust.dao.mysql.RemoteMonitoringDAO;
 import edu.ncsu.csc.itrust.datagenerators.TestDataGenerator;
 import edu.ncsu.csc.itrust.testutils.TestDAOFactory;
@@ -18,8 +19,8 @@ public class PatientListTest extends TestCase {
 	}
 
 	public void testAddRemoveFromList() throws Exception {
-		assertTrue(rmDAO.addPatientToList(2L, 9000000000L));
+		TelemedicineBean tBean = new TelemedicineBean();
+		assertTrue(rmDAO.addPatientToList(2L, 9000000000L, tBean));
 		assertTrue(rmDAO.removePatientFromList(2L, 9000000000L));
 	}
-
 }

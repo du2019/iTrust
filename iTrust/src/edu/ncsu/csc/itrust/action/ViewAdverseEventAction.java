@@ -1,6 +1,5 @@
 package edu.ncsu.csc.itrust.action;
 
-import java.sql.SQLException;
 import java.util.List;
 import edu.ncsu.csc.itrust.beans.AdverseEventBean;
 import edu.ncsu.csc.itrust.dao.DAOFactory;

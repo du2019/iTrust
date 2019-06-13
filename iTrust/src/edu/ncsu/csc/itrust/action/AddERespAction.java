@@ -1,6 +1,5 @@
 package edu.ncsu.csc.itrust.action;
 
-
 import edu.ncsu.csc.itrust.RandomPassword;
 import edu.ncsu.csc.itrust.beans.PersonnelBean;
 import edu.ncsu.csc.itrust.dao.DAOFactory;
@@ -8,7 +7,6 @@ import edu.ncsu.csc.itrust.dao.mysql.AuthDAO;
 import edu.ncsu.csc.itrust.dao.mysql.PersonnelDAO;
 import edu.ncsu.csc.itrust.dao.mysql.TransactionDAO;
 import edu.ncsu.csc.itrust.enums.Role;
-import edu.ncsu.csc.itrust.enums.TransactionType;
 import edu.ncsu.csc.itrust.exception.FormValidationException;
 import edu.ncsu.csc.itrust.exception.iTrustException;
 import edu.ncsu.csc.itrust.validate.AddPersonnelValidator;
@@ -23,7 +21,6 @@ import edu.ncsu.csc.itrust.validate.AddPersonnelValidator;
  * 
  * Copied from AddHCPAction 
  */
-
 
 public class AddERespAction {
 	private PersonnelDAO personnelDAO;
@@ -62,8 +59,6 @@ public class AddERespAction {
 		String pwd = authDAO.addUser(newMID, Role.ER, RandomPassword.getRandomPassword());
 		p.setPassword(pwd);
 
-		transDAO.logTransaction(TransactionType.CREATE_DISABLE_ER, loggedInMID, newMID, "Added New " + p.getRole().name());
 		return newMID;
 	}
-
 }

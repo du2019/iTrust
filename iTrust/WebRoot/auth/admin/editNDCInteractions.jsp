@@ -21,9 +21,9 @@ pageTitle = "iTrust - Edit ND Code Interactions";
 	String drug1 = "";
 	String drug2 = "";
 	if(request.getParameter("drug1") != null && request.getParameter("drug2") != null) {
-		drug1 = request.getParameter("drug1").split(" ")[0];
+		drug1 = request.getParameter("drug1").split("\\s")[0];
 		drug1 = drug1.replace("-", "");
-		drug2 = request.getParameter("drug2").split(" ")[0];
+		drug2 = request.getParameter("drug2").split("\\s")[0];
 		drug2 = drug2.replace("-", "");
 	}
 	
@@ -31,16 +31,19 @@ pageTitle = "iTrust - Edit ND Code Interactions";
 		try {
 			DrugInteractionAction interaction = new DrugInteractionAction(prodDAO, loggedInMID.longValue());
 			headerMessage = interaction.reportInteraction(drug1, drug2, request.getParameter("description"));
+			if(headerMessage.equals("Interaction recorded successfully"))
+				loggingAction.logEvent(TransactionType.DRUG_INTERACTION_ADD, loggedInMID, 0, "\nDrug: " + drug1 + "\nDrug: " + drug2);
+			
 		} catch(iTrustException e) {
 %>
 			<div align=center>
-				<span class="iTrustError"><%=e.getMessage() %></span>
+				<span class="iTrustError"><%=StringEscapeUtils.escapeHtml(e.getMessage()) %></span>
 			</div>
 <%
 		} catch(FormValidationException e) {
 %>
 			<div align=center>
-				<span class="iTrustError"><%=e.getMessage() %></span>
+				<span class="iTrustError"><%=StringEscapeUtils.escapeHtml(e.getMessage()) %></span>
 			</div>
 <%
 		}
@@ -55,7 +58,7 @@ pageTitle = "iTrust - Edit ND Code Interactions";
 <br />
 <div align=center>
 <form name="mainForm" method="post">
-<span class="iTrustMessage"><%=headerMessage %></span>
+<span class="iTrustMessage"><%= StringEscapeUtils.escapeHtml("" + (headerMessage )) %></span>
 
 <br />
 <br />
@@ -77,7 +80,7 @@ pageTitle = "iTrust - Edit ND Code Interactions";
 
 			<option><%=5 > tempCode.length() ? tempCode : tempCode.substring(0, 5)
 				%>-<%=5 > tempCode.length() ? "" : tempCode.substring(5) %>
-				<%=tempDescrip %>
+				<%= StringEscapeUtils.escapeHtml("" + (tempDescrip )) %>
 			</option>
 
 	<% } %>
@@ -93,7 +96,7 @@ pageTitle = "iTrust - Edit ND Code Interactions";
 
 			<option><%=5 > tempCode.length() ? tempCode : tempCode.substring(0, 5)
 				%>-<%=5 > tempCode.length() ? "" : tempCode.substring(5) %>
-				<%=tempDescrip %>
+				<%= StringEscapeUtils.escapeHtml("" + (tempDescrip )) %>
 			</option>
 
 	<% } %>

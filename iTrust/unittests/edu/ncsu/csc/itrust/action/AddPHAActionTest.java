@@ -11,7 +11,6 @@ package edu.ncsu.csc.itrust.action;
 import edu.ncsu.csc.itrust.beans.PersonnelBean;
 import edu.ncsu.csc.itrust.datagenerators.TestDataGenerator;
 import edu.ncsu.csc.itrust.enums.Role;
-import edu.ncsu.csc.itrust.enums.TransactionType;
 import edu.ncsu.csc.itrust.testutils.ActionTestWithMocks; // Need this for the mock object stuff
 import static org.easymock.classextension.EasyMock.*;
 
@@ -48,9 +47,6 @@ public class AddPHAActionTest extends ActionTestWithMocks {
 		// Step 2. For each test, set up the expectations of what will be called (started in initMocks)
 		expect(personnelDAO.addEmptyPersonnel(Role.PHA)).andReturn(56L).once();
 		personnelDAO.editPersonnel(personnel);
-		expectLastCall().once();
-		transDAO
-				.logTransaction(TransactionType.CREATE_DISABLE_PHA, 9000000000L, 56L, "Added New PHA");
 		expectLastCall().once();
 		// Step 3. Exit recording mode, go into playback mode
 		control.replay(); // Don't forget this!

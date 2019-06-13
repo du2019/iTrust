@@ -3,6 +3,7 @@ package edu.ncsu.csc.itrust.dao.remotemonitoring;
 import java.util.List;
 import junit.framework.TestCase;
 import edu.ncsu.csc.itrust.beans.RemoteMonitoringDataBean;
+import edu.ncsu.csc.itrust.beans.TelemedicineBean;
 import edu.ncsu.csc.itrust.dao.mysql.RemoteMonitoringDAO;
 import edu.ncsu.csc.itrust.datagenerators.TestDataGenerator;
 import edu.ncsu.csc.itrust.exception.DBException;
@@ -25,7 +26,11 @@ public class PatientDataTest extends TestCase {
 	}
 
 	public void testStoreRetrievePatientNormalData() throws Exception {
-		rmDAO.storePatientData(2, 100, 70, 80, "self-reported", 2);
+		RemoteMonitoringDataBean b = new RemoteMonitoringDataBean();
+		b.setSystolicBloodPressure(100);
+		b.setDiastolicBloodPressure(70);
+		b.setGlucoseLevel(80);
+		rmDAO.storePatientData(2, b, "self-reported", 2);
 		List<RemoteMonitoringDataBean> d = rmDAO.getPatientsData(9000000000L);
 		assertEquals(2, d.get(0).getPatientMID());
 		assertEquals(100, d.get(0).getSystolicBloodPressure());
@@ -33,42 +38,61 @@ public class PatientDataTest extends TestCase {
 		assertEquals(80, d.get(0).getGlucoseLevel());
 	}
 	
+	public void testGetMonitoringHCPs() throws Exception {
+		gen.remoteMonitoring5();
+		assertTrue(rmDAO.getMonitoringHCPs(1).size() == 1);
+	}
+	
 	public void testBadStoreRetrievePatientNormalDataBad() throws Exception{
 		try {
-			EvilrmDAO.storePatientData(2, 100, 70, 80, "self-reported", 2);
+			RemoteMonitoringDataBean b = new RemoteMonitoringDataBean();
+			b.setSystolicBloodPressure(100);
+			b.setDiastolicBloodPressure(70);
+			b.setGlucoseLevel(80);
+			EvilrmDAO.storePatientData(2, b, "self-reported", 2);
 			fail();
 		} catch (DBException e){
 			assertSame(EvilDAOFactory.MESSAGE, e.getSQLException().getMessage());
 		}
-		
 	}
 
 	public void testBadStoreRetrievePatientGlucoseOnlyDataBad() throws Exception{
 		try {
-			EvilrmDAO.storePatientData(2, 80, "self-reported", 2);
+			RemoteMonitoringDataBean b = new RemoteMonitoringDataBean();
+			b.setGlucoseLevel(80);
+			EvilrmDAO.storePatientData(2, b, "self-reported", 2);
 			fail();
 		} catch (DBException e){
 			assertSame(EvilDAOFactory.MESSAGE, e.getSQLException().getMessage());
 		}
-		
 	}
 	
 	public void testBadStoreRetrievePatientBPOnlyDataBad() throws Exception{
 		try {
-			EvilrmDAO.storePatientData(2, 80, 100, "self-reported", 2);
+			RemoteMonitoringDataBean b = new RemoteMonitoringDataBean();
+			b.setSystolicBloodPressure(80);
+			b.setDiastolicBloodPressure(100);
+			EvilrmDAO.storePatientData(2, b, "self-reported", 2);
 			fail();
 		} catch (DBException e){
 			assertSame(EvilDAOFactory.MESSAGE, e.getSQLException().getMessage());
 		}
-		
+	}
+	
+	public void testGetTelemedicineBean() throws Exception {
+		try {
+			List<TelemedicineBean> tBeans = rmDAO.getTelemedicineBean(2l);
+			assertEquals(1,tBeans.size());
+		} catch (iTrustException e) {
+			fail();
+		}
 	}
 
 	public void testValidatePR() throws Exception{
 		try {
 			rmDAO.validatePR(2, 1);
 			assert(true);
-		}
-		catch (iTrustException e){
+		} catch (iTrustException e){
 			fail();
 		}
 	}
@@ -77,8 +101,7 @@ public class PatientDataTest extends TestCase {
 		try {
 			rmDAO.validatePR(1, 2);
 			fail();
-		}
-		catch (iTrustException e){
+		} catch (iTrustException e){
 			assertEquals("Representer is not valid for patient 2", e.getMessage());
 		}
 	}
@@ -90,7 +113,5 @@ public class PatientDataTest extends TestCase {
 		} catch (DBException e){
 			assertSame(EvilDAOFactory.MESSAGE, e.getSQLException().getMessage());
 		}
-		
 	}
-
 }

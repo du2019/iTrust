@@ -20,6 +20,10 @@ public class TransactionBean {
 	private String addedInfo;
 	private String role;
 
+	public TransactionBean() {
+		// TODO Auto-generated constructor stub
+	}
+
 	public String getRole() {
 		return role;
 	}

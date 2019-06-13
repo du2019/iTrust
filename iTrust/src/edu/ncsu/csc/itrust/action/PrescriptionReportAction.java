@@ -13,7 +13,6 @@ import edu.ncsu.csc.itrust.dao.DAOFactory;
 import edu.ncsu.csc.itrust.dao.mysql.OfficeVisitDAO;
 import edu.ncsu.csc.itrust.dao.mysql.PatientDAO;
 import edu.ncsu.csc.itrust.dao.mysql.TransactionDAO;
-import edu.ncsu.csc.itrust.enums.TransactionType;
 import edu.ncsu.csc.itrust.exception.DBException;
 import edu.ncsu.csc.itrust.exception.FormValidationException;
 import edu.ncsu.csc.itrust.exception.NoHealthRecordsException;
@@ -112,8 +111,6 @@ public class PrescriptionReportAction extends PatientBaseAction {
 				// just skip it
 			}
 		}
-		transDAO.logTransaction(TransactionType.VIEW_PRESCRIPTION_REPORT, loggedInMID, pid,
-				"Getting reports for office visits " + ovIDs.toString());
 		if (ovIDs.size() == 0)
 			return new ArrayList<PrescriptionReportBean>();
 

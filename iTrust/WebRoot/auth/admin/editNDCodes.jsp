@@ -38,29 +38,39 @@ pageTitle = "iTrust - Maintain ND Codes";
 				headerMessage = (request.getParameter("add") != null)
 						? ndUpdater.addNDCode(med)
 						: ndUpdater.updateInformation(med);
+				if(!headerMessage.contains("Error")) {
+					if(request.getParameter("add") != null)
+						loggingAction.logEvent(TransactionType.DRUG_CODE_ADD, loggedInMID, 0, code);
+					else if(request.getParameter("update") != null)
+						loggingAction.logEvent(TransactionType.DRUG_CODE_EDIT, loggedInMID, 0, code);
+				}
 			} else {
 				if(request.getParameter("codeToDelete") != null) {
 					interactionAction.deleteInteraction(code, request.getParameter("codeToDelete").trim());
 					headerMessage = "Interaction deleted successfully";
+					loggingAction.logEvent(TransactionType.DRUG_INTERACTION_DELETE, loggedInMID, 0, 
+							"\nDrug: " + code + "\nDrug: " + request.getParameter("codeToDelete"));
 				} else
 					headerMessage = "Interaction does not exist";
 			}
 		} catch(FormValidationException e) {
 %>
 			<div align=center>
-				<span class="iTrustError"><%=e.getMessage() %></span>
+				<span class="iTrustError"><%=StringEscapeUtils.escapeHtml(e.getMessage()) %></span>
 			</div>
 <%
 			headerMessage = "Validation Errors";
 		} catch(iTrustException e) {
 %>
 			<div align=center>
-				<span class="iTrustError"><%=e.getMessage() %></span>
+				<span class="iTrustError"><%=StringEscapeUtils.escapeHtml(e.getMessage()) %></span>
 			</div>
 <%
 			headerMessage = "Validation Errors";
 		}
 		
+	} else {
+		loggingAction.logEvent(TransactionType.DRUG_CODE_VIEW, loggedInMID, 0, "");
 	}
 			
 	String headerColor = (headerMessage.indexOf("Error") > -1)
@@ -141,7 +151,7 @@ pageTitle = "iTrust - Maintain ND Codes";
 </script>
 
 
-<span class="iTrustMessage"><%=headerMessage %></span>
+<span class="iTrustMessage"><%= StringEscapeUtils.escapeHtml("" + (headerMessage )) %></span>
 
 <br />
 <br />
@@ -233,20 +243,20 @@ pageTitle = "iTrust - Maintain ND Codes";
 				%>-<%=5 > tempCode.length() ? "" : tempCode.substring(5) %>
 			</td>
 			<td><a href="javascript:void(0)"
-					onclick="fillUpdate('<%=tempCode %>')"
-						><%=tempDescrip %></a>
+					onclick="fillUpdate('<%= StringEscapeUtils.escapeHtml("" + (tempCode )) %>')"
+						><%= StringEscapeUtils.escapeHtml("" + (tempDescrip )) %></a>
 				<input type="hidden"
-						id="UPD<%=tempCode %>"
-						name="UPD<%=tempCode %>"
-						value="<%=escapedDescrip %>">
+						id="UPD<%= StringEscapeUtils.escapeHtml("" + (tempCode )) %>"
+						name="UPD<%= StringEscapeUtils.escapeHtml("" + (tempCode )) %>"
+						value="<%= StringEscapeUtils.escapeHtml("" + (escapedDescrip )) %>">
 				<input type="hidden"
-						id="INTDRUG<%=tempCode %>"
-						name="INTDRUG<%=tempCode %>"
-						value="<%=intDrugsString %>">
+						id="INTDRUG<%= StringEscapeUtils.escapeHtml("" + (tempCode )) %>"
+						name="INTDRUG<%= StringEscapeUtils.escapeHtml("" + (tempCode )) %>"
+						value="<%= StringEscapeUtils.escapeHtml("" + (intDrugsString )) %>">
 				<input type="hidden"
-						id="INTDESC<%=tempCode %>"
-						name="INTDESC<%=tempCode %>"
-						value="<%=intDescsString %>">
+						id="INTDESC<%= StringEscapeUtils.escapeHtml("" + (tempCode )) %>"
+						name="INTDESC<%= StringEscapeUtils.escapeHtml("" + (tempCode )) %>"
+						value="<%= StringEscapeUtils.escapeHtml("" + (intDescsString )) %>">
 			</td>
 		</tr>
 	<% } %>

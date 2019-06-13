@@ -11,6 +11,7 @@ import edu.ncsu.csc.itrust.beans.loaders.MedicationBeanLoader;
 import edu.ncsu.csc.itrust.beans.loaders.OfficeVisitLoader;
 import edu.ncsu.csc.itrust.beans.loaders.OperationalProfileLoader;
 import edu.ncsu.csc.itrust.beans.loaders.PrescriptionReportBeanLoader;
+import edu.ncsu.csc.itrust.beans.loaders.RemoteMonitoringListsBeanLoader;
 import edu.ncsu.csc.itrust.beans.loaders.ReportRequestBeanLoader;
 import edu.ncsu.csc.itrust.beans.loaders.SurveyLoader;
 import edu.ncsu.csc.itrust.beans.loaders.SurveyResultBeanLoader;
@@ -93,6 +94,13 @@ public class BeanLoaderTest extends TestCase {
 		
 		try {
 			new PrescriptionReportBeanLoader().loadParameters(null, null);
+			fail("Should have thrown Exception");
+		} catch (IllegalStateException ex) {
+			assertEquals("unimplemented!", ex.getMessage());
+		}
+		
+		try {
+			new RemoteMonitoringListsBeanLoader().loadParameters(null, null);
 			fail("Should have thrown Exception");
 		} catch (IllegalStateException ex) {
 			assertEquals("unimplemented!", ex.getMessage());

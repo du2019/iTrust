@@ -277,5 +277,16 @@
 		<taglib-location>/WEB-INF/cewolf.tld</taglib-location>
 	</taglib>
 	
+	<!-- Servlet for the profile photo -->
+	<servlet>
+		<servlet-name>ProfilePhotoServlet</servlet-name>
+		<servlet-class>edu.ncsu.csc.itrust.server.ProfilePhotoServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>ProfilePhotoServlet</servlet-name>  
+  		<url-pattern>/auth/hcp-uap/profilephoto</url-pattern>
+	</servlet-mapping>
+	
 </web-app>
 

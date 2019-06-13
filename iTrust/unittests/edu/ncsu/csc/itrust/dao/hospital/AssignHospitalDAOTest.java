@@ -1,6 +1,7 @@
 package edu.ncsu.csc.itrust.dao.hospital;
 
 import java.util.List;
+
 import junit.framework.TestCase;
 import edu.ncsu.csc.itrust.beans.HospitalBean;
 import edu.ncsu.csc.itrust.dao.DAOFactory;

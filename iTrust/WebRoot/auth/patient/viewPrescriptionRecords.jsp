@@ -56,7 +56,7 @@ boolean showAdverseButton = false;
 		}
 		else{%>
 		<div align=center>
-			<span class="iTrustError"><%="Must report on at least one prescription" %></span>
+			<span class="iTrustError"><%= StringEscapeUtils.escapeHtml("" + ("Must report on at least one prescription" )) %></span>
 		</div>
 		<% }
 	}
@@ -88,7 +88,7 @@ boolean showAdverseButton = false;
 			int index = 0;
 			for (PatientBean representee : representees) { 
 %>
-						<option value="<%=index %>"><%=representee.getFullName()%></option>
+						<option value="<%=index %>"><%= StringEscapeUtils.escapeHtml("" + (representee.getFullName())) %></option>
 <%
 				index ++;
 			} 
@@ -118,6 +118,7 @@ boolean showAdverseButton = false;
 <%
 	if (showMine) { 
 		List<PrescriptionBean> prescriptions = action.getPrescriptionsForPatient(loggedInMID.longValue());
+		loggingAction.logEvent(TransactionType.PRESCRIPTION_REPORT_VIEW, loggedInMID, loggedInMID, "");
 		if (prescriptions.size() == 0) { 
 %>
 		<tr>
@@ -129,7 +130,7 @@ boolean showAdverseButton = false;
 		} else { 
 %>
 		<tr>
-			<th colspan=5><%= patient.getFullName() %></th>
+			<th colspan=5><%= StringEscapeUtils.escapeHtml("" + ( patient.getFullName() )) %></th>
 		</tr>
 		<tr class="subHeader">
 			<td>ND Code</td>
@@ -147,10 +148,10 @@ boolean showAdverseButton = false;
 				if(prescription.getEndDate().after(date)){
 %>
 		<tr>
-			<td ><a href="viewPrescriptionInformation.jsp?visitID=<%=prescription.getVisitID()%>&presID=<%=prescription.getId()%>"><%=prescription.getMedication().getNDCodeFormatted() %></a></td>
-			<td ><%=prescription.getMedication().getDescription() %></td>
-			<td ><%=prescription.getStartDateStr() %> to <%=prescription.getEndDateStr() %></td>
-			<td ><%=action.getPrescribingDoctor(prescription).getFullName() %></td>
+			<td ><a href="viewPrescriptionInformation.jsp?visitID=<%= StringEscapeUtils.escapeHtml("" + (prescription.getVisitID())) %>&presID=<%= StringEscapeUtils.escapeHtml("" + (prescription.getId())) %>"><%= StringEscapeUtils.escapeHtml("" + (prescription.getMedication().getNDCodeFormatted() )) %></a></td>
+			<td ><%= StringEscapeUtils.escapeHtml("" + (prescription.getMedication().getDescription() )) %></td>
+			<td ><%= StringEscapeUtils.escapeHtml("" + (prescription.getStartDateStr() )) %> to <%= StringEscapeUtils.escapeHtml("" + (prescription.getEndDateStr() )) %></td>
+			<td ><%= StringEscapeUtils.escapeHtml("" + (action.getPrescribingDoctor(prescription).getFullName() )) %></td>
 			<% 
 				HCPLinkBean HLbean = new HCPLinkBean();
 				HLbean.setPrescriberMID(action.getPrescribingDoctor(prescription).getMID());
@@ -160,21 +161,18 @@ boolean showAdverseButton = false;
 			%>
 			<td>
 	<form action="viewPrescriptionRecords.jsp" method="post">
-			<input name="checking<%=a%>" type="text" value="N" size="1" maxlength="1"></input></td>
+			<input name="checking<%= StringEscapeUtils.escapeHtml("" + (a)) %>" type="text" value="N" size="1" maxlength="1"></input></td>
 			<%a++;%>
-			
 		</tr>
-
-	
-	
 <%			
 			}}
 		}
 	} else if (showOther) {
 		PatientBean representee = representees.get(Integer.parseInt(request.getParameter("representee"))); 
+		loggingAction.logEvent(TransactionType.PRESCRIPTION_REPORT_VIEW, loggedInMID, representee.getMID(), "");
 %>
 		<tr>
-			<th colspan=4><%= representee.getFullName() %></th>
+			<th colspan=4><%= StringEscapeUtils.escapeHtml("" + ( representee.getFullName() )) %></th>
 		</tr>
 <%	
 		List<PrescriptionBean> prescriptions = action.getPrescriptionsForPatient(representee.getMID());
@@ -198,10 +196,10 @@ boolean showAdverseButton = false;
 			for (PrescriptionBean prescription : prescriptions) { 
 %>
 		<tr>
-			<td ><%=prescription.getMedication().getNDCodeFormatted() %></td>
-			<td ><%=prescription.getMedication().getDescription() %></td>
-			<td ><%=prescription.getStartDateStr() %> to <%=prescription.getEndDateStr() %></td>
-			<td ><%= action.getPrescribingDoctor(prescription).getFullName() %></td>
+			<td ><%= StringEscapeUtils.escapeHtml("" + (prescription.getMedication().getNDCodeFormatted() )) %></td>
+			<td ><%= StringEscapeUtils.escapeHtml("" + (prescription.getMedication().getDescription() )) %></td>
+			<td ><%= StringEscapeUtils.escapeHtml("" + (prescription.getStartDateStr() )) %> to <%= StringEscapeUtils.escapeHtml("" + (prescription.getEndDateStr() )) %></td>
+			<td ><%= StringEscapeUtils.escapeHtml("" + ( action.getPrescribingDoctor(prescription).getFullName() )) %></td>
 		</tr>
 <%
 			} 
@@ -209,7 +207,6 @@ boolean showAdverseButton = false;
 	} 
 %>
 	</table>
-		
 	<br />
 	<%
 	if (showMine && showAdverseButton) {

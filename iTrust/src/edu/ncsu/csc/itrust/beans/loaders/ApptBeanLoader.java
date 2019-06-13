@@ -27,6 +27,7 @@ public class ApptBeanLoader implements BeanLoader<ApptBean> {
 
 	public ApptBean loadSingle(ResultSet rs) throws SQLException {
 		ApptBean bean = new ApptBean();
+		bean.setApptID(rs.getInt("appt_id"));
 		bean.setApptType(rs.getString("appt_type"));
 		bean.setPatient(rs.getLong("patient_id"));
 		bean.setHcp(rs.getLong("doctor_id"));

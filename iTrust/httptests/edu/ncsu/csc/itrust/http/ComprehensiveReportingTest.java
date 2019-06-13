@@ -3,6 +3,7 @@ package edu.ncsu.csc.itrust.http;
 import com.meterware.httpunit.WebConversation;
 import com.meterware.httpunit.WebForm;
 import com.meterware.httpunit.WebResponse;
+import edu.ncsu.csc.itrust.enums.TransactionType;
 
 
 public class ComprehensiveReportingTest extends iTrustHTTPTest {
@@ -24,8 +25,10 @@ public class ComprehensiveReportingTest extends iTrustHTTPTest {
 		WebConversation wc = login("9000000000", "pw");
 		WebResponse wr = wc.getCurrentPage();
 		assertEquals("iTrust - HCP Home", wr.getTitle());
+		assertLogged(TransactionType.HOME_VIEW, 9000000000L, 0L, "");
+		
 		wr = wr.getLinkWith("My Report Requests").click();
-		assertTrue(wr.getText().contains("Report Requests"));
+		assertTrue(wr.getText().contains("Report Requests"));		
 		wr = wr.getLinkWith("Add a new Report Request").click();
 		assertTrue(wr.getText().contains("Please Select a Patient"));
 		WebForm patientForm = wr.getForms()[0];
@@ -33,6 +36,7 @@ public class ComprehensiveReportingTest extends iTrustHTTPTest {
 		patientForm.getButtons()[1].click();
 		wr = wc.getCurrentPage();
 		assertTrue(wr.getText().contains("Report Request Accepted"));
+		assertLogged(TransactionType.COMPREHENSIVE_REPORT_ADD, 9000000000L, 2L, "Report ID:");
 	}
 	
 	/*
@@ -45,6 +49,7 @@ public class ComprehensiveReportingTest extends iTrustHTTPTest {
 		WebConversation wc = login("9000000000", "pw");
 		WebResponse wr = wc.getCurrentPage();
 		assertEquals("iTrust - HCP Home", wr.getTitle());
+		assertLogged(TransactionType.HOME_VIEW, 9000000000L, 0L, "");
 		wr = wr.getLinkWith("My Report Requests").click();
 		assertTrue(wr.getText().contains("Report Requests"));
 		wr = wr.getLinkWith("Add a new Report Request").click();
@@ -54,6 +59,7 @@ public class ComprehensiveReportingTest extends iTrustHTTPTest {
         wr.getForms()[0].setParameter("mid", "22");
         wr = wr.getForms()[0].submit();
         assertTrue(wr.getText().contains("User does not exist"));
+        assertNotLogged(TransactionType.COMPREHENSIVE_REPORT_ADD, 9000000000L, 22L, "Report ID:");
 	}
 	
 	/*
@@ -79,5 +85,6 @@ public class ComprehensiveReportingTest extends iTrustHTTPTest {
         assertTrue(wr.getText().contains("Andy Programmer"));
         wr = wr.getForms()[0].submit(); // Find another user button
         assertEquals("iTrust - Find User", wr.getTitle());
+        assertNotLogged(TransactionType.COMPREHENSIVE_REPORT_ADD, 9000000000L, 2L, "Report ID:");
 	}
 }

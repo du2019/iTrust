@@ -14,6 +14,8 @@ pageTitle = "iTrust - View Laboratory Procedures";
 <%@include file="/header.jsp" %>
 
 <%
+loggingAction.logEvent(TransactionType.LAB_RESULTS_VIEW, loggedInMID.longValue(), 0, "");
+
 ViewMyRecordsAction action = new ViewMyRecordsAction(prodDAO, loggedInMID.longValue());
 List<LabProcedureBean> proc = action.getLabs();
 int id = 0;
@@ -55,12 +57,12 @@ if(bean == null) {
 		<td>Updated Date</td>
   	</tr>
 	<tr>
-		<td ><%=bean.getLoinc()%></td>
-		<td ><%=bean.getStatus()%></td>
-		<td ><%=bean.getCommentary()%></td>
-		<td ><%=bean.getResults()%></td>
-		<td ><%=bean.getOvID()%></td>
-		<td ><%=bean.getTimestamp()%></td>
+		<td ><%= StringEscapeUtils.escapeHtml("" + (bean.getLoinc())) %></td>
+		<td ><%= StringEscapeUtils.escapeHtml("" + (bean.getStatus())) %></td>
+		<td ><%= StringEscapeUtils.escapeHtml("" + (bean.getCommentary())) %></td>
+		<td ><%= StringEscapeUtils.escapeHtml("" + (bean.getResults())) %></td>
+		<td ><%= StringEscapeUtils.escapeHtml("" + (bean.getOvID())) %></td>
+		<td ><%= StringEscapeUtils.escapeHtml("" + (bean.getTimestamp())) %></td>
 	</tr>
 </table>
 <br /><br />

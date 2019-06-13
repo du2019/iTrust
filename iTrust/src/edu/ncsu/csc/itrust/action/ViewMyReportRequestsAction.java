@@ -8,7 +8,6 @@ import edu.ncsu.csc.itrust.dao.DAOFactory;
 import edu.ncsu.csc.itrust.dao.mysql.PersonnelDAO;
 import edu.ncsu.csc.itrust.dao.mysql.ReportRequestDAO;
 import edu.ncsu.csc.itrust.dao.mysql.TransactionDAO;
-import edu.ncsu.csc.itrust.enums.TransactionType;
 import edu.ncsu.csc.itrust.exception.iTrustException;
 
 /**
@@ -65,8 +64,6 @@ public class ViewMyReportRequestsAction {
 	public long addReportRequest(long patientMID) throws iTrustException {
 		long id = reportRequestDAO
 				.addReportRequest(loggedInMID, patientMID, Calendar.getInstance().getTime());
-		transDAO.logTransaction(TransactionType.COMPREHENSIVE_REPORT_REQUEST, loggedInMID, patientMID,
-				"Added comprehensive report request");
 		return id;
 
 	}
@@ -80,8 +77,6 @@ public class ViewMyReportRequestsAction {
 //	public void approveReportRequest(long ID) throws iTrustException {
 //		ReportRequestBean rr = reportRequestDAO.getReportRequest(ID);
 //		reportRequestDAO.approveReportRequest(ID, loggedInMID, Calendar.getInstance().getTime());
-//		transDAO.logTransaction(TransactionType.COMPREHENSIVE_REPORT_REQUEST, loggedInMID,
-//				rr.getPatientMID(), "Approved comprehensive report request");
 //		new EmailUtil(factory).sendEmail(makeEmailApp(loggedInMID, rr.getRequesterMID(), rr.getPatientMID()));
 //
 //	}
@@ -121,8 +116,6 @@ public class ViewMyReportRequestsAction {
 //	 */
 //	public void rejectReportRequest(long ID, String comment) throws iTrustException {
 //		reportRequestDAO.rejectReportRequest(ID, loggedInMID, Calendar.getInstance().getTime(), comment);
-//		transDAO.logTransaction(TransactionType.COMPREHENSIVE_REPORT_REQUEST, loggedInMID, 0L,
-//				"Rejected comprehensive report request");
 //	}
 
 	/**
@@ -145,8 +138,6 @@ public class ViewMyReportRequestsAction {
 	public void setViewed(int ID) throws iTrustException {
 //		ReportRequestBean rr = reportRequestDAO.getReportRequest(ID);
 		reportRequestDAO.setViewed(ID, Calendar.getInstance().getTime());
-		transDAO.logTransaction(TransactionType.COMPREHENSIVE_REPORT_REQUEST, loggedInMID, 0L,
-				"Viewed comprehensive report");
 		//new EmailUtil(factory).sendEmail(makeEmailView(rr.getApproverMID(), rr.getRequesterMID(), rr
 			//	.getPatientMID()));
 
@@ -193,30 +184,15 @@ public class ViewMyReportRequestsAction {
 			s.append(String.format("Request was requested on %s by %s", r.getRequestedDateString(), p
 					.getFullName()));
 		}
-//		if (r.getStatus().equals(ReportRequestBean.Approved)) {
-//			PersonnelBean p = personnelDAO.getPersonnel(r.getRequesterMID());
-//			PersonnelBean p2 = personnelDAO.getPersonnel(r.getApproverMID());
-//			s.append(String.format("Request was requested on %s by %s ", r.getRequestedDateString(), p
-//					.getFullName()));
-//			s.append(String.format("and approved on %s by %s", r.getApprovedDateString(), p2.getFullName()));
-//		}
-//		if (r.getStatus().equals(ReportRequestBean.Rejected)) {
-//			PersonnelBean p = personnelDAO.getPersonnel(r.getRequesterMID());
-//			PersonnelBean p2 = personnelDAO.getPersonnel(r.getApproverMID());
-//			s.append(String.format("Request was requested on %s by %s ", r.getRequestedDateString(), p
-//					.getFullName()));
-//			s.append(String.format("and rejected on %s by %s", r.getApprovedDateString(), p2.getFullName()));
-//		}
+		
 		if (r.getStatus().equals(ReportRequestBean.Viewed)) {
 			PersonnelBean p = personnelDAO.getPersonnel(r.getRequesterMID());
-//			PersonnelBean p2 = personnelDAO.getPersonnel(r.getApproverMID());
 			String fullName = "Unknown";
 			if(p != null){
 				fullName = p.getFullName();
 				s.append(String.format("Request was requested on %s by %s, ", r.getRequestedDateString(), p
 					.getFullName()));
 			}
-//			s.append(String.format("approved on %s by %s, ", r.getApprovedDateString(), fullName));
 			s.append("");// removed "<br />" because it caused unit test to fail and seems to have no
 			// purpose
 			s.append(String.format("and viewed on %s by %s", r.getViewedDateString(), fullName));

@@ -28,7 +28,6 @@ public class MedicationBeanTest extends TestCase {
 		med = new MedicationBean();
 		med.setNDCode("9283777777");
 		assertEquals("92837-77777", med.getNDCodeFormatted());
-		assertEquals(42, med.hashCode());
 	}
 	
 	public void testShortCode() {

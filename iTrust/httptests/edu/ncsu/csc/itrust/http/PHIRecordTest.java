@@ -3,6 +3,8 @@ package edu.ncsu.csc.itrust.http;
 import com.meterware.httpunit.WebConversation;
 import com.meterware.httpunit.WebForm;
 import com.meterware.httpunit.WebResponse;
+import com.meterware.httpunit.WebTable;
+import edu.ncsu.csc.itrust.enums.TransactionType;
 
 public class PHIRecordTest extends iTrustHTTPTest {
 	@Override
@@ -37,6 +39,8 @@ public class PHIRecordTest extends iTrustHTTPTest {
 		WebConversation wc = login("9000000000", "pw");
 		WebResponse wr = wc.getCurrentPage();
 		assertEquals("iTrust - HCP Home", wr.getTitle());
+		assertLogged(TransactionType.HOME_VIEW, 9000000000L, 0L,"");
+		
 		// click Edit Basic Health Information
 		wr = wr.getLinkWith("Basic Health Information").click();
 		assertEquals(ADDRESS + "auth/getPatientID.jsp?forward=hcp-uap/editBasicHealth.jsp", wr.getURL().toString());
@@ -46,6 +50,8 @@ public class PHIRecordTest extends iTrustHTTPTest {
 		patientForm.getButtons()[1].click();
 		wr = wc.getCurrentPage();
 		assertEquals(ADDRESS + "auth/hcp-uap/editBasicHealth.jsp", wr.getURL().toString());
+		assertLogged(TransactionType.PATIENT_HEALTH_INFORMATION_VIEW, 9000000000L, 2L,"");
+		
 		// add a new record
 		WebForm form = wr.getForms()[0];
 		form.getButtons()[0].click();
@@ -60,6 +66,7 @@ public class PHIRecordTest extends iTrustHTTPTest {
 		form.getButtons()[0].click();
 		WebResponse add = wc.getCurrentPage();
 		assertTrue(add.getText().contains("Information Recorded"));
+		assertLogged(TransactionType.PATIENT_HEALTH_INFORMATION_EDIT, 9000000000L, 2L,"");
 	}
 
 	/*
@@ -83,6 +90,8 @@ public class PHIRecordTest extends iTrustHTTPTest {
 		WebConversation wc = login("9000000000", "pw");
 		WebResponse wr = wc.getResponse(ADDRESS + "auth/hcp/home.jsp");
 		assertEquals("iTrust - HCP Home", wr.getTitle());
+		assertLogged(TransactionType.HOME_VIEW, 9000000000L, 0L,"");
+		
 		// click on Edit Basic Health Information
 		wr = wr.getLinkWith("Basic Health Information").click();
 		assertEquals(ADDRESS + "auth/getPatientID.jsp?forward=hcp-uap/editBasicHealth.jsp", wr.getURL().toString());
@@ -92,6 +101,8 @@ public class PHIRecordTest extends iTrustHTTPTest {
 		patientForm.getButtons()[1].click();
 		wr = wc.getCurrentPage();
 		assertEquals(ADDRESS + "auth/hcp-uap/editBasicHealth.jsp", wr.getURL().toString());
+		assertLogged(TransactionType.PATIENT_HEALTH_INFORMATION_VIEW, 9000000000L, 2L,"");
+		
 		// attempt to add a record with invalid height
 		WebForm form = wr.getForms()[0];
 		form.getButtons()[0].click();
@@ -120,6 +131,8 @@ public class PHIRecordTest extends iTrustHTTPTest {
 		WebConversation wc = login("9000000000", "pw");
 		WebResponse wr = wc.getCurrentPage();
 		assertEquals("iTrust - HCP Home", wr.getTitle());
+		assertLogged(TransactionType.HOME_VIEW, 9000000000L, 0L,"");
+		
 		// click Chronic Disease Risks
 		wr = wr.getLinkWith("Chronic Disease Risks").click();
 		assertEquals(ADDRESS + "auth/getPatientID.jsp?forward=hcp-uap/chronicDiseaseRisks.jsp", wr.getURL().toString());
@@ -129,6 +142,8 @@ public class PHIRecordTest extends iTrustHTTPTest {
 		patientForm.getButtons()[1].click();
 		wr = wc.getCurrentPage();
 		assertEquals(ADDRESS + "auth/hcp-uap/chronicDiseaseRisks.jsp", wr.getURL().toString());
+		assertLogged(TransactionType.RISK_FACTOR_VIEW, 9000000000L, 2L,"");
+		
 		// make sure the correct factors for heart disease are displayed
 		assertTrue(wr.getText().contains("Patient is male"));
 		assertTrue(wr.getText().contains("Patient's body mass index is over 30"));
@@ -144,6 +159,7 @@ public class PHIRecordTest extends iTrustHTTPTest {
 		WebConversation wc = login("9000000000", "pw");
 		WebResponse wr = wc.getCurrentPage();
 		assertEquals("iTrust - HCP Home", wr.getTitle());
+		assertLogged(TransactionType.HOME_VIEW, 9000000000L, 0L,"");		
 		// click Chronic Disease Risks
 		wr = wr.getLinkWith("Chronic Disease Risks").click();
 		assertEquals(ADDRESS + "auth/getPatientID.jsp?forward=hcp-uap/chronicDiseaseRisks.jsp", wr.getURL().toString());
@@ -155,6 +171,7 @@ public class PHIRecordTest extends iTrustHTTPTest {
 		assertEquals(ADDRESS + "auth/hcp-uap/chronicDiseaseRisks.jsp", wr.getURL().toString());
 		// make sure the correct factors for heart disease are displayed
 		assertTrue(wr.getText().contains("No Data"));
+		assertNotLogged(TransactionType.RISK_FACTOR_VIEW, 9000000000L, 4L,"");
 	}
 
 	/*
@@ -184,6 +201,8 @@ public class PHIRecordTest extends iTrustHTTPTest {
 		WebConversation wc = login("8000000009", "uappass1");
 		WebResponse wr = wc.getCurrentPage();
 		assertEquals("iTrust - UAP Home", wr.getTitle());
+		assertLogged(TransactionType.HOME_VIEW, 8000000009L, 0L,"");
+		
 		WebResponse addPatient = wr.getLinkWith("Add Patient").click();
 		// add a patient with valid information
 		WebForm form = addPatient.getForms()[0];
@@ -191,7 +210,11 @@ public class PHIRecordTest extends iTrustHTTPTest {
 		form.setParameter("lastName", "Kent");
 		form.setParameter("email", "clark@ncsu.edu");
 		WebResponse editPatient = form.submit();
+		WebTable table = editPatient.getTables()[0];
+		String newMID = table.getCellAsText(1, 1);
 		assertTrue(editPatient.getText().contains("New patient Clark Kent successfully added!"));
+		assertLogged(TransactionType.PATIENT_CREATE, 8000000009L, Long.parseLong(newMID),"");
+		
 		editPatient = editPatient.getLinkWith("Continue to patient information.").click();
 		assertEquals("iTrust - Edit Patient", editPatient.getTitle());
 		form = editPatient.getForms()[0];
@@ -222,6 +245,7 @@ public class PHIRecordTest extends iTrustHTTPTest {
 		form.getButtons()[2].click();
 		WebResponse add = wc.getCurrentPage();
 		assertTrue(add.getText().contains("Information Successfully Updated"));
+		assertLogged(TransactionType.DEMOGRAPHICS_EDIT, 8000000009L, Long.parseLong(newMID),"");
 	}
 
 	/*
@@ -245,6 +269,8 @@ public class PHIRecordTest extends iTrustHTTPTest {
 		WebConversation wc = login("8000000009", "uappass1");
 		WebResponse wr = wc.getResponse(ADDRESS + "auth/uap/home.jsp");
 		assertEquals("iTrust - UAP Home", wr.getTitle());
+		assertLogged(TransactionType.HOME_VIEW, 8000000009L, 0L,"");
+		
 		// click on Edit Basic Health Information
 		wr = wr.getLinkWith("Basic Health Information").click();
 		assertEquals(ADDRESS + "auth/getPatientID.jsp?forward=hcp-uap/editBasicHealth.jsp", wr.getURL().toString());
@@ -254,6 +280,8 @@ public class PHIRecordTest extends iTrustHTTPTest {
 		patientForm.getButtons()[1].click();
 		wr = wc.getCurrentPage();
 		assertEquals(ADDRESS + "auth/hcp-uap/editBasicHealth.jsp", wr.getURL().toString());
+		assertLogged(TransactionType.PATIENT_HEALTH_INFORMATION_VIEW, 8000000009L, 2L,"");
+		
 		// add a record
 		WebForm form = wr.getForms()[0];
 		form.getButtons()[0].click();
@@ -269,6 +297,7 @@ public class PHIRecordTest extends iTrustHTTPTest {
 		WebResponse add = wc.getCurrentPage();
 		// make sure it was recorded
 		assertTrue(add.getText().contains("Information Recorded"));
+		assertLogged(TransactionType.PATIENT_HEALTH_INFORMATION_EDIT, 8000000009L, 2L,"");
 	}
 
 	/*
@@ -292,6 +321,8 @@ public class PHIRecordTest extends iTrustHTTPTest {
 		WebConversation wc = login("8000000009", "uappass1");
 		WebResponse wr = wc.getResponse(ADDRESS + "auth/uap/home.jsp");
 		assertEquals("iTrust - UAP Home", wr.getTitle());
+		assertLogged(TransactionType.HOME_VIEW, 8000000009L, 0L,"");
+		
 		// click on Edit Basic Health Information
 		wr = wr.getLinkWith("Basic Health Information").click();
 		assertEquals(ADDRESS + "auth/getPatientID.jsp?forward=hcp-uap/editBasicHealth.jsp", wr.getURL().toString());
@@ -301,6 +332,8 @@ public class PHIRecordTest extends iTrustHTTPTest {
 		patientForm.getButtons()[1].click();
 		wr = wc.getCurrentPage();
 		assertEquals(ADDRESS + "auth/hcp-uap/editBasicHealth.jsp", wr.getURL().toString());
+		assertLogged(TransactionType.PATIENT_HEALTH_INFORMATION_VIEW, 8000000009L, 2L,"");
+		
 		// attempt to add a record with invalid hdl
 		WebForm form = wr.getForms()[0];
 		form.getButtons()[0].click();
@@ -314,8 +347,7 @@ public class PHIRecordTest extends iTrustHTTPTest {
 		form.setParameter("cholesterolTri", "200");
 		form.getButtons()[0].click();
 		WebResponse add = wc.getCurrentPage();
-		assertTrue(add.getText().contains("Cholesterol HDL must be an integer in [0,89]"));
-	}
+		assertTrue(add.getText().contains("Cholesterol HDL must be an integer in [0,89]"));	}
 
 	/*
 	 * Auuthenticate UAP
@@ -338,6 +370,8 @@ public class PHIRecordTest extends iTrustHTTPTest {
 		WebConversation wc = login("8000000009", "uappass1");
 		WebResponse wr = wc.getCurrentPage();
 		assertEquals("iTrust - UAP Home", wr.getTitle());
+		assertLogged(TransactionType.HOME_VIEW, 8000000009L, 0L,"");
+		
 		// click Edit Basic Health Information
 		wr = wr.getLinkWith("Basic Health Information").click();
 		assertEquals(ADDRESS + "auth/getPatientID.jsp?forward=hcp-uap/editBasicHealth.jsp", wr.getURL().toString());
@@ -347,6 +381,8 @@ public class PHIRecordTest extends iTrustHTTPTest {
 		patientForm.getButtons()[1].click();
 		wr = wc.getCurrentPage();
 		assertEquals(ADDRESS + "auth/hcp-uap/editBasicHealth.jsp", wr.getURL().toString());
+		assertLogged(TransactionType.PATIENT_HEALTH_INFORMATION_VIEW, 8000000009L, 2L,"");
+		
 		// add a new record
 		WebForm form = wr.getForms()[0];
 		form.getButtons()[0].click();
@@ -384,6 +420,8 @@ public class PHIRecordTest extends iTrustHTTPTest {
 		WebConversation wc = login("8000000009", "uappass1");
 		WebResponse wr = wc.getCurrentPage();
 		assertEquals("iTrust - UAP Home", wr.getTitle());
+		assertLogged(TransactionType.HOME_VIEW, 8000000009L, 0L,"");
+		
 		// click Edit Basic Health Information
 		wr = wr.getLinkWith("Basic Health Information").click();
 		assertEquals(ADDRESS + "auth/getPatientID.jsp?forward=hcp-uap/editBasicHealth.jsp", wr.getURL().toString());
@@ -393,6 +431,8 @@ public class PHIRecordTest extends iTrustHTTPTest {
 		patientForm.getButtons()[1].click();
 		wr = wc.getCurrentPage();
 		assertEquals(ADDRESS + "auth/hcp-uap/editBasicHealth.jsp", wr.getURL().toString());
+		assertLogged(TransactionType.PATIENT_HEALTH_INFORMATION_VIEW, 8000000009L, 2L,"");
+		
 		// add a new record
 		WebForm form = wr.getForms()[0];
 		form.getButtons()[0].click();

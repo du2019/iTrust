@@ -2,6 +2,7 @@ package edu.ncsu.csc.itrust.http;
 
 import com.meterware.httpunit.WebConversation;
 import com.meterware.httpunit.WebResponse;
+import edu.ncsu.csc.itrust.enums.TransactionType;
 
 public class ConsultationTest extends iTrustHTTPTest {
 	@Override
@@ -28,6 +29,7 @@ public class ConsultationTest extends iTrustHTTPTest {
 		WebConversation wc = login("9000000000", "pw");
 		WebResponse wr = wc.getCurrentPage();
 		assertEquals("iTrust - HCP Home", wr.getTitle());
+		assertLogged(TransactionType.HOME_VIEW, 9000000000L, 0L, "");
 		
 		wr = wr.getLinkWith("Consultations").click();
 		assertTrue(wr.getText().contains("HCP Consultations"));
@@ -47,6 +49,7 @@ public class ConsultationTest extends iTrustHTTPTest {
 		
 		wr.getForms()[0].setParameter("msg", "Test1");
 		wr = wr.getForms()[0].submit();
+		assertLogged(TransactionType.CONSULTATION_REFERRAL_CREATE, 9000000000L, 5L, "");
 		
 		assertTrue(wr.getText().contains("Thank you, your Consultation Request was sent."));
 
@@ -102,6 +105,7 @@ public void testSubmitAndEditConsultation() throws Exception {
 		wr = wr.getForms()[0].submit();
 		
 		assertTrue(wr.getText().contains("Thank you, your Consultation Request was sent."));
+		assertLogged(TransactionType.CONSULTATION_REFERRAL_CREATE, 9000000000L, 5L, "");
 
 		assertTrue(wr.getText().contains("Test1"));
 		
@@ -144,6 +148,7 @@ public void testSubmitAndEditConsultation() throws Exception {
 		wr = wr.getForms()[0].submit();
 		
 		assertTrue(wr.getText().contains("Thank you, your Consultation Request was sent."));
+		assertLogged(TransactionType.CONSULTATION_REFERRAL_CREATE, 9000000000L, 5L, "");
 	
 		assertTrue(wr.getText().contains("Test3"));
 		
@@ -168,6 +173,7 @@ public void testSubmitAndEditConsultation() throws Exception {
 		wr = wc.getCurrentPage();
 		
 		assertTrue(wr.getText().contains("View Pending Consultations"));
+		assertLogged(TransactionType.CONSULTATION_REFERRAL_VIEW, 9000000003L, 0L, "");
 		
 		assertTrue(wr.getText().contains("Baby Programmer (5)"));
 			

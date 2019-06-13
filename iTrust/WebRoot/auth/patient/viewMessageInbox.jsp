@@ -13,6 +13,8 @@ pageTitle = "iTrust - View Message";
 <%@include file="/header.jsp" %>
 
 <%
+	loggingAction.logEvent(TransactionType.MESSAGE_VIEW, loggedInMID.longValue(), 0, "");
+	
 	ViewMyMessagesAction action = new ViewMyMessagesAction(prodDAO, loggedInMID.longValue());
 	MessageBean original = null;
 
@@ -44,15 +46,15 @@ pageTitle = "iTrust - View Message";
 	
 %>
 	<div>
-		<table width="100%" style="background-color: #DDDDDD;">
+		<table width="99%">
 			<tr>
-				<td><b>From:</b> <%= action.getName(original.getFrom()) %></td>
+				<td><b>From:</b> <%= StringEscapeUtils.escapeHtml("" + ( action.getName(original.getFrom()) )) %></td>
 			</tr>
 			<tr>
-				<td><b>Subject:</b> <%= original.getSubject() %></td>
+				<td><b>Subject:</b> <%= StringEscapeUtils.escapeHtml("" + ( original.getSubject() )) %></td>
 			</tr>
 			<tr>
-				<td><b>Date &amp; Time:</b> <%= original.getSentDate() %></td>
+				<td><b>Date &amp; Time:</b> <%= StringEscapeUtils.escapeHtml("" + ( original.getSentDate() )) %></td>
 			</tr>
 		</table>
 	</div>
@@ -65,7 +67,7 @@ pageTitle = "iTrust - View Message";
 			<td colspan="2"><b>Message:</b></td>
 		</tr>
 		<tr>
-			<td colspan="2"><%= original.getBody() %></td>
+			<td colspan="2"><%= StringEscapeUtils.escapeHtml("" + ( original.getBody() )) %></td>
 		</tr>
 	</table>
 

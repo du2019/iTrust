@@ -4,7 +4,6 @@ import edu.ncsu.csc.itrust.beans.ProcedureBean;
 import edu.ncsu.csc.itrust.dao.DAOFactory;
 import edu.ncsu.csc.itrust.dao.mysql.CPTCodesDAO;
 import edu.ncsu.csc.itrust.dao.mysql.TransactionDAO;
-import edu.ncsu.csc.itrust.enums.TransactionType;
 import edu.ncsu.csc.itrust.exception.DBException;
 import edu.ncsu.csc.itrust.exception.FormValidationException;
 import edu.ncsu.csc.itrust.exception.iTrustException;
@@ -50,8 +49,6 @@ public class UpdateCPTCodeListAction {
 		validator.validate(proc);
 		try {
 			if (cptDAO.addCPTCode(proc)) {
-				transDAO.logTransaction(TransactionType.MANAGE_PROCEDURE_CODE, loggedInMID, 0L,
-						"added CPT code " + proc.getCPTCode());
 				return "Success: " + proc.getCPTCode() + " - " + proc.getDescription() + " added";
 			} else
 				return "The database has become corrupt. Please contact the system administrator for assistance.";
@@ -79,8 +76,6 @@ public class UpdateCPTCodeListAction {
 				return "Error: Code not found. To edit an actual code, "
 						+ "change the description and add a new code with the old description";
 			} else {
-				transDAO.logTransaction(TransactionType.MANAGE_PROCEDURE_CODE, loggedInMID, 0L,
-						"updated CPT code " + proc.getCPTCode());
 				return "Success: " + rows + " row(s) updated";
 			}
 		} catch (DBException e) {

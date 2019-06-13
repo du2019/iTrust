@@ -4,6 +4,8 @@
 <%@page import="edu.ncsu.csc.itrust.dao.mysql.FakeEmailDAO"%>
 <%@page import="edu.ncsu.csc.itrust.beans.Email"%>
 <%@page import="java.util.List"%>
+<%@page import="org.apache.commons.lang.StringEscapeUtils"%>
+
 <html>
 <head>
 <title>Fake Emails Sent</title>
@@ -40,6 +42,7 @@ body {
 <a href="/iTrust">Back to iTrust</a>
 <h2>FOR TESTING PURPOSES ONLY</h2>
 <%
+
 List<Email> emails = DAOFactory.getProductionInstance().getFakeEmailDAO().getAllEmails();
 %>
 <b>Fake Emails</b>
@@ -55,10 +58,10 @@ List<Email> emails = DAOFactory.getProductionInstance().getFakeEmailDAO().getAll
 	for (Email email : emails) {
 	%>
 	<tr>
-		<td><%=email.getToListStr() %></td>
-		<td><%=email.getFrom() %></td>
-		<td><%=email.getSubject() %></td>
-		<td><%=email.getBody() %></td>
+		<td><%= StringEscapeUtils.escapeHtml("" + (email.getToListStr() )) %></td>
+		<td><%= StringEscapeUtils.escapeHtml("" + (email.getFrom() )) %></td>
+		<td><%= StringEscapeUtils.escapeHtml("" + (email.getSubject() )) %></td>
+		<td><%= StringEscapeUtils.escapeHtml("" + (email.getBody() )) %></td>
 	</tr>
 	<%
 	}

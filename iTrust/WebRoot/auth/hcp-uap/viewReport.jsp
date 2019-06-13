@@ -64,8 +64,9 @@ List<DiagnosisBean> diagnoses = viewAction.getDiagnoses(patientMID);
 List<ProcedureBean> procedures = viewAction.getProcedures(patientMID);
 List<PrescriptionBean> prescriptions = viewAction.getPrescriptions(patientMID);
 List<PersonnelBean> hcps = viewAction.getDeclaredHCPs(patientMID);
+loggingAction.logEvent(TransactionType.COMPREHENSIVE_REPORT_VIEW, loggedInMID.longValue(), patientMID, "");
 
-%><h3>Comprehensive Patient Report for <%=patient.getFullName()%></h3>
+%><h3>Comprehensive Patient Report for <%= StringEscapeUtils.escapeHtml("" + (patient.getFullName())) %></h3>
 
 <div align=center>
 <table>
@@ -76,23 +77,23 @@ List<PersonnelBean> hcps = viewAction.getDeclaredHCPs(patientMID);
 		</tr>
 		<tr>
 			<td class="subHeaderVertical">Name:</td>
-			<td ><%=patient.getFullName()%></td>
+			<td ><%= StringEscapeUtils.escapeHtml("" + (patient.getFullName())) %></td>
 		</tr>
 		<tr>
 			<td class="subHeaderVertical">Address:</td>
 			<td >
-			<%=patient.getStreetAddress1()%><br />
+			<%= StringEscapeUtils.escapeHtml("" + (patient.getStreetAddress1())) %><br />
 			<%= "".equals(patient.getStreetAddress2()) ? "" : patient.getStreetAddress2() + "<br />"%>
-			<%=patient.getStreetAddress3()%><br />									  
+			<%= StringEscapeUtils.escapeHtml("" + (patient.getStreetAddress3())) %><br />									  
 			</td>
 		</tr>
 		<tr>
 			<td class="subHeaderVertical">Phone:</td>
-			<td ><%=patient.getPhone()%></td>
+			<td ><%= StringEscapeUtils.escapeHtml("" + (patient.getPhone())) %></td>
 		</tr>
 		<tr>
 			<td class="subHeaderVertical">Email:</td>
-			<td ><%=patient.getEmail()%></td>
+			<td ><%= StringEscapeUtils.escapeHtml("" + (patient.getEmail())) %></td>
 		</tr>
 	</table>
 	</td>
@@ -104,19 +105,19 @@ List<PersonnelBean> hcps = viewAction.getDeclaredHCPs(patientMID);
 		</tr>
 		<tr>
 			<td class="subHeaderVertical">Name (ID):</td>
-			<td ><%=patient.getIcName()%> (<%=patient.getIcID()%>)</td>
+			<td ><%= StringEscapeUtils.escapeHtml("" + (patient.getIcName())) %> (<%= StringEscapeUtils.escapeHtml("" + (patient.getIcID())) %>)</td>
 		</tr>
 		<tr>
 			<td class="subHeaderVertical">Address:</td>
 			<td >
-			<%=patient.getIcAddress1()%><br />
+			<%= StringEscapeUtils.escapeHtml("" + (patient.getIcAddress1())) %><br />
 			<%="".equals(patient.getIcAddress2()) ? "" : patient.getIcAddress2() + "<br />"%>
-			<%=patient.getIcAddress3()%><br />							
+			<%= StringEscapeUtils.escapeHtml("" + (patient.getIcAddress3())) %><br />							
 			</td>
 		</tr>
 		<tr>
 			<td class="subHeaderVertical">Phone:</td>
-			<td ><%=patient.getIcPhone()%></td>
+			<td ><%= StringEscapeUtils.escapeHtml("" + (patient.getIcPhone())) %></td>
 		</tr>
 	</table>
 	</td></tr>
@@ -144,16 +145,16 @@ List<PersonnelBean> hcps = viewAction.getDeclaredHCPs(patientMID);
 		personnel = personnelDAO.getPersonnel(hr.getPersonnelID());
 %>
 	<tr>
-		<td align=center><%=hr.getHeight()%>in</td>
-		<td align=center><%=hr.getWeight() %>lbs</td>
-		<td align=center><%=hr.isSmoker() ? "Y" : "N" %></td>
-		<td align=center><%=hr.getBloodPressure()%> mmHg</td>
-		<td align=center><%=hr.getCholesterolHDL()%> mg/dL</td>
-		<td align=center><%=hr.getCholesterolLDL()%> mg/dL</td>
-		<td align=center><%=hr.getCholesterolTri()%> mg/dL</td>
-		<td align=center><%=hr.getTotalCholesterol()%> mg/dL</td>		
-		<td align=center><%=hr.getDateRecorded()%></td>
-		<td align=center><%=personnel.getFullName()%></td>
+		<td align=center><%= StringEscapeUtils.escapeHtml("" + (hr.getHeight())) %>in</td>
+		<td align=center><%= StringEscapeUtils.escapeHtml("" + (hr.getWeight() )) %>lbs</td>
+		<td align=center><%= StringEscapeUtils.escapeHtml("" + (hr.isSmoker() ? "Y" : "N" )) %></td>
+		<td align=center><%= StringEscapeUtils.escapeHtml("" + (hr.getBloodPressure())) %> mmHg</td>
+		<td align=center><%= StringEscapeUtils.escapeHtml("" + (hr.getCholesterolHDL())) %> mg/dL</td>
+		<td align=center><%= StringEscapeUtils.escapeHtml("" + (hr.getCholesterolLDL())) %> mg/dL</td>
+		<td align=center><%= StringEscapeUtils.escapeHtml("" + (hr.getCholesterolTri())) %> mg/dL</td>
+		<td align=center><%= StringEscapeUtils.escapeHtml("" + (hr.getTotalCholesterol())) %> mg/dL</td>		
+		<td align=center><%= StringEscapeUtils.escapeHtml("" + (hr.getDateRecorded())) %></td>
+		<td align=center><%= StringEscapeUtils.escapeHtml("" + (personnel.getFullName())) %></td>
 	</tr>
 	<%}%>
 </table>
@@ -178,9 +179,9 @@ List<PersonnelBean> hcps = viewAction.getDeclaredHCPs(patientMID);
 				((DecimalFormat)numberFormatter).setMinimumFractionDigits(2);
 				for(DiagnosisBean diagnosis : diagnoses){%>
 			<tr>
-				<td style="text-align: center;"><%=diagnosis.getOvDiagnosisID()%></td>
-				<td style="text-align: center;"><%=numberFormatter.format(Float.parseFloat(diagnosis.getICDCode()))%></td>
-				<td style="text-align: center;"><%=diagnosis.getDescription()%></td>
+				<td style="text-align: center;"><%= StringEscapeUtils.escapeHtml("" + (diagnosis.getOvDiagnosisID())) %></td>
+				<td style="text-align: center;"><%= StringEscapeUtils.escapeHtml("" + (numberFormatter.format(Float.parseFloat(diagnosis.getICDCode())))) %></td>
+				<td style="text-align: center;"><%= StringEscapeUtils.escapeHtml("" + (diagnosis.getDescription())) %></td>
 			</tr>			
 			<%  }
 			  } %>
@@ -201,7 +202,7 @@ List<PersonnelBean> hcps = viewAction.getDeclaredHCPs(patientMID);
 			<%} else {
 				for(PersonnelBean hcp : hcps){%>
 			<tr>
-				<td style="text-align: center;"><%=hcp.getFullName()%></td>
+				<td style="text-align: center;"><%= StringEscapeUtils.escapeHtml("" + (hcp.getFullName())) %></td>
 			</tr>			
 			<%  }
 			  } %>
@@ -223,8 +224,8 @@ List<PersonnelBean> hcps = viewAction.getDeclaredHCPs(patientMID);
 			<%} else {
 				for(AllergyBean allergy : allergies){%>
 			<tr>
-				<td style="text-align: center;"><%=allergy.getDescription()%></td>
-				<td style="text-align: center;"><%=allergy.getFirstFoundStr()%></td>
+				<td style="text-align: center;"><%= StringEscapeUtils.escapeHtml("" + (allergy.getDescription())) %></td>
+				<td style="text-align: center;"><%= StringEscapeUtils.escapeHtml("" + (allergy.getFirstFoundStr())) %></td>
 			</tr>			
 			<%  }
 			  } %>
@@ -247,9 +248,9 @@ List<PersonnelBean> hcps = viewAction.getDeclaredHCPs(patientMID);
 			<%} else {
 				for(ProcedureBean procedure : procedures){%>
 			<tr>
-				<td style="text-align: center;"><%=procedure.getOvProcedureID()%></td>
-				<td style="text-align: center;"><%=procedure.getCPTCode()%></td>
-				<td style="text-align: center;"><%=procedure.getDescription()%></td>
+				<td style="text-align: center;"><%= StringEscapeUtils.escapeHtml("" + (procedure.getOvProcedureID())) %></td>
+				<td style="text-align: center;"><%= StringEscapeUtils.escapeHtml("" + (procedure.getCPTCode())) %></td>
+				<td style="text-align: center;"><%= StringEscapeUtils.escapeHtml("" + (procedure.getDescription())) %></td>
 			</tr>			
 			<%  }
 			  } %>
@@ -275,12 +276,12 @@ List<PersonnelBean> hcps = viewAction.getDeclaredHCPs(patientMID);
 			<%} else {
 				for(PrescriptionBean prescription : prescriptions){%>
 			<tr>
-				<td style="text-align: center;"><%=prescription.getVisitID()%></td>
-				<td style="text-align: center;"><%=prescription.getMedication().getNDCode()%></td>
-				<td style="text-align: center;"><%=prescription.getStartDateStr()%></td>
-				<td style="text-align: center;"><%=prescription.getEndDateStr()%></td>
-				<td style="text-align: center;"><%=prescription.getDosage()%></td>
-				<td style="text-align: center;"><%=prescription.getInstructions()%></td>
+				<td style="text-align: center;"><%= StringEscapeUtils.escapeHtml("" + (prescription.getVisitID())) %></td>
+				<td style="text-align: center;"><%= StringEscapeUtils.escapeHtml("" + (prescription.getMedication().getNDCode())) %></td>
+				<td style="text-align: center;"><%= StringEscapeUtils.escapeHtml("" + (prescription.getStartDateStr())) %></td>
+				<td style="text-align: center;"><%= StringEscapeUtils.escapeHtml("" + (prescription.getEndDateStr())) %></td>
+				<td style="text-align: center;"><%= StringEscapeUtils.escapeHtml("" + (prescription.getDosage())) %></td>
+				<td style="text-align: center;"><%= StringEscapeUtils.escapeHtml("" + (prescription.getInstructions())) %></td>
 			</tr>			
 			<%  }
 			  } %>
@@ -306,10 +307,10 @@ List<PersonnelBean> hcps = viewAction.getDeclaredHCPs(patientMID);
 					personnel = personnelDAO.getPersonnel(ov.getHcpID());
 %>
 			<tr>
-				<td style="text-align: center;"><%=ov.getVisitDateStr()%></td>
-				<td style="text-align: center;"><%=personnel.getFullName()%></td>
-				<td style="text-align: center;"><%=ov.getHospitalID()%></td>
-				<td style="text-align: center;"><%=ov.getNotes()%></td>
+				<td style="text-align: center;"><%= StringEscapeUtils.escapeHtml("" + (ov.getVisitDateStr())) %></td>
+				<td style="text-align: center;"><%= StringEscapeUtils.escapeHtml("" + (personnel.getFullName())) %></td>
+				<td style="text-align: center;"><%= StringEscapeUtils.escapeHtml("" + (ov.getHospitalID())) %></td>
+				<td style="text-align: center;"><%= StringEscapeUtils.escapeHtml("" + (ov.getNotes())) %></td>
 			</tr>	
 			<%  }
 			  } %>
@@ -331,8 +332,8 @@ List<PersonnelBean> hcps = viewAction.getDeclaredHCPs(patientMID);
 			  <%} else {
 				  for(FamilyMemberBean member : family) {%>
 			  	<tr>
-					<td><%=member.getFullName()%></td>
-					<td><%=member.getRelation()%></td>
+					<td><%= StringEscapeUtils.escapeHtml("" + (member.getFullName())) %></td>
+					<td><%= StringEscapeUtils.escapeHtml("" + (member.getRelation())) %></td>
 				</tr>
 			  <%  }
 				}%>
@@ -340,20 +341,20 @@ List<PersonnelBean> hcps = viewAction.getDeclaredHCPs(patientMID);
 <br />
 <table class="fTable">
 		<tr>
-			<th>Patients <%=patient.getFirstName()%> is representing</th>
+			<th>Patients <%= StringEscapeUtils.escapeHtml("" + (patient.getFirstName())) %> is representing</th>
 		</tr>
 			<tr class="subHeader">
 				<th>Patient</th>
 			</tr>
 			<%if(represented.size() ==0){ %>
 			<tr>
-				<td><%=patient.getFirstName()%> is not representing any patients</td>
+				<td><%= StringEscapeUtils.escapeHtml("" + (patient.getFirstName())) %> is not representing any patients</td>
 			</tr>
 			<%} else { 
 				for(PatientBean p : represented){%>
 				<tr>
 					<td align=center>
-						<%=p.getFullName()%>
+						<%= StringEscapeUtils.escapeHtml("" + (p.getFullName())) %>
 					</td>
 				</tr>
 			 <% }
@@ -362,20 +363,20 @@ List<PersonnelBean> hcps = viewAction.getDeclaredHCPs(patientMID);
 <br />
 <table class="fTable">
 		<tr>
-			<th >Patients Representing <%=patient.getFirstName()%></th>
+			<th >Patients Representing <%= StringEscapeUtils.escapeHtml("" + (patient.getFirstName())) %></th>
 		</tr>
 			<tr class="subHeader">
 				<th>Patient</th>
 			</tr>
 			<%if(representing.size() ==0){ %>
 			<tr>
-				<td><%=patient.getFirstName()%> is not represented by any patients</td>
+				<td><%= StringEscapeUtils.escapeHtml("" + (patient.getFirstName())) %> is not represented by any patients</td>
 			</tr>
 			<%} else { 
 				for(PatientBean p : representing){%>
 				<tr>
 					<td align=center>
-						<%=p.getFullName()%>
+						<%= StringEscapeUtils.escapeHtml("" + (p.getFullName())) %>
 					</td>
 				</tr>
 			 <% }
@@ -385,7 +386,7 @@ List<PersonnelBean> hcps = viewAction.getDeclaredHCPs(patientMID);
 <br />
 
 <%} catch (Exception ex) {
-	%><%=ex.getClass()+", " %><%=ex.getCause()+", " %><%=ex.getMessage() %><%
+	%><%=ex.getClass()+", " %><%=ex.getCause()+", " %><%=StringEscapeUtils.escapeHtml(ex.getMessage()) %><%
 }
 %>
 

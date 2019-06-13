@@ -12,6 +12,7 @@ import edu.ncsu.csc.itrust.DBUtil;
 import edu.ncsu.csc.itrust.beans.DiagnosisBean;
 import edu.ncsu.csc.itrust.beans.LabProcedureBean;
 import edu.ncsu.csc.itrust.beans.OfficeVisitBean;
+import edu.ncsu.csc.itrust.beans.OverrideReasonBean;
 import edu.ncsu.csc.itrust.beans.PrescriptionBean;
 import edu.ncsu.csc.itrust.beans.PrescriptionReportBean;
 import edu.ncsu.csc.itrust.beans.ProcedureBean;
@@ -724,6 +725,32 @@ public class OfficeVisitDAO {
 		
 		}
 		catch (SQLException e) {
+			e.printStackTrace();
+			throw new DBException(e);
+		} finally {
+			DBUtil.closeConnection(conn, ps);
+		}
+	}
+
+	/**
+	 * Adds an override reason bean to the database.
+	 * @param orc The override reason bean to be added.
+	 * @return The unique ID of the newly added bean.
+	 * @throws DBException
+	 */
+	public long addReason(OverrideReasonBean orb) throws DBException {
+		Connection conn = null;
+		PreparedStatement ps = null;
+		try {
+			conn = factory.getConnection();
+			ps = conn
+					.prepareStatement("INSERT INTO OVReactionOverride (OVMedicationID,OverrideCode,OverrideComment) VALUES (?,?,?)");
+			ps.setLong(1, orb.getPresID());
+			ps.setString(2, orb.getORCode());
+			ps.setString(3, orb.getDescription());
+			ps.executeUpdate();
+			return DBUtil.getLastInsert(conn);
+		} catch (SQLException e) {
 			e.printStackTrace();
 			throw new DBException(e);
 		} finally {

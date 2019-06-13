@@ -13,8 +13,7 @@ public class RemoteMonitoringDataBeanValidator extends BeanValidator<RemoteMonit
 	/**
 	 * The default constructor.
 	 */
-	public RemoteMonitoringDataBeanValidator() {
-	}
+	public RemoteMonitoringDataBeanValidator() {}
 	
 	/**
 	 * Performs the act of validating the bean in question, which varies depending on the
@@ -25,12 +24,26 @@ public class RemoteMonitoringDataBeanValidator extends BeanValidator<RemoteMonit
 	@Override
 	public void validate(RemoteMonitoringDataBean m) throws FormValidationException {
 		ErrorList errorList = new ErrorList();
-		errorList.addIfNotNull(checkFormat("Systolic Blood Pressure", "" + m.getSystolicBloodPressure(),
-				ValidationFormat.SYSTOLIC_BLOOD_PRESSURE, false));
-		errorList.addIfNotNull(checkFormat("Diastolic Blood Pressure", "" + m.getDiastolicBloodPressure(),
-				ValidationFormat.DIASTOLIC_BLOOD_PRESSURE, false));
-		errorList.addIfNotNull(checkFormat("Glucose Level", "" + m.getGlucoseLevel(),
-				ValidationFormat.GLUCOSE_LEVEL, false));
+		
+		// Skip validation if values were not submitted (0 or -1)
+		if (!(m.getSystolicBloodPressure() == 0 || m.getSystolicBloodPressure() == -1))
+			errorList.addIfNotNull(checkFormat("Systolic Blood Pressure", "" + m.getSystolicBloodPressure(),
+					ValidationFormat.SYSTOLIC_BLOOD_PRESSURE, true));
+		if (!(m.getDiastolicBloodPressure() == 0 || m.getDiastolicBloodPressure() == -1))
+			errorList.addIfNotNull(checkFormat("Diastolic Blood Pressure", "" + m.getDiastolicBloodPressure(),
+					ValidationFormat.DIASTOLIC_BLOOD_PRESSURE, true));
+		if (!(m.getGlucoseLevel() == 0 || m.getGlucoseLevel() == -1))
+			errorList.addIfNotNull(checkFormat("Glucose Level", "" + m.getGlucoseLevel(),
+					ValidationFormat.GLUCOSE_LEVEL, true));
+		if (!(m.getPedometerReading() == 0 || m.getPedometerReading() == -1))
+			errorList.addIfNotNull(checkFormat("Pedometer Reading", "" + m.getPedometerReading(),
+					ValidationFormat.PEDOMETER_READING, true));
+		if (!(m.getHeight() == 0 || m.getHeight() == -1))
+			errorList.addIfNotNull(checkFormat("Height", "" + m.getHeight(),
+					ValidationFormat.HEIGHT, true));
+		if (!(m.getWeight() == 0 || m.getWeight() == -1))
+			errorList.addIfNotNull(checkFormat("Weight", "" + m.getWeight(),
+					ValidationFormat.WEIGHT, true));
 		if (errorList.hasErrors()){
 			throw new FormValidationException(errorList);
 		}

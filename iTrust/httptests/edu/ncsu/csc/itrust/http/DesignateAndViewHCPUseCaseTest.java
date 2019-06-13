@@ -6,6 +6,7 @@ import com.meterware.httpunit.WebForm;
 import com.meterware.httpunit.WebResponse;
 import com.meterware.httpunit.WebTable;
 import com.meterware.httpunit.TableRow;
+import edu.ncsu.csc.itrust.enums.TransactionType;
 
 /**
  * Use Case 6
@@ -24,6 +25,7 @@ public class DesignateAndViewHCPUseCaseTest extends iTrustHTTPTest {
 		WebConversation wc = login("2", "pw");
 		WebResponse wr = wc.getCurrentPage();
 		assertEquals("iTrust - Patient Home", wr.getTitle());
+		assertLogged(TransactionType.HOME_VIEW, 2L, 0L, "");
 
 		wr = wr.getLinkWith("My Providers").click();
 		assertEquals("iTrust - My Providers", wr.getTitle());
@@ -43,7 +45,8 @@ public class DesignateAndViewHCPUseCaseTest extends iTrustHTTPTest {
 		WebConversation wc = login("2", "pw");
 		WebResponse wr = wc.getCurrentPage();
 		assertEquals("iTrust - Patient Home", wr.getTitle());
-
+		assertLogged(TransactionType.HOME_VIEW, 2L, 0L, "");
+		
 		wr = wr.getLinkWith("My Providers").click();
 		assertEquals("iTrust - My Providers", wr.getTitle());
 		
@@ -57,6 +60,7 @@ public class DesignateAndViewHCPUseCaseTest extends iTrustHTTPTest {
 		//form.getScriptableObject().submit();
 		//wr = wc.getCurrentPage();
 		wr = wr.getForms()[0].submit();
+		assertLogged(TransactionType.LHCP_VIEW, 2L, 0L, "");
 		
 		WebTable table = (WebTable)wr.getElementWithID("hcp_table");
 		TableRow rows[] = table.getRows();
@@ -70,6 +74,7 @@ public class DesignateAndViewHCPUseCaseTest extends iTrustHTTPTest {
 		WebConversation wc = login("2", "pw");
 		WebResponse wr = wc.getCurrentPage();
 		assertEquals("iTrust - Patient Home", wr.getTitle());
+		assertLogged(TransactionType.HOME_VIEW, 2L, 0L, "");
 
 		wr = wr.getLinkWith("My Providers").click();
 		assertEquals("iTrust - My Providers", wr.getTitle());

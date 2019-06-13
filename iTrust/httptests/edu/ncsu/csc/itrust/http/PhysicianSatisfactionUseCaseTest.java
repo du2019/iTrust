@@ -5,6 +5,7 @@ import com.meterware.httpunit.WebForm;
 import com.meterware.httpunit.WebResponse;
 import com.meterware.httpunit.WebTable;
 import edu.ncsu.csc.itrust.beans.SurveyResultBean;
+import edu.ncsu.csc.itrust.enums.TransactionType;
 
 /**
  * Use Case 25
@@ -34,9 +35,12 @@ public class PhysicianSatisfactionUseCaseTest extends iTrustHTTPTest {
 		WebConversation wc = login("2", "pw");
 		WebResponse wr = wc.getCurrentPage();
 		assertEquals("iTrust - Patient Home", wr.getTitle());
+		assertLogged(TransactionType.HOME_VIEW, 2L, 0L, "");
+		
 		//go to page with HCP Survey Results
 		wr = wr.getLinkWith("Satisfaction Survey Results").click();
 		assertTrue(wr.getText().contains("Search HCP Survey Results"));
+		
 		WebForm form = wr.getForms()[0];
 		form.setParameter("hcpZip", "12377");
 		form.setParameter("hcpSpecialty", SurveyResultBean.SURGEON_SPECIALTY);
@@ -51,12 +55,7 @@ public class PhysicianSatisfactionUseCaseTest extends iTrustHTTPTest {
 		assertTrue(wr.getText().contains("NY"));
 		assertTrue(wr.getText().contains("12345-1234"));
 		assertTrue(wr.getText().contains("surgeon"));
-	 	
-		
-		//check log
-		wr = wr.getLinkWith("Transaction Log").click();
-		assertTrue(wr.getText().contains("searched results by HCP zip code"));
-		
+		assertLogged(TransactionType.SATISFACTION_SURVEY_VIEW, 2L, 0L, "");		
 	}
 	
 	
@@ -68,6 +67,8 @@ public class PhysicianSatisfactionUseCaseTest extends iTrustHTTPTest {
 		WebConversation wc = login("8000000009", "uappass1");
 		WebResponse wr = wc.getCurrentPage();
 		assertEquals("iTrust - UAP Home", wr.getTitle());
+		assertLogged(TransactionType.HOME_VIEW, 8000000009L, 0L, "");
+		
 		//go to page with HCP Survey Results
 		wr = wr.getLinkWith("Satisfaction Survey Results").click();
 		assertTrue(wr.getText().contains("Search HCP Survey Results"));
@@ -90,11 +91,7 @@ public class PhysicianSatisfactionUseCaseTest extends iTrustHTTPTest {
 		assertEquals("1.00", wt.getTableCell(2, 10).getText());
 		assertEquals("2.00", wt.getTableCell(2, 11).getText());
 		assertEquals("75%", wt.getTableCell(2, 12).getText());
-		
-		//check log
-		wr = wr.getLinkWith("Transaction Log").click();
-		assertTrue(wr.getText().contains("searched results by HCP zip code"));
-		
+		assertLogged(TransactionType.SATISFACTION_SURVEY_VIEW, 8000000009L, 0L, "");		
 	}
 	
 	
@@ -106,6 +103,8 @@ public class PhysicianSatisfactionUseCaseTest extends iTrustHTTPTest {
 		WebConversation wc = login("9000000000", "pw");
 		WebResponse wr = wc.getCurrentPage();
 		assertEquals("iTrust - HCP Home", wr.getTitle());
+		assertLogged(TransactionType.HOME_VIEW, 9000000000L, 0L, "");
+		
 		//go to page with HCP Survey Results
 		wr = wr.getLinkWith("Satisfaction Survey Results").click();
 		assertTrue(wr.getText().contains("Search HCP Survey Results"));
@@ -142,11 +141,7 @@ public class PhysicianSatisfactionUseCaseTest extends iTrustHTTPTest {
 		assertEquals("1.00", wt.getTableCell(3, 10).getText());
 		assertEquals("2.00", wt.getTableCell(3, 11).getText());
 		assertEquals("75%", wt.getTableCell(3, 12).getText());
-		
-		//check log
-		wr = wr.getLinkWith("Transaction Log").click();
-		assertTrue(wr.getText().contains("searched results by HCP zip code"));
-		
+		assertLogged(TransactionType.SATISFACTION_SURVEY_VIEW, 9000000000L, 0L, "");	
 	}
 	
 	public void testSearchByHospitalSurveyResults1() throws Exception {
@@ -156,6 +151,8 @@ public class PhysicianSatisfactionUseCaseTest extends iTrustHTTPTest {
 		WebConversation wc = login("2", "pw");
 		WebResponse wr = wc.getCurrentPage();
 		assertEquals("iTrust - Patient Home", wr.getTitle());
+		assertLogged(TransactionType.HOME_VIEW, 2L, 0L, "");
+		
 		//go to page with HCP Survey Results
 		wr = wr.getLinkWith("Satisfaction Survey Results").click();
 		assertTrue(wr.getText().contains("Search HCP Survey Results"));
@@ -166,6 +163,7 @@ public class PhysicianSatisfactionUseCaseTest extends iTrustHTTPTest {
 		wr = form.submit();
 		WebTable wt = wr.getTableStartingWith("LHCP Search Results:");
 		assertEquals(5, wt.getRowCount());
+		assertLogged(TransactionType.SATISFACTION_SURVEY_VIEW, 2L, 0L, "");
 	}
 	
 	public void testSearchByHospitalSurveyResults2() throws Exception {
@@ -175,6 +173,8 @@ public class PhysicianSatisfactionUseCaseTest extends iTrustHTTPTest {
 		WebConversation wc = login("8000000009", "uappass1");
 		WebResponse wr = wc.getCurrentPage();
 		assertEquals("iTrust - UAP Home", wr.getTitle());
+		assertLogged(TransactionType.HOME_VIEW, 8000000009L, 0L, "");
+		
 		//go to page with HCP Survey Results
 		wr = wr.getLinkWith("Satisfaction Survey Results").click();
 		assertTrue(wr.getText().contains("Search HCP Survey Results"));
@@ -185,6 +185,7 @@ public class PhysicianSatisfactionUseCaseTest extends iTrustHTTPTest {
 		wr = form.submit();
 		WebTable wt = wr.getTableStartingWith("LHCP Search Results:");
 		assertEquals(4, wt.getRowCount());
+		assertLogged(TransactionType.SATISFACTION_SURVEY_VIEW, 8000000009L, 0L, "");
 	}
 	
 	public void testSearchByHospitalSurveyResults3() throws Exception {
@@ -194,6 +195,8 @@ public class PhysicianSatisfactionUseCaseTest extends iTrustHTTPTest {
 		WebConversation wc = login("9000000000", "pw");
 		WebResponse wr = wc.getCurrentPage();
 		assertEquals("iTrust - HCP Home", wr.getTitle());
+		assertLogged(TransactionType.HOME_VIEW, 9000000000L, 0L, "");
+		
 		//go to page with HCP Survey Results
 		wr = wr.getLinkWith("Satisfaction Survey Results").click();
 		assertTrue(wr.getText().contains("Search HCP Survey Results"));
@@ -204,6 +207,7 @@ public class PhysicianSatisfactionUseCaseTest extends iTrustHTTPTest {
 		wr = form.submit();
 		WebTable wt = wr.getTableStartingWith("LHCP Search Results:");
 		assertEquals(3, wt.getRowCount());
+		assertLogged(TransactionType.SATISFACTION_SURVEY_VIEW, 9000000000L, 0L, "");
 	}
 	
 	public void testSurveyResultsNoInput() throws Exception {
@@ -211,6 +215,8 @@ public class PhysicianSatisfactionUseCaseTest extends iTrustHTTPTest {
 		WebConversation wc = login("2", "pw");
 		WebResponse wr = wc.getCurrentPage();
 		assertEquals("iTrust - Patient Home", wr.getTitle());
+		assertLogged(TransactionType.HOME_VIEW, 2L, 0L, "");
+		
 		//go to page with HCP Survey Results
 		wr = wr.getLinkWith("Satisfaction Survey Results").click();
 		assertTrue(wr.getText().contains("Search HCP Survey Results"));
@@ -225,6 +231,8 @@ public class PhysicianSatisfactionUseCaseTest extends iTrustHTTPTest {
 		WebConversation wc = login("2", "pw");
 		WebResponse wr = wc.getCurrentPage();
 		assertEquals("iTrust - Patient Home", wr.getTitle());
+		assertLogged(TransactionType.HOME_VIEW, 2L, 0L, "");
+		
 		//go to page with HCP Survey Results
 		wr = wr.getLinkWith("Satisfaction Survey Results").click();
 		assertTrue(wr.getText().contains("Search HCP Survey Results"));
@@ -241,6 +249,8 @@ public class PhysicianSatisfactionUseCaseTest extends iTrustHTTPTest {
 		WebConversation wc = login("2", "pw");
 		WebResponse wr = wc.getCurrentPage();
 		assertEquals("iTrust - Patient Home", wr.getTitle());
+		assertLogged(TransactionType.HOME_VIEW, 2L, 0L, "");
+		
 		//go to page with HCP Survey Results
 		wr = wr.getLinkWith("Satisfaction Survey Results").click();
 		assertTrue(wr.getText().contains("Search HCP Survey Results"));
@@ -256,6 +266,8 @@ public class PhysicianSatisfactionUseCaseTest extends iTrustHTTPTest {
 		WebConversation wc = login("2", "pw");
 		WebResponse wr = wc.getCurrentPage();
 		assertEquals("iTrust - Patient Home", wr.getTitle());
+		assertLogged(TransactionType.HOME_VIEW, 2L, 0L, "");
+		
 		//go to page with HCP Survey Results
 		wr = wr.getLinkWith("Satisfaction Survey Results").click();
 		assertTrue(wr.getText().contains("Search HCP Survey Results"));
@@ -271,6 +283,8 @@ public class PhysicianSatisfactionUseCaseTest extends iTrustHTTPTest {
 		WebConversation wc = login("2", "pw");
 		WebResponse wr = wc.getCurrentPage();
 		assertEquals("iTrust - Patient Home", wr.getTitle());
+		assertLogged(TransactionType.HOME_VIEW, 2L, 0L, "");
+		
 		//go to page with HCP Survey Results
 		wr = wr.getLinkWith("Satisfaction Survey Results").click();
 		assertTrue(wr.getText().contains("Search HCP Survey Results"));

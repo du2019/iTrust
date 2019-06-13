@@ -5,6 +5,7 @@ import java.sql.Timestamp;
 
 public class ApptBean {
 	private String apptType;
+	int apptID;
 	private long patient;
 	private long hcp;
 	private Timestamp date;
@@ -16,6 +17,18 @@ public class ApptBean {
 	public String getApptType() {
 		return apptType;
 	}
+	
+	/**
+	 * @param apptID the apptID to set
+	 */
+	public void setApptID(int apptID) {
+		this.apptID = apptID;
+	}
+	
+	public int getApptID() {
+		return apptID;
+	}
+	
 	/**
 	 * @param apptType the apptType to set
 	 */
@@ -70,4 +83,5 @@ public class ApptBean {
 	public void setComment(String comment) {
 		this.comment = comment;
 	}
+
 }
