@@ -1,0 +1,43 @@
+package edu.ncsu.csc.itrust.action;
+
+import junit.framework.TestCase;
+import edu.ncsu.csc.itrust.dao.DAOFactory;
+import edu.ncsu.csc.itrust.datagenerators.TestDataGenerator;
+import edu.ncsu.csc.itrust.testutils.EvilDAOFactory;
+import edu.ncsu.csc.itrust.testutils.TestDAOFactory;
+
+public class LoginFailureActionTest extends TestCase {
+	private DAOFactory factory = TestDAOFactory.getTestInstance();
+	private DAOFactory evil = EvilDAOFactory.getEvilInstance();
+	private TestDataGenerator gen;
+	private LoginFailureAction action;
+
+	@Override
+	protected void setUp() throws Exception {
+		gen = new TestDataGenerator();
+		gen.clearAllTables();
+		action = new LoginFailureAction(factory, "192.168.1.1");
+	}
+
+	public void testNormalLoginFailureSequence() throws Exception {
+		assertTrue(action.isValidForLogin());
+		assertEquals("Login failed, attempt 1", action.recordLoginFailure());
+		assertTrue(action.isValidForLogin());
+		assertEquals("Login failed, attempt 2", action.recordLoginFailure());
+		assertTrue(action.isValidForLogin());
+		assertEquals("Login failed, attempt 3", action.recordLoginFailure());
+		assertFalse(action.isValidForLogin());
+	}
+
+	public void testRecordLoginFailureEvil() throws Exception {
+		action = new LoginFailureAction(evil, "192.168.1.1");
+		assertEquals("A database exception has occurred. Please see the log in the "
+				+ "console for stacktrace", action.recordLoginFailure());
+	}
+
+	public void testIsValidForLoginEvil() throws Exception {
+		action = new LoginFailureAction(evil, "192.168.1.1");
+		assertEquals(false, action.isValidForLogin());
+	}
+
+}
